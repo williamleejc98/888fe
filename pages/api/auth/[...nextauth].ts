@@ -8,12 +8,13 @@ config();
 export const authOptions = {
   providers: [
     Auth0Provider({
-      clientId: process.env.AUTH0_CLIENT_ID,
-      clientSecret: process.env.AUTH0_CLIENT_SECRET,
-      issuer: process.env.AUTH0_ISSUER,
+      clientId: process.env.AUTH0_CLIENT_ID!,
+      clientSecret: process.env.AUTH0_CLIENT_SECRET!,
+      issuer: process.env.AUTH0_ISSUER!,
     }),
   ],
-  secret: process.env.NEXT_AUTH_SECRET,
+  secret: process.env.NEXT_AUTH_SECRET!,
 };
+
 
 export default NextAuth(authOptions);

@@ -10,29 +10,30 @@
     "refine": "refine"
   },
   "dependencies": {
+    "@ant-design/icons": "^5.0.1",
+    "@refinedev/antd": "^5.7.0",
     "@refinedev/cli": "^2.7.4",
     "@refinedev/core": "^4.28.2",
-    "@refinedev/nextjs-router": "^5.3.2",
     "@refinedev/inferencer": "^4.3.2",
     "@refinedev/kbar": "^1.1.2",
+    "@refinedev/nestjsx-crud": "^4.0.0",
+    "@refinedev/nextjs-router": "^5.3.2",
+    "antd": "^5.0.5",
+    "dotenv": "^16.3.1",
     "next": "^13.0.6",
+    "next-auth": "^4.20.1",
+    "next-i18next": "^8.9.0",
     "nookies": "^2.5.2",
     "react": "^18.0.0",
-    "react-dom": "^18.0.0",
-    "@refinedev/nestjsx-crud": "^4.0.0",
-    "@refinedev/antd": "^5.7.0",
-    "antd": "^5.0.5",
-    "@ant-design/icons": "^5.0.1",
-    "next-auth": "^4.20.1",
-    "next-i18next": "^8.9.0"
+    "react-dom": "^18.0.0"
   },
   "devDependencies": {
+    "@types/node": "^12.20.11",
     "@types/react": "^18.0.0",
     "@types/react-dom": "^18.0.0",
-    "@types/node": "^12.20.11",
     "@typescript-eslint/parser": "5.48.0",
-    "typescript": "^4.7.4",
-    "cross-env": "^7.0.3"
+    "cross-env": "^7.0.3",
+    "typescript": "^4.7.4"
   },
   "refine": {
     "projectId": "2BpDJ5-Fo5K4U-taSLKU"
