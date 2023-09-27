@@ -22,7 +22,7 @@ import dataProvider from "@refinedev/nestjsx-crud";
 import { appWithTranslation, useTranslation } from "next-i18next";
 import { AppIcon } from "src/components/app-icon";
 
-const API_URL = "https://api.nestjsx-crud.refine.dev";
+const API_URL = process.env.API_URL || "https://api.nestjsx-crud.refine.dev";
 
 export type NextPageWithLayout<P = {}, IP = P> = NextPage<P, IP> & {
   noLayout?: boolean;

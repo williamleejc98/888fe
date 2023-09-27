@@ -1,16 +1,19 @@
 import NextAuth from "next-auth";
 import Auth0Provider from "next-auth/providers/auth0";
+import { config } from "dotenv";
+
+// Load environment variables from .env.local file
+config();
 
 export const authOptions = {
-  // Configure one or more authentication providers
   providers: [
-    // !!! Should be stored in .env file.
     Auth0Provider({
-      clientId: `AbQeb6rjTpNOJR9vtjkyfkWW5UF3WrpY`,
-      clientSecret: `77386zmwTiKbN_bHoqRb4RUpwT7d4O81ouMtdmyiX4MfjYdsoJT5J1f5ty0KEtku`,
-      issuer: `https://dev-b5eyrhx8ed6hts4g.us.auth0.com`,
+      clientId: process.env.AUTH0_CLIENT_ID,
+      clientSecret: process.env.AUTH0_CLIENT_SECRET,
+      issuer: process.env.AUTH0_ISSUER,
     }),
   ],
-  secret: `UItTuD1HcGXIj8ZfHUswhYdNd40Lc325R8VlxQPUoR0=`,
+  secret: process.env.NEXT_AUTH_SECRET,
 };
+
 export default NextAuth(authOptions);
