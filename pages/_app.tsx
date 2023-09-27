@@ -21,6 +21,10 @@ import "@refinedev/antd/dist/reset.css";
 import dataProvider from "@refinedev/nestjsx-crud";
 import { appWithTranslation, useTranslation } from "next-i18next";
 import { AppIcon } from "src/components/app-icon";
+import { config } from "dotenv";
+
+// Load environment variables from .env.local file
+config();
 
 const API_URL = process.env.API_URL || "https://api.nestjsx-crud.refine.dev";
 
