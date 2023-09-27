@@ -1,11 +1,26 @@
-import { ErrorComponent } from "@refinedev/antd";
+import { AuthPage, ThemedTitleV2 } from "@refinedev/antd";
+
 import { GetServerSideProps } from "next";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import { authProvider } from "src/authProvider";
+import { AppIcon } from "src/components/app-icon";
 
-export default function CatchAll() {
-  return <ErrorComponent />;
+export default function Register() {
+  return (
+    <AuthPage
+      type="register"
+      title={
+        <ThemedTitleV2
+          collapsed={false}
+          text="refine Project"
+          icon={<AppIcon />}
+        />
+      }
+    />
+  );
 }
+
+Register.noLayout = true;
 
 export const getServerSideProps: GetServerSideProps<{}> = async (context) => {
   const { authenticated, redirectTo } = await authProvider.check(context);
@@ -14,15 +29,11 @@ export const getServerSideProps: GetServerSideProps<{}> = async (context) => {
     "common",
   ]);
 
-  if (!authenticated) {
+  if (authenticated) {
     return {
-      props: {
-        ...translateProps,
-      },
+      props: {},
       redirect: {
-        destination: `${redirectTo}?to=${encodeURIComponent(
-          context.req.url || "/"
-        )}`,
+        destination: redirectTo ?? "/",
         permanent: false,
       },
     };
