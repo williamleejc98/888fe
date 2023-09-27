@@ -6,9 +6,9 @@ export const authOptions = {
   providers: [
     // !!! Should be stored in .env file.
     Auth0Provider({
-      clientId: `Be5vsLunFvpzPf4xfXtaMxrZUVBjjNPO`,
-      clientSecret: `08F9X84FvzpsimV16CQvlQuwJOlqk-GqQgEdcq_3xzrn1K3UHnTCcRgMCwBW7api`,
-      issuer: `https://dev-qg1ftdys736bk5i3.us.auth0.com`,
+      clientId: `AbQeb6rjTpNOJR9vtjkyfkWW5UF3WrpY`,
+      clientSecret: `77386zmwTiKbN_bHoqRb4RUpwT7d4O81ouMtdmyiX4MfjYdsoJT5J1f5ty0KEtku`,
+      issuer: `https://dev-b5eyrhx8ed6hts4g.us.auth0.com`,
     }),
   ],
   secret: `UItTuD1HcGXIj8ZfHUswhYdNd40Lc325R8VlxQPUoR0=`,
