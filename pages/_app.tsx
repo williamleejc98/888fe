@@ -77,7 +77,7 @@ function MyApp({ Component, pageProps }: AppPropsWithLayout): JSX.Element {
               resources={[
                 {
                   name: "agents",
-                  list: "/agents/children",
+                  list: "/agents/",
                   create: "/agents/create",
                   edit: "/agents/edit/:id",
                   show: "/agents/show/:id",
