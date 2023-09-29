@@ -1,56 +1,64 @@
+import { RefineThemes } from "@refinedev/antd";
+import { ConfigProvider, theme } from "antd";
+import { parseCookies } from "nookies";
 import React, {
-    PropsWithChildren,
-    createContext,
-    useEffect,
-    useState,
+  createContext,
+  PropsWithChildren,
+  useEffect,
+  useState,
 } from "react";
-import { ThemeProvider } from "@mui/material/styles";
-import { DarkTheme, LightTheme } from "@refinedev/mui";
 
 type ColorModeContextType = {
-    mode: string;
-    setMode: () => void;
+  mode: string;
+  setMode: (mode: string) => void;
 };
 
 export const ColorModeContext = createContext<ColorModeContextType>(
-    {} as ColorModeContextType,
+  {} as ColorModeContextType
 );
 
 export const ColorModeContextProvider: React.FC<PropsWithChildren> = ({
-    children,
+  children,
 }) => {
-    const colorModeFromLocalStorage = localStorage.getItem("colorMode");
-    const isSystemPreferenceDark = window?.matchMedia(
-        "(prefers-color-scheme: dark)",
-    ).matches;
+  const [isMounted, setIsMounted] = useState(false);
+  const [mode, setMode] = useState("light");
 
-    const systemPreference = isSystemPreferenceDark ? "dark" : "light";
-    const [mode, setMode] = useState(
-        colorModeFromLocalStorage || systemPreference,
-    );
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
-    useEffect(() => {
-        window.localStorage.setItem("colorMode", mode);
-    }, [mode]);
+  useEffect(() => {
+    if (isMounted) {
+      setMode(parseCookies()["theme"]);
+    }
+  }, [isMounted]);
 
-    const setColorMode = () => {
-        if (mode === "light") {
-            setMode("dark");
-        } else {
-            setMode("light");
-        }
-    };
+  const setColorMode = () => {
+    if (mode === "light") {
+      setMode("dark");
+    } else {
+      setMode("light");
+    }
+  };
 
-    return (
-        <ColorModeContext.Provider
-            value={{
-                setMode: setColorMode,
-                mode,
-            }}
-        >
-            <ThemeProvider theme={mode === "light" ? LightTheme : DarkTheme}>
-                {children}
-            </ThemeProvider>
-        </ColorModeContext.Provider>
-    );
+  const { darkAlgorithm, defaultAlgorithm } = theme;
+
+  return (
+    <ColorModeContext.Provider
+      value={{
+        setMode: setColorMode,
+        mode,
+      }}
+    >
+      <ConfigProvider
+        // you can change the theme colors here. example: ...RefineThemes.Magenta,
+        theme={{
+          ...RefineThemes.Purple,
+          algorithm: mode === "light" ? defaultAlgorithm : darkAlgorithm,
+        }}
+      >
+        {children}
+      </ConfigProvider>
+    </ColorModeContext.Provider>
+  );
 };
