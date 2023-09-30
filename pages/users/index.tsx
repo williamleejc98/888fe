@@ -32,6 +32,10 @@ export default function UserList() {
           dataIndex="currency"
           title={translate("Currency")}
         />
+           <Table.Column
+          dataIndex="memberId"
+          title={translate("Username")}
+        />
         <Table.Column
           dataIndex="agent"
           title={translate("Agent")}
