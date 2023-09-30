@@ -18,6 +18,9 @@ import {
   DateField,
 } from "@refinedev/antd";
 import { Table, Space } from "antd";
+
+
+
 export default function AgentList() {
   const translate = useTranslate();
     const { tableProps } = useTable({
@@ -73,11 +76,7 @@ export default function AgentList() {
             dataIndex="actions"
             render={(_, record: BaseRecord) => (
                 <Space>
-                    <EditButton
-                        hideText
-                        size="small"
-                        recordItemId={record._id}
-                    />
+                 
                     <ShowButton
                         hideText
                         size="small"
