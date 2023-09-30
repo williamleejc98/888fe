@@ -13,7 +13,7 @@ const axiosInstance = axios.create();
 
 
 // Create a function to update the JWT token in the interceptor headers
-const updateHeadersWithToken = (config) => {
+const updateHeadersWithToken = (config: AxiosRequestConfig) => {
     const jwtToken = nookies.get(null, 'jwt'); // Retrieve the JWT token from cookies
     if (jwtToken) {
         config.headers.Authorization = `Bearer ${jwtToken.jwt}`;
