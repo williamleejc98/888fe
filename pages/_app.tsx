@@ -5,7 +5,6 @@ import {
   ThemedTitleV2,
 } from "@refinedev/antd";
 import { Refine } from "@refinedev/core";
-import { DevtoolsPanel, DevtoolsProvider } from "@refinedev/devtools";
 import { RefineKbar, RefineKbarProvider } from "@refinedev/kbar";
 import routerProvider, {
   DocumentTitleHandler,
@@ -13,17 +12,34 @@ import routerProvider, {
 } from "@refinedev/nextjs-router";
 import type { NextPage } from "next";
 import { AppProps } from "next/app";
-
+import nookies from 'nookies';
+import axios from 'axios';
 import { Header } from "@components/header";
 import { ColorModeContextProvider } from "@contexts";
 import "@refinedev/antd/dist/reset.css";
-import dataProvider from "@refinedev/simple-rest";
+import originalDataProvider from "@refinedev/simple-rest";
 import { appWithTranslation, useTranslation } from "next-i18next";
 import { authProvider } from "src/authProvider";
 import { AppIcon } from "src/components/app-icon";
+import styles from "./global.css"; // Import your custom CSS module
 
 const API_URL = "https://api.play888king.com";
+const customHttpClient = axios.create();
 
+customHttpClient.interceptors.request.use(config => {
+  const cookies = nookies.get();
+  const jwtToken = cookies['jwt'];
+
+  if (jwtToken) {
+    config.headers['Authorization'] = `Bearer ${jwtToken}`;
+  }
+
+  return config;
+});
+
+const customDataProvider = (apiUrl: string) => {
+  return originalDataProvider(apiUrl, customHttpClient);
+};
 export type NextPageWithLayout<P = {}, IP = P> = NextPage<P, IP> & {
   noLayout?: boolean;
 };
@@ -42,11 +58,10 @@ function MyApp({ Component, pageProps }: AppPropsWithLayout): JSX.Element {
       <ThemedLayoutV2
         Header={() => <Header sticky />}
         Sider={(props) => <ThemedSiderV2 {...props} fixed />}
-        Title={({ collapsed }) => (
+        Title={({  }) => (
           <ThemedTitleV2
-            collapsed={collapsed}
-            text="888 Project"
-            icon={<AppIcon />}
+            text=""
+            icon={<AppIcon size="100px" />}
           />
         )}
       >
@@ -67,10 +82,9 @@ function MyApp({ Component, pageProps }: AppPropsWithLayout): JSX.Element {
     <>
       <RefineKbarProvider>
         <ColorModeContextProvider>
-          <DevtoolsProvider>
             <Refine
               routerProvider={routerProvider}
-              dataProvider={dataProvider(API_URL)}
+              dataProvider={customDataProvider(API_URL)}
               notificationProvider={notificationProvider}
               authProvider={authProvider}
               i18nProvider={i18nProvider}
@@ -106,8 +120,6 @@ function MyApp({ Component, pageProps }: AppPropsWithLayout): JSX.Element {
               <UnsavedChangesNotifier />
               <DocumentTitleHandler />
             </Refine>
-            <DevtoolsPanel />
-          </DevtoolsProvider>
         </ColorModeContextProvider>
       </RefineKbarProvider>
     </>

@@ -6,8 +6,6 @@ import axios from 'axios';
 
 export const authProvider: AuthBindings = {
   login: async ({ username, password }) => {
-    // Treat the email parameter as a username
-  
     try {
       const response = await fetch('https://api.play888king.com/auth/login', {
         method: 'POST',
@@ -20,8 +18,9 @@ export const authProvider: AuthBindings = {
       const data = await response.json();
   
       if (response.ok) {
-        nookies.set(null, "auth", JSON.stringify(data.user), {
-          maxAge: 30 * 24 * 60 * 60,
+        // Store the JWT token in a cookie
+        nookies.set(null, "jwt", data.access_token, {
+          maxAge: 30 * 24 * 60 * 60, // 30 days
           path: "/",
         });
         return {
@@ -47,6 +46,7 @@ export const authProvider: AuthBindings = {
       };
     }
   },
+  
   
   
   logout: async () => {
