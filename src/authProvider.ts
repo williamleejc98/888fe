@@ -1,8 +1,5 @@
 import { AuthBindings } from "@refinedev/core";
 import nookies from "nookies";
-import axios from 'axios';
-
-
 
 export const authProvider: AuthBindings = {
   login: async ({ username, password }) => {
@@ -23,6 +20,13 @@ export const authProvider: AuthBindings = {
           maxAge: 30 * 24 * 60 * 60, // 30 days
           path: "/",
         });
+
+        // Assuming data.user contains user details
+        nookies.set(null, "auth", JSON.stringify(data.user), {
+          maxAge: 30 * 24 * 60 * 60, // 30 days
+          path: "/",
+        });
+
         return {
           success: true,
           redirectTo: "/",
@@ -47,18 +51,18 @@ export const authProvider: AuthBindings = {
     }
   },
   
-  
-  
   logout: async () => {
+    nookies.destroy(null, "jwt");
     nookies.destroy(null, "auth");
     return {
       success: true,
       redirectTo: "/login",
     };
   },
+
   check: async (ctx: any) => {
     const cookies = nookies.get(ctx);
-    if (cookies["auth"]) {
+    if (cookies["jwt"] && cookies["auth"]) {
       return {
         authenticated: true,
       };
@@ -70,6 +74,7 @@ export const authProvider: AuthBindings = {
       redirectTo: "/login",
     };
   },
+
   getPermissions: async () => {
     const auth = nookies.get()["auth"];
     if (auth) {
@@ -78,6 +83,7 @@ export const authProvider: AuthBindings = {
     }
     return null;
   },
+
   getIdentity: async () => {
     const auth = nookies.get()["auth"];
     if (auth) {
@@ -86,6 +92,7 @@ export const authProvider: AuthBindings = {
     }
     return null;
   },
+
   onError: async (error) => {
     console.error(error);
     return { error };
