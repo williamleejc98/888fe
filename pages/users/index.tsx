@@ -5,6 +5,7 @@ import { authProvider } from "src/authProvider";
 import { BaseRecord, useTranslate } from "@refinedev/core";
 import { useTable, List, EditButton, ShowButton, DeleteButton, MarkdownField, DateField } from "@refinedev/antd";
 import { Table, Space, Button, Modal, Form, Input } from "antd";
+import nookies from 'nookies'; // Make sure you've imported nookies
 
 
 type ModalType = "deposit" | "withdraw" | "duration";
@@ -26,6 +27,10 @@ const API_BASE_URL = "https://api.play888king.com/users";
 async function sendApiRequest(memberId: string, actionType: ModalType, amount: number) {
   if (actionType !== "deposit" && actionType !== "withdraw") return;
 
+  // Retrieve the JWT token
+  const jwtTokenObject = nookies.get(null, 'jwt'); // Retrieve the JWT token object
+  const jwtToken = jwtTokenObject ? jwtTokenObject.jwt : ''; // Extract the JWT token as a string
+
   const url = `${API_BASE_URL}/${memberId}/${actionType}`;
   const body = {
     amount
@@ -36,6 +41,7 @@ async function sendApiRequest(memberId: string, actionType: ModalType, amount: n
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
+        "Authorization": `Bearer ${jwtToken}`, // Add JWT token to the request header
       },
       body: JSON.stringify(body),
     });
@@ -44,13 +50,12 @@ async function sendApiRequest(memberId: string, actionType: ModalType, amount: n
     }
     const responseData = await response.json();
     console.log(responseData);
-    // Here you can handle the response, show a notification, refresh data, etc.
+    // Handle the response if needed
   } catch (error) {
     console.error("API call failed:", error);
     // Handle errors, maybe show a notification to the user
   }
 }
-
 
 export default function UserList() {
   const translate = useTranslate();
