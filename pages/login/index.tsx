@@ -1,35 +1,73 @@
 import { AuthPage, ThemedTitleV2 } from "@refinedev/antd";
 import { GetServerSideProps } from "next";
+import { useRouter } from "next/router";
+
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import { authProvider } from "src/authProvider";
 import { AppIcon } from "src/components/app-icon";
+import { Create, useForm } from "@refinedev/antd";
+import { Form, Input, Button } from "antd";
+import styles from "./Login.module.css"; // Import your custom CSS module
+
 const authWrapperProps = {
   style: {
       background:
-          "radial-gradient(50% 50% at 50% 50%,rgba(255, 255, 255, 0) 0%,rgba(0, 0, 0, 0.5) 100%),url('https://i.ibb.co/2PWmbS9/BG.png')",
+          "padding:24px;radial-gradient(50% 50% at 50% 50%,rgba(255, 255, 255, 0) 0%,rgba(0, 0, 0, 0.5) 100%),url('https://i.ibb.co/2PWmbS9/BG.png')",
       backgroundSize: "cover",
   },
 };
 
 export default function Login() {
-  return (
-    <div style={authWrapperProps.style}>
+  const router = useRouter();
 
-    <AuthPage
-      type="login"
-      formProps={{
-        initialValues: { email: "yourusername@play888king.com", password: "123123123" },
-      }}
-      title={
-        <ThemedTitleV2
-          collapsed={false}
-          text="888"
-          icon={<AppIcon />}
-        />
+  const onFinish = async (values) => {
+    try {
+      const { success, error, redirectTo } = await authProvider.login(values);
+  
+      if (success) {
+        // Redirect the user to the specified destination (default: '/')
+        router.push(redirectTo || "/");
+      } else {
+        // Handle authentication errors
+        message.error(error?.message || "Authentication failed");
       }
-    />
-        </div>
+    } catch (error) {
+      console.error("Login error:", error);
+    }
+  };
 
+  return (
+    <div style={authWrapperProps.style} className={styles.loginContainer}>
+      <div className={styles.logo}>
+       <img src="/888logo.png"></img>
+      </div>
+      <Form
+        name="login"
+        initialValues={{ username: "", password: "" }}
+        onFinish={onFinish}
+        className={styles.loginForm}
+      >
+        <Form.Item
+          name="username"
+          rules={[{ required: true, message: "Please enter your username" }]}
+        >
+          <Input placeholder="Username" />
+        </Form.Item>
+
+        <Form.Item
+          name="password"
+          rules={[{ required: true, message: "Please enter your password" }]}
+        >
+          <Input.Password placeholder="Password" />
+        </Form.Item>
+
+        <Form.Item>
+          <Button type="primary" htmlType="submit">
+            Login
+          </Button>
+        </Form.Item>
+      </Form>
+    </div>
   );
 }
 

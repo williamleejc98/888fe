@@ -5,9 +5,8 @@ import axios from 'axios';
 
 
 export const authProvider: AuthBindings = {
-  login: async ({ email, password }) => {
+  login: async ({ username, password }) => {
     // Treat the email parameter as a username
-    const username = email.split('@')[0];
   
     try {
       const response = await fetch('https://api.play888king.com/auth/login', {
