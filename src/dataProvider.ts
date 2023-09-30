@@ -1,7 +1,7 @@
-import axios, { AxiosInstance } from "axios";
+import { AxiosInstance } from "axios";
 import { stringify } from "query-string";
 import { DataProvider } from "@refinedev/core";
-import { generateSort, generateFilter } from "./utils";
+import { axiosInstance, generateSort, generateFilter } from "./utils";
 import nookies from 'nookies'; // Assuming you have nookies installed
 
 // Get JWT token from nookies
@@ -9,24 +9,16 @@ const jwtTokenObject = nookies.get(null, 'jwt'); // Retrieve the JWT token objec
 const jwtToken = jwtTokenObject ? jwtTokenObject.jwt : ''; // Extract the JWT token as a string
 const jwtTokenAsString = jwtToken ? jwtToken.toString() : ''; // Convert to a string
 
-const axiosInstance = axios.create();
 
-
-// Create a function to update the JWT token in the interceptor headers
-const updateHeadersWithToken = (config: AxiosRequestConfig) => {
-    const jwtToken = nookies.get(null, 'jwt'); // Retrieve the JWT token from cookies
+// Set up an Axios request interceptor
+axiosInstance.interceptors.request.use((config) => {
     if (jwtToken) {
-        config.headers.Authorization = `Bearer ${jwtToken.jwt}`;
+        config.headers.Authorization = `Bearer ${jwtToken}`;
     }
     return config;
-};
-
-axiosInstance.interceptors.request.use(
-    updateHeadersWithToken, // Use the function to update headers with the latest token
-    (error) => {
-        return Promise.reject(error);
-    }
-);
+}, (error) => {
+    return Promise.reject(error);
+});
 
 
 type MethodTypes = "get" | "delete" | "head" | "options";
