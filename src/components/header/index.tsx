@@ -72,20 +72,6 @@ export const Header: React.FC<RefineThemedLayoutV2HeaderProps> = ({
   return (
     <AntdLayout.Header style={headerStyles}>
       <Space>
-        <Dropdown
-          menu={{
-            items: menuItems,
-            selectedKeys: currentLocale ? [currentLocale] : [],
-          }}
-        >
-          <Button type="text">
-            <Space>
-              <Avatar size={16} src={`/images/flags/${currentLocale}.svg`} />
-              {currentLocale === "en" ? "English" : "German"}
-              <DownOutlined />
-            </Space>
-          </Button>
-        </Dropdown>
         <Switch
           checkedChildren="🌛"
           unCheckedChildren="🔆"

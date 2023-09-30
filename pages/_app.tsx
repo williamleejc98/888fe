@@ -4,7 +4,7 @@ import {
   ThemedSiderV2,
   ThemedTitleV2,
 } from "@refinedev/antd";
-import { GitHubBanner, Refine } from "@refinedev/core";
+import { Refine } from "@refinedev/core";
 import { DevtoolsPanel, DevtoolsProvider } from "@refinedev/devtools";
 import { RefineKbar, RefineKbarProvider } from "@refinedev/kbar";
 import routerProvider, {
@@ -45,7 +45,7 @@ function MyApp({ Component, pageProps }: AppPropsWithLayout): JSX.Element {
         Title={({ collapsed }) => (
           <ThemedTitleV2
             collapsed={collapsed}
-            text="refine Project"
+            text="888 Project"
             icon={<AppIcon />}
           />
         )}
@@ -77,7 +77,7 @@ function MyApp({ Component, pageProps }: AppPropsWithLayout): JSX.Element {
               resources={[
                 {
                   name: "agents",
-                  list: "/agents/",
+                  list: "/agents",
                   create: "/agents/create",
                   edit: "/agents/edit/:id",
                   show: "/agents/show/:id",
@@ -99,7 +99,6 @@ function MyApp({ Component, pageProps }: AppPropsWithLayout): JSX.Element {
               options={{
                 syncWithLocation: true,
                 warnWhenUnsavedChanges: true,
-                projectId: "bo6pPn-PwhmHN-n2EcjG",
               }}
             >
               {renderComponent()}

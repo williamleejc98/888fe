@@ -21,7 +21,7 @@ export const ColorModeContextProvider: React.FC<PropsWithChildren> = ({
   children,
 }) => {
   const [isMounted, setIsMounted] = useState(false);
-  const [mode, setMode] = useState("light");
+  const [mode, setMode] = useState("dark");
 
   useEffect(() => {
     setIsMounted(true);
