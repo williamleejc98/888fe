@@ -32,27 +32,8 @@ export const Header: React.FC<RefineThemedLayoutV2HeaderProps> = ({
   const { data: user } = useGetIdentity<IUser>();
 
   const { token } = useToken();
-  const { mode, setMode } = useContext(ColorModeContext);
 
-  const locale = useGetLocale();
-  const { locales } = useRouter();
-  const currentLocale = locale();
 
-  const menuItems: MenuProps["items"] = [...(locales || [])]
-    .sort()
-    .map((lang: string) => ({
-      key: lang,
-      icon: (
-        <span style={{ marginRight: 8 }}>
-          <Avatar size={16} src={`/images/flags/${lang}.svg`} />
-        </span>
-      ),
-      label: (
-        <Link href="/" locale={lang}>
-          {lang === "en" ? "English" : "German"}
-        </Link>
-      ),
-    }));
 
   const headerStyles: React.CSSProperties = {
     backgroundColor: token.colorBgElevated,
@@ -72,12 +53,6 @@ export const Header: React.FC<RefineThemedLayoutV2HeaderProps> = ({
   return (
     <AntdLayout.Header style={headerStyles}>
       <Space>
-        <Switch
-          checkedChildren="🌛"
-          unCheckedChildren="🔆"
-          onChange={() => setMode(mode === "light" ? "dark" : "light")}
-          defaultChecked={mode === "light"}
-        />
         {(user?.name || user?.avatar) && (
           <Space style={{ marginLeft: "8px" }} size="middle">
             {user?.name && <Text strong>{user.name}</Text>}

@@ -65,7 +65,6 @@ function MyApp({ Component, pageProps }: AppPropsWithLayout): JSX.Element {
   return (
     <>
       <RefineKbarProvider>
-        <ColorModeContextProvider>
             <Refine
               routerProvider={routerProvider}
               dataProvider={dataProvider(API_URL)}
@@ -104,7 +103,6 @@ function MyApp({ Component, pageProps }: AppPropsWithLayout): JSX.Element {
               <UnsavedChangesNotifier />
               <DocumentTitleHandler />
             </Refine>
-        </ColorModeContextProvider>
       </RefineKbarProvider>
     </>
   );
