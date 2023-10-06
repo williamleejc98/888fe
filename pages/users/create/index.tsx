@@ -14,9 +14,9 @@ export default function UserCreate() {
   });
   return (
     <Create saveButtonProps={saveButtonProps}>
-    <Form {...formProps} layout="vertical">
+<Form {...formProps} layout="vertical" initialValues={{ currency: 'MYR' }}>
         <Form.Item
-            label={translate("Currency")}
+            label={translate("Currency (We only support MYR for now.)")}
             name={["currency"]}
             rules={[
                 {
@@ -24,11 +24,11 @@ export default function UserCreate() {
                 },
             ]}
         >
-            <Input />
+            <Input readOnly />
         </Form.Item>
 
         <Form.Item
-            label={translate("Username")}
+            label={translate("Username (Your player will login with this username")}
             name={["memberId"]}
             rules={[
                 {

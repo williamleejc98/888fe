@@ -24,39 +24,71 @@ type FormValues = DepositValues | WithdrawValues | DurationValues;
 const API_BASE_URL = "https://api.play888king.com/users";
 
 
-async function sendApiRequest(memberId: string, actionType: ModalType, amount: number) {
-  if (actionType !== "deposit" && actionType !== "withdraw") return;
+/**
+ * Sends an API request to update the balance.
+ *
+ * @param {string} memberId - The ID of the member.
+ * @param {string} actionType - The type of action (deposit or withdraw).
+ * @param {number | string} amount - The amount to be deposited or withdrawn.
+ */
+async function sendApiRequest(memberId, actionType, amount) {
+  // Ensure valid action type
+  if (actionType !== "deposit" && actionType !== "withdraw") {
+    console.error('Invalid actionType:', actionType);
+    return;
+  }
 
-  // Retrieve the JWT token
-  const jwtTokenObject = nookies.get(null, 'jwt'); // Retrieve the JWT token object
-  const jwtToken = jwtTokenObject ? jwtTokenObject.jwt : ''; // Extract the JWT token as a string
+  // Convert amount to a number if it's a string
+  if (typeof amount === "string") {
+    amount = parseFloat(amount);
+  }
 
+  // Ensure valid amount after conversion
+  if (isNaN(amount) || typeof amount !== "number") {
+    console.error('Invalid amount:', amount);
+    return;
+  }
+
+  // Construct the request URL
   const url = `${API_BASE_URL}/${memberId}/${actionType}`;
+
+  // Fetch the JWT token
+  const jwtTokenObject = nookies.get(null, 'jwt');
+  const jwtToken = jwtTokenObject ? jwtTokenObject.jwt : '';
+
+  // Ensure JWT token is available
+  if (!jwtToken) {
+    console.error('JWT token is missing');
+    return;
+  }
+
+  // Construct the request body
   const body = {
     amount
   };
 
+  // Send the request
   try {
     const response = await fetch(url, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${jwtToken}`, // Add JWT token to the request header
+        "Authorization": `Bearer ${jwtToken}`
       },
-      body: JSON.stringify(body),
+      body: JSON.stringify(body)
     });
+
     if (!response.ok) {
-      throw new Error(`Failed with status ${response.status}`);
+      const responseData = await response.json();
+      throw new Error(`Failed with status ${response.status}: ${JSON.stringify(responseData)}`);
     }
+
     const responseData = await response.json();
-    console.log(responseData);
-    // Handle the response if needed
+    console.log('Server Response:', responseData);
   } catch (error) {
-    console.error("API call failed:", error);
-    // Handle errors, maybe show a notification to the user
+    console.error('API call failed:', error.message);
   }
 }
-
 export default function UserList() {
   const translate = useTranslate();
   const { tableProps } = useTable({ syncWithLocation: true });
@@ -65,7 +97,7 @@ export default function UserList() {
     type: null,
     visible: false,
     memberId: null
-});
+  });
 
 
 
@@ -73,7 +105,7 @@ export default function UserList() {
   const form = Form.useForm()[0];
   const showModal = (type: ModalType, memberId: string) => {
     setModalInfo({ type, visible: true, memberId });
-};
+  };
   const hideModal = () => {
     setModalInfo(prev => ({ ...prev, visible: false }));
     form.resetFields();
@@ -89,7 +121,9 @@ export default function UserList() {
     }
 
     hideModal();
-};
+    window.location.reload();
+
+  };
 
   const renderModalContent = () => {
     const modalType = modalInfo.type;
@@ -135,10 +169,7 @@ export default function UserList() {
 
       <List>
         <Table {...tableProps} rowKey="id">
-          <Table.Column
-            dataIndex="currency"
-            title={translate("Currency")}
-          />
+
           <Table.Column
             dataIndex="memberId"
             title={translate("Username")}
@@ -152,13 +183,17 @@ export default function UserList() {
             title={translate("Wallet Balance")}
           />
           <Table.Column
-            title={translate("table.actions")}
+            dataIndex="promotionalBalance"
+            title={translate("Promotional Balance")}
+          />
+          <Table.Column
+            title={translate("Set Credit")}
             dataIndex="actions"
             render={(_, record: BaseRecord) => (
               <Space>
-              <Button type="primary" size="small" onClick={() => showModal("deposit", record.memberId)}>Deposit</Button>
+                <Button type="primary" size="small" onClick={() => showModal("deposit", record.memberId)}>Deposit</Button>
 
-              <Button type="primary" size="small" onClick={() => showModal("withdraw", record.memberId)}>Withdraw</Button>
+                <Button type="primary" size="small" onClick={() => showModal("withdraw", record.memberId)}>Withdraw</Button>
 
               </Space>
             )}
@@ -182,26 +217,11 @@ export default function UserList() {
               </>
             )}
           />
+         
+         
 
-<Table.Column
-  title={translate("table.actions")}
-  dataIndex="actions"
-  render={(_, record: BaseRecord) => (
-    <Space>
-                   <Button type="primary" size="small" onClick={() => showModal("duration", record.memberId)}>Set Duration</Button>
 
-    </Space>
-  )}
-/>
-          <Table.Column
-            title={translate("table.actions")}
-            dataIndex="actions"
-            render={(_, record: BaseRecord) => (
-              <Space>
-                <ShowButton hideText size="small" recordItemId={record._id} />
-              </Space>
-            )}
-          />
+
         </Table>
       </List>
     </div>
