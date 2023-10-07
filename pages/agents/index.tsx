@@ -10,6 +10,12 @@ import nookies from 'nookies';
 
 const API_BASE_URL = "https://api.play888king.com/agents";  // Update the endpoint as needed
 
+type ModalType = "deposit" | "withdraw" | "duration";
+type FormValues = {
+  depositAmount?: number;
+  withdrawAmount?: number;
+  duration?: number;
+};
 
 
 export default function AgentList() {
@@ -17,11 +23,12 @@ export default function AgentList() {
   const { tableProps } = useTable({ syncWithLocation: true });
   const [agents, setAgents] = useState<BaseRecord[]>([]);
   
-  const [modalInfo, setModalInfo] = useState<{ type: ModalType | null, visible: boolean, agentId: string | null }>({
+  const [modalInfo, setModalInfo] = useState<{ type: ModalType | null, visible: boolean, username: string | null }>({
     type: null,
     visible: false,
-    agentId: null
+    username: null
   });
+  
 
   const refetchAgent = async (username: string) => {
     try {
