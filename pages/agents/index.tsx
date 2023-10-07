@@ -140,7 +140,7 @@ async function sendApiRequest(username, actionType, amount) {
     }
 
     hideModal();
-    window.location.reload();
+        window.location.reload();
 
 };
   const renderModalContent = () => {
