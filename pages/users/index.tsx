@@ -25,13 +25,13 @@ const API_BASE_URL = "https://api.play888king.com/users";
 
 
 /**
- * Sends an API request to update the balance.
+ * Your JSDoc comment here...
  *
- * @param {string} memberId - The ID of the member.
- * @param {string} actionType - The type of action (deposit or withdraw).
- * @param {number | string} amount - The amount to be deposited or withdrawn.
+ * @param memberId - The ID of the member.
+ * @param actionType - The type of action (either "deposit" or "withdraw").
+ * @param amount - The amount to be deposited or withdrawn.
  */
-async function sendApiRequest(memberId, actionType, amount) {
+async function sendApiRequest(memberId: string | number, actionType: "deposit" | "withdraw", amount: number | string): Promise<void> {
   // Ensure valid action type
   if (actionType !== "deposit" && actionType !== "withdraw") {
     console.error('Invalid actionType:', actionType);
@@ -86,7 +86,11 @@ async function sendApiRequest(memberId, actionType, amount) {
     const responseData = await response.json();
     console.log('Server Response:', responseData);
   } catch (error) {
-    console.error('API call failed:', error.message);
+    if (error instanceof Error) {
+      console.error('API call failed:', error.message);
+    } else {
+      console.error('API call failed:', error);
+    }
   }
 }
 export default function UserList() {

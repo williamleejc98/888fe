@@ -51,9 +51,15 @@ export default function AgentList() {
       setAgents(prevAgents => {
         return prevAgents.map(a => a._id === username ? agent : a);
       });
-    }
-    
-  };
+  } catch (error) {
+  if (error instanceof Error) {
+    console.error('API call failed:', error.message);
+  } else {
+    console.error('API call failed:', error);
+  }
+}
+
+  }
   
 
 
@@ -66,21 +72,25 @@ export default function AgentList() {
  */
 async function sendApiRequest(username: string, actionType: "deposit" | "withdraw", amount: number | string) {
   // Ensure valid action type
- if (actionType !== "deposit" && actionType !== "withdraw") {
-   console.error('Invalid actionType:', actionType);
-   return;
- }
+  if (actionType !== "deposit" && actionType !== "withdraw") {
+    console.error('Invalid actionType:', actionType);
+    return;
+  }
 
- // Convert amount to a number if it's a string
- if (typeof amount === "string") {
-   amount = parseFloat(amount);
- }
+  // Convert amount to a number if it's a string
+  if (typeof amount === "string") {
+    amount = parseFloat(amount);
+  }
 
- // Ensure valid amount after conversion
- if (isNaN(amount) || typeof amount !== "number") {
-   console.error('Invalid amount:', amount);
-   return;
- }
+  // Ensure valid amount after conversion
+  if (isNaN(amount) || typeof amount !== "number") {
+    console.error('Invalid amount:', amount);
+    return;
+  }
+
+  // Rest of your function...
+
+
 
  // Construct the request URL
  const url = `${API_BASE_URL}/${actionType}/${username}`;
@@ -118,9 +128,14 @@ async function sendApiRequest(username: string, actionType: "deposit" | "withdra
 
    const responseData = await response.json();
    console.log('Server Response:', responseData);
- } catch (error) {
-   console.error('API call failed:', error.message);
- }
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error('API call failed:', error.message);
+    } else {
+      console.error('API call failed:', error);
+    }
+  }
+
  refetchAgent(username);
 
 }
@@ -139,9 +154,9 @@ async function sendApiRequest(username: string, actionType: "deposit" | "withdra
     console.log("Username:", modalInfo.username);
 
     if (modalInfo.type === "deposit" && 'depositAmount' in values) {
-      sendApiRequest(modalInfo.username!, modalInfo.type, values.depositAmount);
+      sendApiRequest(modalInfo.username!, modalInfo.type, values.depositAmount || 0);
     } else if (modalInfo.type === "withdraw" && 'withdrawAmount' in values) {
-      sendApiRequest(modalInfo.username!, modalInfo.type, values.withdrawAmount);
+      sendApiRequest(modalInfo.username!, modalInfo.type, values.depositAmount || 0);
     }
 
     hideModal();
