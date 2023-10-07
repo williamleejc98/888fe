@@ -262,7 +262,7 @@ async function sendApiRequest(username: string, actionType: "deposit" | "withdra
           render={(_, record: BaseRecord) => (
             <Space>
 
-              <ShowButton
+              <EditButton
                 hideText
                 size="small"
                 recordItemId={record._id}
