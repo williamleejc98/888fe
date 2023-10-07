@@ -51,12 +51,6 @@ export default function AgentList() {
       setAgents(prevAgents => {
         return prevAgents.map(a => a._id === username ? agent : a);
       });
-    } catch (error) {
-      if (error instanceof Error) {
-        console.error('API call failed:', error.message);
-      } else {
-        console.error('API call failed:', error);
-      }
     }
     
   };
