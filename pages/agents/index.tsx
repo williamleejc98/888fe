@@ -70,7 +70,7 @@ export default function AgentList() {
  * @param {string} actionType - The type of action (deposit or withdraw).
  * @param {number | string} amount - The amount to be deposited or withdrawn.
  */
-async function sendApiRequest(username, actionType, amount) {
+async function sendApiRequest(username: string, actionType: "deposit" | "withdraw", amount: number | string) {
   // Ensure valid action type
  if (actionType !== "deposit" && actionType !== "withdraw") {
    console.error('Invalid actionType:', actionType);
