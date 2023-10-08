@@ -107,7 +107,7 @@ export default function AgentCreate() {
                         {
                             required: true,
                             pattern: /^[a-z0-9]+$/,
-                            message: translate('Subdomain should be in lowercase!'),
+                            message: translate('Subdomain should be in lowercase letters and can include numbers!'),
                         },
                     ]}
                 >
