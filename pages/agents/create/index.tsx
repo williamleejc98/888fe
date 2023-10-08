@@ -122,7 +122,7 @@ export default function AgentCreate() {
                     >
                         <Upload.Dragger
                             name="file"
-                            action={`${apiUrl}/media/upload`}
+                            action={`${apiUrl}/agents/upload-logo`}
                             listType="picture"
                             maxCount={1} // Set maxCount to 1
                         >
