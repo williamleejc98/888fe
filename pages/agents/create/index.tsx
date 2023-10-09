@@ -23,17 +23,7 @@ export default function AgentCreate() {
                         setSubdomainPreview(changedValues.subdomain + ".play888king.com");
                     }
                 }}
-            >        <Form.Item
-                label={translate("Contact Person")}
-                name={["contactPerson"]}
-                rules={[
-                    {
-                        required: true,
-                    },
-                ]}
-            >
-                    <Input />
-                </Form.Item>
+            >     
                 <Form.Item
                     label={translate("Username")}
                     name={["username"]}
@@ -56,17 +46,7 @@ export default function AgentCreate() {
                 >
                     <Input />
                 </Form.Item>
-                <Form.Item
-                    label={translate("(MYR) Starting Credit Balance - Ensure you have enough credit in your account")}
-                    name={["agentCredit"]}
-                    rules={[
-                        {
-                            required: true,
-                        },
-                    ]}
-                >
-                    <Input />
-                </Form.Item>
+           
                 <Form.Item
                     label={translate("Password")}
                     name={["password"]}
@@ -121,6 +101,17 @@ export default function AgentCreate() {
                         },
                     ]}
                 >
+                    <Input />
+                </Form.Item>
+                <Form.Item
+                label={translate("Contact Person")}
+                name={["contactPerson"]}
+                rules={[
+                    {
+                        required: true,
+                    },
+                ]}
+            >
                     <Input />
                 </Form.Item>
                 <Form.Item
