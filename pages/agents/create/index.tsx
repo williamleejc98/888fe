@@ -2,16 +2,15 @@ import React, { useState } from 'react';
 import { GetServerSideProps } from "next";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import { authProvider } from "src/authProvider";
-import { useTranslate, useApiUrl } from "@refinedev/core";
-import { Create, useForm, getValueFromEvent } from "@refinedev/antd";
-import { Form, Input, Upload } from "antd";
+import { useTranslate } from "@refinedev/core";
+import { Create, useForm } from "@refinedev/antd";
+import { Form, Input } from "antd";
 2
 export default function AgentCreate() {
     const translate = useTranslate();
-    const { formProps, saveButtonProps, queryResult } = useForm();
-
+    const { formProps, saveButtonProps } = useForm();
+    
     const [subdomainPreview, setSubdomainPreview] = useState("");
-    const apiUrl = useApiUrl();
 
     return (
 
@@ -112,25 +111,6 @@ export default function AgentCreate() {
                     ]}
                 >
                     <Input />
-                </Form.Item>
-                <Form.Item label="Logo">
-                    <Form.Item
-                        name="logoImage"
-                        valuePropName="fileList"
-                        getValueFromEvent={getValueFromEvent}
-                        noStyle
-                    >
-                        <Upload.Dragger
-                            name="file"
-                            action={`${apiUrl}/agents/upload-logo`}
-                            listType="picture"
-                            maxCount={1} // Set maxCount to 1
-                        >
-                            <p className="ant-upload-text">
-                                Drag & drop a file in this area
-                            </p>
-                        </Upload.Dragger>
-                    </Form.Item>
                 </Form.Item>
                 <Form.Item
                     label={translate("Company Name")}

@@ -16,6 +16,9 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { useContext } from "react";
 import { ColorModeContext } from "../../contexts";
+import { decode as jwtDecode } from "jsonwebtoken";
+
+import nookies from "nookies";
 
 const { Text } = Typography;
 const { useToken } = theme;
@@ -23,16 +26,47 @@ const { useToken } = theme;
 type IUser = {
   id: number;
   name: string;
-  avatar: string;
+  avatar?: string;
+  creditBalance?: number;
 };
 
+
+
+interface MyJwtPayload {
+  username: string;
+  // ... any other fields you expect in the payload
+}
 export const Header: React.FC<RefineThemedLayoutV2HeaderProps> = ({
   sticky,
 }) => {
-  const { data: user } = useGetIdentity<IUser>();
+  const [user, setUser] = React.useState<IUser | null>(null);
 
   const { token } = useToken();
+  const [creditBalance, setCreditBalance] = React.useState<number | null>(null);
 
+
+  React.useEffect(() => {
+    const fetchCreditBalance = async () => {
+      const jwt = nookies.get()["jwt"];
+      if (jwt) {
+        const decodedToken = jwtDecode(jwt) as MyJwtPayload;
+        const username = decodedToken?.username;
+
+        if (username) {
+          const response = await fetch(`https://api.play888king.com/agents/username/${username}`);
+          const data = await response.json();
+          setCreditBalance(data.agentCredit);
+          setUser({
+            id: data._id, 
+            name: data.username, 
+            creditBalance: data.agentCredit
+          });
+        }
+      }
+    };
+
+    fetchCreditBalance();
+  }, []);
 
 
   const headerStyles: React.CSSProperties = {
@@ -53,10 +87,10 @@ export const Header: React.FC<RefineThemedLayoutV2HeaderProps> = ({
   return (
     <AntdLayout.Header style={headerStyles}>
       <Space>
-        {(user?.name || user?.avatar) && (
+      {(user?.name) && (
           <Space style={{ marginLeft: "8px" }} size="middle">
             {user?.name && <Text strong>{user.name}</Text>}
-            {user?.avatar && <Avatar src={user?.avatar} alt={user?.name} />}
+            {creditBalance !== null && <Text strong>RM{new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(creditBalance)}</Text>}
           </Space>
         )}
       </Space>

@@ -1,5 +1,11 @@
 import { AuthBindings } from "@refinedev/core";
 import nookies from "nookies";
+import { decode as jwtDecode } from "jsonwebtoken";
+
+interface MyJwtPayload {
+  username: string;
+  // ... any other fields you expect in the payload
+}
 
 export const authProvider: AuthBindings = {
   login: async ({ username, password }) => {
@@ -11,9 +17,9 @@ export const authProvider: AuthBindings = {
         },
         body: JSON.stringify({ username, password }),
       });
-    
+
       const data = await response.json();
-  
+
       if (response.ok) {
         // Store the JWT token in a cookie
         nookies.set(null, "jwt", data.access_token, {
@@ -27,6 +33,10 @@ export const authProvider: AuthBindings = {
           path: "/",
         });
 
+        // Refresh the window
+        if (typeof window !== 'undefined') {
+          window.location.reload();
+        }
         return {
           success: true,
           redirectTo: "/",
@@ -50,7 +60,7 @@ export const authProvider: AuthBindings = {
       };
     }
   },
-  
+
   logout: async () => {
     nookies.destroy(null, "jwt");
     nookies.destroy(null, "auth");
@@ -85,10 +95,24 @@ export const authProvider: AuthBindings = {
   },
 
   getIdentity: async () => {
-    const auth = nookies.get()["auth"];
-    if (auth) {
-      const parsedUser = JSON.parse(auth);
-      return parsedUser;
+    const jwt = nookies.get()["jwt"];
+    if (jwt) {
+      const decodedToken = jwtDecode(jwt) as MyJwtPayload;
+      const username = decodedToken?.username;
+
+      if (username) {
+        // Fetch credit balance
+        const response = await fetch(`https://api.play888king.com/agents/${username}`);
+        const data = await response.json();
+
+        // Assuming data.balance contains the credit balance
+        const creditBalance = data.balance;
+
+        return {
+          ...decodedToken,
+          creditBalance: creditBalance,
+        };
+      }
     }
     return null;
   },

@@ -1,7 +1,7 @@
 import { GetServerSideProps } from "next";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import { authProvider } from "src/authProvider";
-import {  useTranslate } from "@refinedev/core";
+import { useTranslate } from "@refinedev/core";
 import { Create, useForm, useSelect } from "@refinedev/antd";
 import { Form, Input, Select } from "antd";
 
@@ -10,61 +10,63 @@ export default function UserCreate() {
   const { formProps, saveButtonProps, queryResult } = useForm();
 
   const { selectProps: agentSelectProps } = useSelect({
-      resource: "agents",
+    resource: "agents",
   });
   return (
     <Create saveButtonProps={saveButtonProps}>
-<Form {...formProps} layout="vertical" initialValues={{ currency: 'MYR' }}>
+      <Form {...formProps} layout="vertical" initialValues={{ currency: 'MYR' }}>
         <Form.Item
-            label={translate("Currency (We only support MYR for now.)")}
-            name={["currency"]}
-            rules={[
-                {
-                    required: true,
-                },
-            ]}
+          label={translate("Currency (We only support MYR for now.)")}
+          name={["currency"]}
+          rules={[
+            {
+              required: true,
+            },
+          ]}
+          style={{ display: 'none' }}  // Add this line
         >
-            <Input readOnly />
-        </Form.Item>
+          <Input readOnly />
+        <Input readOnly />
+      </Form.Item>
 
-        <Form.Item
-            label={translate("Username (Your player will login with this username")}
-            name={["memberId"]}
-            rules={[
-                {
-                    required: true,
-                },
-            ]}
-        >
-            <Input />
-        </Form.Item>
-        <Form.Item
-            label={translate("Password")}
-            name={["password"]}
-            rules={[
-                {
-                    required: true,
-                },
-            ]}
-        >
-            <Input />
-        </Form.Item>
-        <Form.Item
-            label={translate("Confirm Password")}
-            name={["passwordRepeat"]}
-            rules={[
-                {
-                    required: true,
-                },
-            ]}
-        >
-            <Input />
-        </Form.Item>
-       
-       
-     
+      <Form.Item
+        label={translate("Username (Your player will login with this username")}
+        name={["memberId"]}
+        rules={[
+          {
+            required: true,
+          },
+        ]}
+      >
+        <Input />
+      </Form.Item>
+      <Form.Item
+        label={translate("Password")}
+        name={["password"]}
+        rules={[
+          {
+            required: true,
+          },
+        ]}
+      >
+        <Input />
+      </Form.Item>
+      <Form.Item
+        label={translate("Confirm Password")}
+        name={["passwordRepeat"]}
+        rules={[
+          {
+            required: true,
+          },
+        ]}
+      >
+        <Input />
+      </Form.Item>
+
+
+
     </Form>
-</Create>
+</Create >
 
 
   );
