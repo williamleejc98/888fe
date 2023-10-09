@@ -156,7 +156,7 @@ async function sendApiRequest(username: string, actionType: "deposit" | "withdra
     if (modalInfo.type === "deposit" && 'depositAmount' in values) {
       sendApiRequest(modalInfo.username!, modalInfo.type, values.depositAmount || 0);
     } else if (modalInfo.type === "withdraw" && 'withdrawAmount' in values) {
-      sendApiRequest(modalInfo.username!, modalInfo.type, values.depositAmount || 0);
+      sendApiRequest(modalInfo.username!, modalInfo.type, values.withdrawAmount || 0);
     }
 
     hideModal();
@@ -184,17 +184,7 @@ async function sendApiRequest(username: string, actionType: "deposit" | "withdra
           </Form.Item>
         </Form>
       );
-    }
-
-    if (modalType === "duration") {
-      return (
-        <Form form={form} onFinish={handleSubmit}>
-          <Form.Item name="duration" label="Duration" rules={[{ required: true, message: "Please enter the duration" }]}>
-            <Input />
-          </Form.Item>
-        </Form>
-      );
-    }
+      }
 
     return null;
   };
