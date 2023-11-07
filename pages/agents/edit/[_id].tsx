@@ -6,7 +6,6 @@ import { Edit, useForm } from "@refinedev/antd";
 import { Form, Input, message } from "antd";
 import React, { useState } from 'react';
 
-import 'react-image-crop/dist/ReactCrop.css';
 
 export const AgentEdit: React.FC<IResourceComponentsProps> = () => {
 
