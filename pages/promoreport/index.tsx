@@ -22,7 +22,7 @@ type RecordType = {
   report_link: string;
 };
 export default function PromoreportTable() {
-  const [reportData, setReportData] = useState([]);
+  const [reportData, setReportData] = useState<RecordType[]>([]);
   const [pagination, setPagination] = useState({ current: 1, pageSize: 1000 });
   const [searchQuery, setSearchQuery] = useState("");
 
