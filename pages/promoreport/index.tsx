@@ -8,7 +8,7 @@ import { useState, useEffect } from "react";
 import { Table, Space, Modal, Form, Input, Button } from "antd";
 import nookies from 'nookies';
 
-const API_ENDPOINT = "https://api.play888king.com/reports/all";
+const API_ENDPOINT = "https://api.play888king.com/promoreports/all";
 type RecordType = {
   id: string;
   ticket_id: string;
@@ -23,24 +23,27 @@ type RecordType = {
 };
 export default function PromoreportTable() {
   const [reportData, setReportData] = useState([]);
-  const [pagination, setPagination] = useState({ current: 1, pageSize: 10 });
+  const [pagination, setPagination] = useState({ current: 1, pageSize: 1000 });
   const [searchQuery, setSearchQuery] = useState("");
 
   const fetchData = (query = "") => {
     const API_URL = `${API_ENDPOINT}?page=${pagination.current}&pageSize=${pagination.pageSize}&username=${query}`;
 
     fetch(API_URL)
-      .then(response => response.json())
-      .then(data => {
-        if (data && data.data) {
-          setReportData(data.data);
-          setPagination(prev => ({ ...prev, total: data.total }));
-        }
-      })
-      .catch(err => {
-        console.error("Error fetching data:", err);
-      });
-  };
+    .then(response => response.json())
+    .then(data => {
+      console.log(data); // Log the data
+
+      if (data && Array.isArray(data)) {
+        setReportData(data);
+        // Assuming each page has a fixed number of items
+        setPagination(prev => ({ ...prev, total: data.length * pagination.pageSize }));
+      }
+    })
+    .catch(err => {
+      console.error("Error fetching data:", err);
+    });
+};
 
   useEffect(() => {
     fetchData(searchQuery);
@@ -59,7 +62,7 @@ export default function PromoreportTable() {
 
   return (
     <>
-      <Input.Search
+       <Input.Search
         placeholder="Search"
         onSearch={handleSearch}
         style={{ marginBottom: 16 }}
@@ -67,11 +70,11 @@ export default function PromoreportTable() {
 
       <Table
         dataSource={reportData}
-        rowKey="id"
+        rowKey="_id"
         pagination={pagination}
         onChange={handleTableChange}
       >
-        <Table.Column title="ID" dataIndex="id" />
+        <Table.Column title="ID" dataIndex="_id" />
         <Table.Column title="Ticket ID" dataIndex="ticket_id" />
         <Table.Column title="Game Code" dataIndex="game_code" />
         <Table.Column title="Username" dataIndex="username" />
@@ -81,6 +84,7 @@ export default function PromoreportTable() {
         <Table.Column title="After Balance" dataIndex="after_balance" />
         <Table.Column title="Report Date" dataIndex="report_date" />
         <Table.Column title="Detail" render={(text, record: RecordType) => <a href={record.report_link} target="_blank" rel="noopener noreferrer">View Detail</a>} />      </Table>
+      
     </>
   );
 }

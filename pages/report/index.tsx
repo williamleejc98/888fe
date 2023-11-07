@@ -23,18 +23,21 @@ type RecordType = {
 };
 export default function ReportTable() {
   const [reportData, setReportData] = useState([]);
-  const [pagination, setPagination] = useState({ current: 1, pageSize: 10 });
+  const [pagination, setPagination] = useState({ current: 1, pageSize: 1000 });
   const [searchQuery, setSearchQuery] = useState("");
 
   const fetchData = (query = "") => {
     const API_URL = `${API_ENDPOINT}?page=${pagination.current}&pageSize=${pagination.pageSize}&username=${query}`;
-
+  
     fetch(API_URL)
       .then(response => response.json())
       .then(data => {
-        if (data && data.data) {
-          setReportData(data.data);
-          setPagination(prev => ({ ...prev, total: data.total }));
+        console.log(data); // Log the data
+  
+        if (data && Array.isArray(data)) {
+          setReportData(data);
+          // Assuming each page has a fixed number of items
+          setPagination(prev => ({ ...prev, total: data.length * pagination.pageSize }));
         }
       })
       .catch(err => {
@@ -66,11 +69,11 @@ export default function ReportTable() {
 
       <Table
         dataSource={reportData}
-        rowKey="id"
+        rowKey="_id"
         pagination={pagination}
         onChange={handleTableChange}
       >
-        <Table.Column title="ID" dataIndex="id" />
+        <Table.Column title="ID" dataIndex="_id" />
         <Table.Column title="Ticket ID" dataIndex="ticket_id" />
         <Table.Column title="Game Code" dataIndex="game_code" />
         <Table.Column title="Username" dataIndex="username" />
