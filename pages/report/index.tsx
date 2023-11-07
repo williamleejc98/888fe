@@ -73,7 +73,6 @@ export default function ReportTable() {
         pagination={pagination}
         onChange={handleTableChange}
       >
-        <Table.Column title="ID" dataIndex="_id" />
         <Table.Column title="Ticket ID" dataIndex="ticket_id" />
         <Table.Column title="Game Code" dataIndex="game_code" />
         <Table.Column title="Username" dataIndex="username" />
