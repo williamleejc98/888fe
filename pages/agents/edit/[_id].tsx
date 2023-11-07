@@ -3,7 +3,7 @@ import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import { authProvider } from "src/authProvider";
 import { IResourceComponentsProps, useTranslate } from "@refinedev/core";
 import { Edit, useForm } from "@refinedev/antd";
-import { Form, Input, message, UploadInfo } from "antd";
+import { Form, Input, message } from "antd";
 import React, { useState } from 'react';
 import fileType from 'file-type';
 
@@ -13,26 +13,6 @@ import 'react-image-crop/dist/ReactCrop.css';
 export const AgentEdit: React.FC<IResourceComponentsProps> = () => {
     const [crop, setCrop] = useState({ aspect: 1/1 });
     const [src, setSrc] = useState<string | null>(null);
-
-    const onImageChange = async (info: UploadInfo) => {
-        const { file } = info;
-    
-        if (file.status === 'done') {
-            // Check the file type
-            const buffer = await file.originFileObj.arrayBuffer();
-            const type = fileType(buffer);
-    
-            if (!type || !['image/jpeg', 'image/png', 'image/jpg'].includes(type.mime)) {
-                message.error('You can only upload JPG/PNG/JPEG files!');
-                return;
-            }
-    
-            message.success(`Logo uploaded successfully`);
-            setSrc(file.response?.filePath || null);
-        } else if (file.status === 'error') {
-            message.error(`Logo upload failed.`);
-        }
-    };
 
     const translate = useTranslate();
     const { formProps, saveButtonProps, queryResult } = useForm();
@@ -92,20 +72,12 @@ export const AgentEdit: React.FC<IResourceComponentsProps> = () => {
                     getValueFromEvent={normFile}
                     rules={[
                         {
-                            required: true,
+                            required: false,
                             message: 'Please upload a logo!',
                         },
                     ]}
                 >
-                    <input type="file" accept="image/*" onChange={onImageChange} />
-                    {src && (
-                        <ReactCrop
-                            src={src}
-                            crop={crop}
-                            onImageLoaded={onImageLoaded}
-                            onChange={newCrop => setCrop(newCrop)}
-                        />
-                    )}
+              
                 </Form.Item>
 
                 <Form.Item
