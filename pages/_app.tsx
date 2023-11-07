@@ -92,6 +92,20 @@ function MyApp({ Component, pageProps }: AppPropsWithLayout): JSX.Element {
                     canDelete: false,
                   },
                 },
+                {
+                  name: "report",
+                  list: "/report",
+                  meta: {
+                    canDelete: false,
+                  },
+                },
+                {
+                  name: "promoreport",
+                  list: "/promoreport",
+                  meta: {
+                    canDelete: false,
+                  },
+                },
               ]}
               options={{
                 syncWithLocation: true,
