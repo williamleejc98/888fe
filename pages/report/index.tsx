@@ -9,7 +9,18 @@ import { Table, Space, Modal, Form, Input, Button } from "antd";
 import nookies from 'nookies';
 
 const API_ENDPOINT = "https://api.play888king.com/reports/all";
-
+type RecordType = {
+  id: string;
+  ticket_id: string;
+  game_code: string;
+  username: string;
+  bet_stake: number;
+  payout_amount: number;
+  before_balance: number;
+  after_balance: number;
+  report_date: string;
+  report_link: string;
+};
 export default function ReportTable() {
   const [reportData, setReportData] = useState([]);
   const [pagination, setPagination] = useState({ current: 1, pageSize: 10 });
@@ -35,15 +46,16 @@ export default function ReportTable() {
     fetchData(searchQuery);
   }, [pagination.current, searchQuery]);
 
-  const handleTableChange = (pagination) => {
-    setPagination(pagination);
+  const handleTableChange = (pagination: { current?: number, pageSize?: number }) => {
+    setPagination({
+      current: pagination.current ?? 1,
+      pageSize: pagination.pageSize ?? 10
+    });
   };
-
-  const handleSearch = (value) => {
+  const handleSearch = (value: string) => {
     setSearchQuery(value);
     setPagination(prev => ({ ...prev, current: 1 }));
   };
-
   return (
     <>
       <Input.Search
@@ -67,8 +79,8 @@ export default function ReportTable() {
         <Table.Column title="Before Balance" dataIndex="before_balance" />
         <Table.Column title="After Balance" dataIndex="after_balance" />
         <Table.Column title="Report Date" dataIndex="report_date" />
-        <Table.Column title="Detail" render={(text, record) => <a href={record.report_link} target="_blank" rel="noopener noreferrer">View Detail</a>} />
-      </Table>
+        <Table.Column title="Detail" render={(text, record: RecordType) => <a href={record.report_link} target="_blank" rel="noopener noreferrer">View Detail</a>} />      </Table>
+      
     </>
   );
 }
