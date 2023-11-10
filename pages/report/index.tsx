@@ -5,8 +5,9 @@ import { authProvider } from "src/authProvider";
 import { IResourceComponentsProps, BaseRecord, useTranslate, useMany } from "@refinedev/core";
 import { useTable, List, EditButton, ShowButton, DeleteButton, MarkdownField, DateField } from "@refinedev/antd";
 import { useState, useEffect } from "react";
-import { Table, Space, Modal, Form, Input, Button } from "antd";
+import { Table, Space, Modal, Form, Input, Button, Card } from "antd";
 import nookies from 'nookies';
+import axios from 'axios';
 
 const API_ENDPOINT = "https://api.play888king.com/reports/all";
 type RecordType = {
@@ -25,20 +26,57 @@ export default function ReportTable() {
   const [reportData, setReportData] = useState<RecordType[]>([]);
   const [pagination, setPagination] = useState({ current: 1, pageSize: 1000 });
   const [searchQuery, setSearchQuery] = useState("");
+  const [totalBetStake, setTotalBetStake] = useState(0);
+  const [totalGamesPlayed, setTotalGamesPlayed] = useState(0);
+  // Add new state variables for total win and total loss
+  const [totalWin, setTotalWin] = useState(0);
+  const [totalLoss, setTotalLoss] = useState(0);
+
+  const handleButtonClick = async () => {
+    try {
+      const response = await axios.post('https://api.play888king.com/reports/crawl', {
+        host_id: 'd2b154ee85f316a9ba2b9273eb2e3470',
+        key: '1',
+        page_size: '1'
+      });
+
+      console.log(response.data);
+    } catch (error) {
+      console.error('Error making POST request:', error);
+    }
+  };
+
 
   const fetchData = (query = "") => {
     const API_URL = `${API_ENDPOINT}?page=${pagination.current}&pageSize=${pagination.pageSize}&username=${query}`;
-  
+
     fetch(API_URL)
       .then(response => response.json())
       .then(data => {
         console.log(data); // Log the data
-  
+
         if (data && Array.isArray(data)) {
           setReportData(data);
           // Assuming each page has a fixed number of items
           setPagination(prev => ({ ...prev, total: data.length * pagination.pageSize }));
         }
+        // Calculate total bet stake, total games played, and total win/loss
+        let totalStake = 0;
+        let totalWin = 0;
+        let totalLoss = 0;
+        data.forEach((record: RecordType) => {
+          totalStake += record.bet_stake;
+          const potentialBalance = record.before_balance + record.bet_stake;
+          if (record.payout_amount > 0) {
+            totalWin += (record.payout_amount - potentialBalance);
+          } else {
+            totalLoss += record.bet_stake;
+          }
+        });
+        setTotalBetStake(totalStake);
+        setTotalGamesPlayed(data.length);
+        setTotalWin(totalWin);
+        setTotalLoss(totalLoss);
       })
       .catch(err => {
         console.error("Error fetching data:", err);
@@ -61,12 +99,27 @@ export default function ReportTable() {
   };
   return (
     <>
+      <Button onClick={handleButtonClick}>Crawl Reports</Button>
+
       <Input.Search
         placeholder="Search"
         onSearch={handleSearch}
         style={{ marginBottom: 16 }}
       />
-
+      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
+        <Card title="Total Turnover" style={{ width: 300 }}>
+          <p>{totalBetStake}</p>
+        </Card>
+        <Card title="Total Games Played" style={{ width: 300 }}>
+          <p>{totalGamesPlayed}</p>
+        </Card>
+        <Card title="Total Win" style={{ width: 300 }}>
+          <p>{totalWin}</p>
+        </Card>
+        <Card title="Total Loss" style={{ width: 300 }}>
+          <p>{totalLoss}</p>
+        </Card>
+      </div>
       <Table
         dataSource={reportData}
         rowKey="_id"
@@ -82,7 +135,7 @@ export default function ReportTable() {
         <Table.Column title="After Balance" dataIndex="after_balance" />
         <Table.Column title="Report Date" dataIndex="report_date" />
         <Table.Column title="Detail" render={(text, record: RecordType) => <a href={record.report_link} target="_blank" rel="noopener noreferrer">View Detail</a>} />      </Table>
-      
+
     </>
   );
 }
@@ -100,7 +153,7 @@ export const getServerSideProps: GetServerSideProps<{}> = async (context) => {
         ...translateProps,
       },
       redirect: {
-        destination: `${redirectTo}?to=${encodeURIComponent("/agents")}`,
+        destination: `${redirectTo}?to=${encodeURIComponent("/reports")}`,
         permanent: false,
       },
     };
