@@ -9,6 +9,16 @@ import { Table, Space, Modal, Form, Input, Button, Card } from "antd";
 import { axiosInstance } from "../../src/utils";
 
 
+// Set up an Axios request interceptor
+axiosInstance.interceptors.request.use((config) => {
+  if (jwtToken) {
+      config.headers.Authorization = `Bearer ${jwtToken}`;
+  }
+  return config;
+}, (error) => {
+  return Promise.reject(error);
+});
+
 
 const API_ENDPOINT = "https://api.play888king.com/reports/all";
 type RecordType = {
