@@ -55,11 +55,11 @@ export default function ReportTable() {
 
   const fetchData = (query = "") => {
     const API_URL = `${API_ENDPOINT}?page=${pagination.current}&pageSize=${pagination.pageSize}&specificUsername=${query}`;
-    console.log(`JWT Token: ${jwtTokenAsString}`);
+    console.log(`JWT Token: ${jwtToken}`);
   
     axios.get(API_URL, {
       headers: {
-        'Authorization': `Bearer ${jwtTokenAsString}`
+        'Authorization': `Bearer ${jwtToken}`
       }
     })
       .then(response => {
