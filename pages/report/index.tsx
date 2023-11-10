@@ -7,6 +7,13 @@ import { useTable, List, EditButton, ShowButton, DeleteButton, MarkdownField, Da
 import { useState, useEffect } from "react";
 import { Table, Space, Modal, Form, Input, Button, Card } from "antd";
 import { axiosInstance } from "../../src/utils";
+import nookies from 'nookies'; // Assuming you have nookies installed
+
+// Get JWT token from nookies
+const jwtTokenObject = nookies.get(null, 'jwt'); // Retrieve the JWT token object
+const jwtToken = jwtTokenObject ? jwtTokenObject.jwt : ''; // Extract the JWT token as a string
+const jwtTokenAsString = jwtToken ? jwtToken.toString() : ''; // Convert to a string
+
 
 
 // Set up an Axios request interceptor
