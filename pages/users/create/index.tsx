@@ -46,7 +46,6 @@ export default function UserCreate() {
 
         <Form.Item name="bank" rules={[{ required: true, message: 'Sila pilih bank anda!' }]}>
           <Select placeholder="Pilih bank">
-            <Select placeholder="Pilih bank">
               <Select.Option value="maybank">MAYBANK</Select.Option>
               <Select.Option value="hongLeongBank">HONG LEONG BANK</Select.Option>
               <Select.Option value="publicBank">PUBLIC BANK</Select.Option>
@@ -63,7 +62,6 @@ export default function UserCreate() {
               <Select.Option value="standardCharteredBank">STANDARD CHATERED BANK</Select.Option>
               <Select.Option value="bankRakyat">BANK RAKYAT</Select.Option>
               <Select.Option value="bankIslam">BANK ISLAM</Select.Option>
-            </Select>
           </Select>
         </Form.Item>
         <Form.Item name="bankAccountName" rules={[{ required: true, message: 'Sila masukkan nama akaun bank anda!' }]}>
