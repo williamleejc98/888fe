@@ -59,7 +59,7 @@ export default function ReportTable() {
   
     axios.get(API_URL, {
       headers: {
-        'Authorization': `Bearer ${jwtToken}`
+        'Authorization': `Bearer `
       }
     })
       .then(response => {
