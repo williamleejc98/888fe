@@ -55,16 +55,17 @@ export default function ReportTable() {
 
   const fetchData = (query = "") => {
     const API_URL = `${API_ENDPOINT}?page=${pagination.current}&pageSize=${pagination.pageSize}&specificUsername=${query}`;
-
-    fetch(API_URL, {
+    console.log(`JWT Token: ${jwtTokenAsString}`);
+  
+    axios.get(API_URL, {
       headers: {
         'Authorization': `Bearer ${jwtTokenAsString}`
       }
     })
-      .then(response => response.json())
-      .then(data => {
+      .then(response => {
+        const data = response.data;
         console.log(data); // Log the data
-
+  
         if (data && Array.isArray(data)) {
           setReportData(data);
           // Assuming each page has a fixed number of items
@@ -92,7 +93,6 @@ export default function ReportTable() {
         console.error("Error fetching data:", err);
       });
   };
-
   useEffect(() => {
     fetchData(searchQuery);
   }, [pagination.current, searchQuery]);
