@@ -9,12 +9,7 @@ import { Table, Space, Modal, Form, Input, Button, Card } from "antd";
 import axios from 'axios';
 import nookies from 'nookies'; // Assuming you have nookies installed
 
-// Get JWT token from nookies
-const jwtTokenObject = nookies.get(null, 'jwt'); // Retrieve the JWT token object
-const jwtToken = jwtTokenObject ? jwtTokenObject.jwt : ''; // Extract the JWT token as a string
-const jwtTokenAsString = jwtToken ? jwtToken.toString() : ''; // Convert to a string
 
-console.log(`JWT Token: ${jwtTokenAsString}`); // Log the JWT token
 const API_ENDPOINT = "https://api.play888king.com/reports/all";
 type RecordType = {
   id: string;
@@ -54,6 +49,9 @@ export default function ReportTable() {
 
 
   const fetchData = (query = "") => {
+    const jwtTokenObject = nookies.get(null, 'jwt');
+    const jwtToken = jwtTokenObject ? jwtTokenObject.jwt : '';
+    const jwtTokenAsString = jwtToken ? jwtToken.toString() : '';
     const API_URL = `${API_ENDPOINT}?page=${pagination.current}&pageSize=${pagination.pageSize}&specificUsername=${query}`;
     console.log(`JWT Token: ${jwtTokenAsString}`);
   
