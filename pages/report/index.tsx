@@ -6,7 +6,7 @@ import { IResourceComponentsProps, BaseRecord, useTranslate, useMany } from "@re
 import { useTable, List, EditButton, ShowButton, DeleteButton, MarkdownField, DateField } from "@refinedev/antd";
 import { useState, useEffect } from "react";
 import { Table, Space, Modal, Form, Input, Button, Card } from "antd";
-import axios from 'axios';
+import { axiosInstance } from "../../src/utils/axios"; // Import axiosInstance
 import nookies from 'nookies'; // Assuming you have nookies installed
 
 
@@ -49,47 +49,40 @@ export default function ReportTable() {
 
 
   const fetchData = (query = "") => {
-    const jwtTokenObject = nookies.get(null, 'jwt');
-    const jwtToken = jwtTokenObject ? jwtTokenObject.jwt : '';
-    const jwtTokenAsString = jwtToken ? jwtToken.toString() : '';
+   
     const API_URL = `${API_ENDPOINT}?page=${pagination.current}&pageSize=${pagination.pageSize}&specificUsername=${query}`;
-    console.log(`JWT Token: ${jwtTokenAsString}`);
   
-    axios.get(API_URL, {
-      headers: {
-        'Authorization': `Bearer ${jwtTokenAsString}`
+    axiosInstance.get(API_URL)
+    .then(response => {
+      const data = response.data;
+      console.log(data); // Log the data
+  
+      if (data && Array.isArray(data)) {
+        setReportData(data);
+        // Assuming each page has a fixed number of items
+        setPagination(prev => ({ ...prev, total: data.length * pagination.pageSize }));
       }
-    })
-      .then(response => {
-        const data = response.data;
-        console.log(data); // Log the data
-  
-        if (data && Array.isArray(data)) {
-          setReportData(data);
-          // Assuming each page has a fixed number of items
-          setPagination(prev => ({ ...prev, total: data.length * pagination.pageSize }));
+      // Calculate total bet stake, total games played, and total win/loss
+      let totalStake = 0;
+      let totalWin = 0;
+      let totalLoss = 0;
+      data.forEach((record: RecordType) => {
+        totalStake += record.bet_stake;
+        const potentialBalance = record.before_balance + record.bet_stake;
+        if (record.payout_amount > 0) {
+          totalWin += (record.payout_amount - potentialBalance);
+        } else {
+          totalLoss += record.bet_stake;
         }
-        // Calculate total bet stake, total games played, and total win/loss
-        let totalStake = 0;
-        let totalWin = 0;
-        let totalLoss = 0;
-        data.forEach((record: RecordType) => {
-          totalStake += record.bet_stake;
-          const potentialBalance = record.before_balance + record.bet_stake;
-          if (record.payout_amount > 0) {
-            totalWin += (record.payout_amount - potentialBalance);
-          } else {
-            totalLoss += record.bet_stake;
-          }
-        });
-        setTotalBetStake(totalStake);
-        setTotalGamesPlayed(data.length);
-        setTotalWin(totalWin);
-        setTotalLoss(totalLoss);
-      })
-      .catch(err => {
-        console.error("Error fetching data:", err);
       });
+      setTotalBetStake(totalStake);
+      setTotalGamesPlayed(data.length);
+      setTotalWin(totalWin);
+      setTotalLoss(totalLoss);
+    })
+    .catch(err => {
+      console.error("Error fetching data:", err);
+    });
   };
   useEffect(() => {
     fetchData(searchQuery);
