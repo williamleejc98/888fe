@@ -51,10 +51,17 @@ export default function ReportTable() {
 
 
   const fetchData = (query = "") => {
+    console.log('fetchData called'); // Log when fetchData is called
+
     const jwtTokenObject = nookies.get(null, 'jwt');
+    console.log(`JWT Object: ${jwtTokenObject}`); // Log the JWT token
+
     const jwtToken = jwtTokenObject ? jwtTokenObject.jwt : '';
+    console.log(`JWT Token: ${jwtToken}`); // Log the JWT token
+
     const jwtTokenAsString = jwtToken ? jwtToken.toString() : '';
-  
+    console.log(`JWT Token as string: ${jwtTokenAsString}`); // Log the JWT token
+
     // Create a new instance of axios
     const axiosInstance = axios.create();
   
