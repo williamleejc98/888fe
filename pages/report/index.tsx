@@ -2,11 +2,13 @@ import { AntdListInferencer } from "@refinedev/inferencer/antd";
 import { GetServerSideProps } from "next";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import { authProvider } from "src/authProvider";
+import { stringify } from "query-string";
+import { DataProvider } from "@refinedev/core";
 import { IResourceComponentsProps, BaseRecord, useTranslate, useMany } from "@refinedev/core";
 import { useTable, List, EditButton, ShowButton, DeleteButton, MarkdownField, DateField } from "@refinedev/antd";
 import { useState, useEffect } from "react";
 import { Table, Space, Modal, Form, Input, Button, Card } from "antd";
-import { axiosInstance } from "../../src/utils/axios"; // Import axiosInstance
+import axios from "axios"; // Import axios
 import nookies from 'nookies'; // Assuming you have nookies installed
 
 
@@ -49,7 +51,22 @@ export default function ReportTable() {
 
 
   const fetchData = (query = "") => {
-   
+    const jwtTokenObject = nookies.get(null, 'jwt');
+    const jwtToken = jwtTokenObject ? jwtTokenObject.jwt : '';
+    const jwtTokenAsString = jwtToken ? jwtToken.toString() : '';
+  
+    // Create a new instance of axios
+    const axiosInstance = axios.create();
+  
+    // Set up an Axios request interceptor
+    axiosInstance.interceptors.request.use((config) => {
+      if (jwtTokenAsString) {
+        config.headers.Authorization = `Bearer ${jwtTokenAsString}`;
+      }
+      return config;
+    }, (error) => {
+      return Promise.reject(error);
+    });
     const API_URL = `${API_ENDPOINT}?page=${pagination.current}&pageSize=${pagination.pageSize}&specificUsername=${query}`;
   
     axiosInstance.get(API_URL)
