@@ -6,13 +6,8 @@ import { IResourceComponentsProps, BaseRecord, useTranslate, useMany } from "@re
 import { useTable, List, EditButton, ShowButton, DeleteButton, MarkdownField, DateField } from "@refinedev/antd";
 import { useState, useEffect } from "react";
 import { Table, Space, Modal, Form, Input, Button, Card } from "antd";
-import axios from 'axios';
-import nookies from 'nookies'; // Assuming you have nookies installed
+import { axiosInstance } from "../../src/utils";
 
-// Get JWT token from nookies
-const jwtTokenObject = nookies.get(null, 'jwt'); // Retrieve the JWT token object
-const jwtToken = jwtTokenObject ? jwtTokenObject.jwt : ''; // Extract the JWT token as a string
-const jwtTokenAsString = jwtToken ? jwtToken.toString() : ''; // Convert to a string
 
 
 const API_ENDPOINT = "https://api.play888king.com/reports/all";
@@ -57,12 +52,8 @@ export default function ReportTable() {
     const API_URL = `${API_ENDPOINT}?page=${pagination.current}&pageSize=${pagination.pageSize}&specificUsername=${query}`;
     console.log(`JWT Token: ${jwtToken}`);
   
-    axios.get(API_URL, {
-      headers: {
-        'Authorization': `Bearer `
-      }
-    })
-      .then(response => {
+    axiosInstance.get(API_URL) // Use axiosInstance instead of axios
+    .then(response => {
         const data = response.data;
         console.log(data); // Log the data
   
