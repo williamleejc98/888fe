@@ -48,7 +48,7 @@ export default function ReportTable() {
 
 
   const fetchData = (query = "") => {
-    const API_URL = `${API_ENDPOINT}?page=${pagination.current}&pageSize=${pagination.pageSize}&username=${query}`;
+    const API_URL = `${API_ENDPOINT}?page=${pagination.current}&pageSize=${pagination.pageSize}&specificUsername=${query}`;
 
     fetch(API_URL)
       .then(response => response.json())
