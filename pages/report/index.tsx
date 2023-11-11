@@ -153,18 +153,18 @@ export default function ReportTable() {
           />
         </Col>
         <Col span={8}>
-          <DatePicker
-            showTime
-            onChange={(date) => setStartDate(date ? date.toISOString() : null)}
-            placeholder="Start Date"
-          />
+        <DatePicker
+  showTime
+  onChange={(date) => setStartDate(date ? date.toISOString() : null)}
+  placeholder="Start Date"
+/>
         </Col>
         <Col span={8}>
-          <DatePicker
-            showTime
-            onChange={(date) => setEndDate(date ? date.toISOString() : null)}
-            placeholder="End Date"
-          />
+        <DatePicker
+  showTime
+  onChange={(date) => setEndDate(date ? date.toISOString() : null)}
+  placeholder="End Date"
+/>
         </Col>
       </Row>
 
