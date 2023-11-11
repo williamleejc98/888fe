@@ -10,6 +10,7 @@ import { useState, useEffect } from "react";
 import { Table, Space, Modal, Form, Input, Button, Card, DatePicker, Row, Col } from "antd";
 import axios from "axios"; // Import axios
 import nookies from 'nookies'; // Assuming you have nookies installed
+import moment from 'moment';
 
 
 const API_ENDPOINT = "https://api.play888king.com/reports/all";
@@ -32,7 +33,7 @@ export default function ReportTable() {
   const [totalGames, setTotalGames] = useState(0);
   const [totalTurnover, setTotalTurnover] = useState(0);
   const [totalPayout, setTotalPayout] = useState(0);
-  const [totalWinLoss, setTotalWinLoss] = useState(0); 
+  const [totalWinLoss, setTotalWinLoss] = useState(0);
   const [startDate, setStartDate] = useState<string | null>(null);
   const [endDate, setEndDate] = useState<string | null>(null);
   const handleButtonClick = async () => {
@@ -131,6 +132,10 @@ export default function ReportTable() {
     fetchSummary(searchQuery);
   }, [pagination.current, searchQuery]);
 
+
+  useEffect(() => {
+    fetchSummary(searchQuery);
+  }, []);
   const handleTableChange = (pagination: { current?: number, pageSize?: number }) => {
     setPagination({
       current: pagination.current ?? 1,
@@ -153,18 +158,25 @@ export default function ReportTable() {
           />
         </Col>
         <Col span={8}>
-        <DatePicker
-  showTime
-  onChange={(date) => setStartDate(date ? date.toISOString() : null)}
-  placeholder="Start Date"
-/>
+          <DatePicker
+            showTime
+            onChange={(date) => setStartDate(date ? date.toISOString() : null)}
+            placeholder="Start Date"
+          />
         </Col>
         <Col span={8}>
-        <DatePicker
-  showTime
-  onChange={(date) => setEndDate(date ? date.toISOString() : null)}
-  placeholder="End Date"
-/>
+          <DatePicker
+            showTime
+            onChange={(date) => setEndDate(date ? date.toISOString() : null)}
+            placeholder="End Date"
+          />
+        </Col>
+        <Col span={8}>
+          <Button onClick={() => { setStartDate(moment().toISOString()); setEndDate(moment().toISOString()); }}>TODAY</Button>
+          <Button onClick={() => { setStartDate(moment().subtract(1, 'weeks').startOf('week').toISOString()); setEndDate(moment().toISOString()); }}>LAST WEEK</Button>
+          <Button onClick={() => { setStartDate(moment().subtract(1, 'months').startOf('month').toISOString()); setEndDate(moment().toISOString()); }}>LAST MONTH</Button>
+          <Button onClick={() => { setStartDate(moment().subtract(3, 'months').toISOString()); setEndDate(moment().toISOString()); }}>3 MONTHS</Button>
+          <Button onClick={() => { setStartDate(null); setEndDate(null); }}>ALL TIME</Button>
         </Col>
       </Row>
 
