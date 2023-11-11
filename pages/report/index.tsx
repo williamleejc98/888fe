@@ -32,9 +32,9 @@ export default function ReportTable() {
   const [totalGames, setTotalGames] = useState(0);
   const [totalTurnover, setTotalTurnover] = useState(0);
   const [totalPayout, setTotalPayout] = useState(0);
-  const [totalWinLoss, setTotalWinLoss] = useState(0); const [startDate, setStartDate] = useState(null);
-  const [endDate, setEndDate] = useState(null);
-
+  const [totalWinLoss, setTotalWinLoss] = useState(0); 
+  const [startDate, setStartDate] = useState<string | null>(null);
+  const [endDate, setEndDate] = useState<string | null>(null);
   const handleButtonClick = async () => {
     try {
       const response = await axios.post('https://api.play888king.com/reports/crawl', {
