@@ -170,10 +170,11 @@ const handleViewDetail = (url: string) => {
   }, [pagination.current, searchQuery, startDate, endDate]);
 
   const handleTableChange = (pagination: { current?: number, pageSize?: number }) => {
-    setPagination({
+    setPagination(prev => ({
       current: pagination.current ?? 1,
-      pageSize: pagination.pageSize ?? 10
-    });
+      pageSize: pagination.pageSize ?? 10,
+      total: prev.total
+    }));
   };
 
   const handleSearch = () => {
