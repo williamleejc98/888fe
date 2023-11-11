@@ -203,14 +203,14 @@ const handleViewDetail = (url: string) => {
       {lastFetched && <p>Last fetched time: {lastFetched.toLocaleString()}</p>}
      <Row gutter={0} style={{ marginBottom: 16 }}>
    
-      <Col span={12}>
+      <Col span={10}>
         <Input
           placeholder="Search Specific Player"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
         />
       </Col>
-      <Col span={12}>
+      <Col span={14}>
         <DatePicker
           showTime
           onChange={(date) => setStartDate(date ? date.toISOString() : null)}
