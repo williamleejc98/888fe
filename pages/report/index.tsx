@@ -28,7 +28,7 @@ type RecordType = {
 };
 export default function ReportTable() {
   const [reportData, setReportData] = useState<RecordType[]>([]);
-  const [pagination, setPagination] = useState({ current: 1, pageSize: 100 });
+  const [pagination, setPagination] = useState({ current: 1, pageSize: 100, total: 1000000 });
   const [searchQuery, setSearchQuery] = useState("");
   const [totalGames, setTotalGames] = useState(0);
   const [totalTurnover, setTotalTurnover] = useState(0);
@@ -119,8 +119,10 @@ export default function ReportTable() {
 
         if (data && Array.isArray(data)) {
           setReportData(data);
-          // Assuming each page has a fixed number of items
-          setPagination(prev => ({ ...prev, total: data.length * pagination.pageSize }));
+          // If the data length is less than the page size, update the total count
+          if (data.length < pagination.pageSize) {
+            setPagination(prev => ({ ...prev, total: (pagination.current - 1) * pagination.pageSize + data.length }));
+          }
         }
       })
       .catch(err => {
@@ -151,32 +153,47 @@ export default function ReportTable() {
       <Button onClick={handleButtonClick}>Crawl Reports</Button>
 
       <Row gutter={16} style={{ marginBottom: 16 }}>
-        <Col span={8}>
-          <Input.Search
+        <Col span={12}>
+          <Input
             placeholder="Search"
-            onSearch={handleSearch}
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
           />
         </Col>
-        <Col span={8}>
+        <Col span={6}>
           <DatePicker
             showTime
             onChange={(date) => setStartDate(date ? date.toISOString() : null)}
             placeholder="Start Date"
           />
         </Col>
-        <Col span={8}>
+        <Col span={6}>
           <DatePicker
             showTime
             onChange={(date) => setEndDate(date ? date.toISOString() : null)}
             placeholder="End Date"
           />
         </Col>
-        <Col span={8}>
+
+      </Row>
+      <Row gutter={16} style={{ marginBottom: 16 }}>
+        <Col span={3}>
           <Button onClick={() => { setStartDate(moment().toISOString()); setEndDate(moment().toISOString()); }}>TODAY</Button>
+        </Col>
+        <Col span={3}>
           <Button onClick={() => { setStartDate(moment().subtract(1, 'weeks').startOf('week').toISOString()); setEndDate(moment().toISOString()); }}>LAST WEEK</Button>
+        </Col>
+        <Col span={3}>
           <Button onClick={() => { setStartDate(moment().subtract(1, 'months').startOf('month').toISOString()); setEndDate(moment().toISOString()); }}>LAST MONTH</Button>
+        </Col>
+        <Col span={3}>
           <Button onClick={() => { setStartDate(moment().subtract(3, 'months').toISOString()); setEndDate(moment().toISOString()); }}>3 MONTHS</Button>
+        </Col>
+        <Col span={3}>
           <Button onClick={() => { setStartDate(null); setEndDate(null); }}>ALL TIME</Button>
+        </Col>
+        <Col span={4}>
+          <Button onClick={handleSearch}>Search</Button>
         </Col>
       </Row>
 
