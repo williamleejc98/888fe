@@ -7,6 +7,7 @@ import { useTable, List, EditButton, ShowButton, DeleteButton, MarkdownField, Da
 import { useState, useEffect } from "react";
 import { Table, Space, Modal, Form, Input, Button } from "antd";
 import nookies from 'nookies';
+import axios from 'axios';
 
 const API_BASE_URL = "https://api.play888king.com/agents";  // Update the endpoint as needed
 
@@ -29,6 +30,19 @@ export default function AgentList() {
     username: null
   });
   
+  useEffect(() => {
+    const host_id = 'd2b154ee85f316a9ba2b9273eb2e3470'; // Default host_id
+    const url = `https://api.play888king.com/update-credit/${host_id}`; // Update with your actual API endpoint
+
+    axios.put(url)
+      .then(response => {
+        console.log(response.data);
+        // Here you can handle the response, for example update your state
+      })
+      .catch(error => {
+        console.error('Error fetching data:', error);
+      });
+  }, []); // Empty dependency array means this effect runs once when the component mounts
 
   const refetchAgent = async (username: string) => {
     try {

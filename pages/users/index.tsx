@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState }, { useEffect }  from "react";
 import { GetServerSideProps } from "next";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import { authProvider } from "src/authProvider";
@@ -6,6 +6,7 @@ import { BaseRecord, useTranslate } from "@refinedev/core";
 import { useTable, List, EditButton, ShowButton, DeleteButton, MarkdownField, DateField } from "@refinedev/antd";
 import { Table, Space, Button, Modal, Form, Input } from "antd";
 import nookies from 'nookies'; // Make sure you've imported nookies
+import axios from 'axios';
 
 
 type ModalType = "deposit" | "withdraw" | "duration";
@@ -23,6 +24,19 @@ type DurationValues = {
 type FormValues = DepositValues | WithdrawValues | DurationValues;
 const API_BASE_URL = "https://api.play888king.com/users";
 
+useEffect(() => {
+  const host_id = 'd2b154ee85f316a9ba2b9273eb2e3470'; // Default host_id
+  const url = `https://api.play888king.com/update-all-balances/${host_id}`; // Update with your actual API endpoint
+
+  axios.put(url)
+    .then(response => {
+      console.log(response.data);
+      // Here you can handle the response, for example update your state
+    })
+    .catch(error => {
+      console.error('Error fetching data:', error);
+    });
+}, []); // Empty dependency array means this effect runs once when the component mounts
 
 /**
  * Your JSDoc comment here...
