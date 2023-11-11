@@ -7,7 +7,7 @@ import { DataProvider } from "@refinedev/core";
 import { IResourceComponentsProps, BaseRecord, useTranslate, useMany } from "@refinedev/core";
 import { useTable, List, EditButton, ShowButton, DeleteButton, MarkdownField, DateField } from "@refinedev/antd";
 import { useState, useEffect } from "react";
-import { Table, Space, Modal, Form, Input, Button, Card, DatePicker } from "antd";
+import { Table, Space, Modal, Form, Input, Button, Card, DatePicker, Row, Col } from "antd";
 import axios from "axios"; // Import axios
 import nookies from 'nookies'; // Assuming you have nookies installed
 
@@ -145,15 +145,29 @@ export default function ReportTable() {
     <>
       <Button onClick={handleButtonClick}>Crawl Reports</Button>
 
-      <Input.Search
-        placeholder="Search"
-        onSearch={handleSearch}
-        style={{ marginBottom: 16 }}
-      />
-      <div style={{ marginBottom: 16 }}>
-        <DatePicker showTime onChange={(date) => setStartDate(date?.toISOString())} placeholder="Start Date" />
-        <DatePicker showTime onChange={(date) => setEndDate(date?.toISOString())} placeholder="End Date" />
-      </div>
+      <Row gutter={16} style={{ marginBottom: 16 }}>
+        <Col span={8}>
+          <Input.Search
+            placeholder="Search"
+            onSearch={handleSearch}
+          />
+        </Col>
+        <Col span={8}>
+          <DatePicker
+            showTime
+            onChange={(date) => setStartDate(date ? date.toISOString() : null)}
+            placeholder="Start Date"
+          />
+        </Col>
+        <Col span={8}>
+          <DatePicker
+            showTime
+            onChange={(date) => setEndDate(date ? date.toISOString() : null)}
+            placeholder="End Date"
+          />
+        </Col>
+      </Row>
+
       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
         <Card title="Total Games Played" style={{ width: 300 }}>
           <p>{totalGames}</p>
