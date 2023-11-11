@@ -20,7 +20,6 @@ import { dataProvider } from "src/dataProvider";
 import { appWithTranslation, useTranslation } from "next-i18next";
 import { authProvider } from "src/authProvider";
 import { AppIcon } from "src/components/app-icon";
-
 const API_URL = "https://api.play888king.com";
 
 export type NextPageWithLayout<P = {}, IP = P> = NextPage<P, IP> & {

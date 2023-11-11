@@ -11,6 +11,7 @@ import { Table, Space, Modal, Form, Input, Button, Card, DatePicker, Row, Col , 
 import axios from "axios"; // Import axios
 import nookies from 'nookies'; // Assuming you have nookies installed
 import moment from 'moment';
+import styles from './report.module.css';
 
 
 const API_ENDPOINT = "https://api.play888king.com/reports/all";
@@ -37,7 +38,15 @@ export default function ReportTable() {
   const [startDate, setStartDate] = useState<string | null>(null);
   const [endDate, setEndDate] = useState<string | null>(null);
   const [lastFetched, setLastFetched] = useState<Date | null>(null);
+  const [isModalVisible, setIsModalVisible] = useState(false);
 
+ 
+const [iframeUrl, setIframeUrl] = useState("");
+
+const handleViewDetail = (url: string) => {
+  setIframeUrl(url);
+  setIsModalVisible(true);
+};
   const handleButtonClick = async () => {
     try {
       const response = await axios.post('https://api.play888king.com/reports/crawl', {
@@ -175,6 +184,20 @@ export default function ReportTable() {
 
   return (
     <>
+    <Modal
+  title="Detail View"
+  visible={isModalVisible}
+  onCancel={() => setIsModalVisible(false)}
+  footer={null}
+  width="80%"
+>
+  <iframe 
+    src={iframeUrl} 
+    style={{ width: '100%', height: '80vh' }} 
+    frameBorder="0"
+  />
+</Modal>
+
             <Button onClick={handleButtonClick} style={{ width: '100%', marginBottom: 16 }}>Crawl Reports</Button>
       {lastFetched && <p>Last fetched time: {lastFetched.toLocaleString()}</p>}
      <Row gutter={0} style={{ marginBottom: 16 }}>
@@ -208,42 +231,70 @@ export default function ReportTable() {
 
 
     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
-  <Col span={6}>
-    <Card title="Total Games Played" style={{ width: '100%' }}>
-      <p>{totalGames}</p>
-    </Card>
-  </Col>
-  <Col span={6}>
-    <Card title="Total Turnover" style={{ width: '100%' }}>
-      <p>{totalTurnover}</p>
-    </Card>
-  </Col>
-  <Col span={6}>
-    <Card title="Total Payout" style={{ width: '100%' }}>
-      <p>{totalPayout}</p>
-    </Card>
-  </Col>
-  <Col span={6}>
-    <Card title="Total Win/Loss" style={{ width: '100%' }}>
-      <p>{totalWinLoss}</p>
-    </Card>
-  </Col>
+    <Col span={6}>
+  <Card className={styles.card1}>
+    <h2 className={styles['card-title']}>Total Games Played</h2>
+    <p className={styles['card-content']}>{totalGames} Rounds</p>
+  </Card>
+</Col>
+<Col span={6}>
+  <Card className={styles.card2}>
+    <h2 className={styles['card-title']}>Total Turnover</h2>
+    <p className={styles['card-content']}>RM {totalTurnover}</p>
+  </Card>
+</Col>
+<Col span={6}>
+  <Card className={styles.card3}>
+    <h2 className={styles['card-title']}>Total Payout</h2>
+    <p className={styles['card-content']}>RM {totalPayout}</p>
+  </Card>
+</Col>
+<Col span={6}>
+  <Card className={styles.card4}>
+    <h2 className={styles['card-title']}>Total Win/Loss</h2>
+    <p className={styles['card-content']}>{totalWinLoss}</p>
+  </Card>
+</Col>
 </div>
       <Table
         dataSource={reportData}
         rowKey="_id"
         pagination={pagination}
         onChange={handleTableChange}
+
       >
         <Table.Column title="Ticket ID" dataIndex="ticket_id" />
         <Table.Column title="Game Code" dataIndex="game_code" />
         <Table.Column title="Username" dataIndex="username" />
         <Table.Column title="Bet Stake" dataIndex="bet_stake" />
         <Table.Column title="Payout Amount" dataIndex="payout_amount" />
+        <Table.Column 
+    title="Result" 
+    render={(text, record: RecordType) => (
+      <span style={{ color: record.payout_amount > 0 ? 'green' : 'red' }}>
+        {record.payout_amount > 0 ? 'Win' : 'Lose'}
+      </span>
+    )}
+  />
         <Table.Column title="Before Balance" dataIndex="before_balance" />
         <Table.Column title="After Balance" dataIndex="after_balance" />
         <Table.Column title="Report Date" dataIndex="report_date" />
-        <Table.Column title="Detail" render={(text, record: RecordType) => <a href={record.report_link} target="_blank" rel="noopener noreferrer">View Detail</a>} />      </Table>
+        <Table.Column 
+  title="Detail" 
+  render={(text, record: RecordType) => (
+    <a 
+      onClick={(e) => {
+        e.preventDefault();
+        handleViewDetail(record.report_link);
+      }} 
+      href={record.report_link} 
+      target="_blank" 
+      rel="noopener noreferrer"
+    >
+      View Detail
+    </a>
+  )} 
+/>     </Table>
 
     </>
   );
