@@ -7,7 +7,7 @@ import { DataProvider } from "@refinedev/core";
 import { IResourceComponentsProps, BaseRecord, useTranslate, useMany } from "@refinedev/core";
 import { useTable, List, EditButton, ShowButton, DeleteButton, MarkdownField, DateField } from "@refinedev/antd";
 import { useState, useEffect } from "react";
-import { Table, Space, Modal, Form, Input, Button, Card } from "antd";
+import { Table, Space, Modal, Form, Input, Button, Card, DatePicker } from "antd";
 import axios from "axios"; // Import axios
 import nookies from 'nookies'; // Assuming you have nookies installed
 
@@ -27,13 +27,13 @@ type RecordType = {
 };
 export default function ReportTable() {
   const [reportData, setReportData] = useState<RecordType[]>([]);
-  const [pagination, setPagination] = useState({ current: 1, pageSize: 1000 });
+  const [pagination, setPagination] = useState({ current: 1, pageSize: 100 });
   const [searchQuery, setSearchQuery] = useState("");
-  const [totalBetStake, setTotalBetStake] = useState(0);
-  const [totalGamesPlayed, setTotalGamesPlayed] = useState(0);
-  // Add new state variables for total win and total loss
-  const [totalWin, setTotalWin] = useState(0);
-  const [totalLoss, setTotalLoss] = useState(0);
+  const [totalGames, setTotalGames] = useState(0);
+  const [totalTurnover, setTotalTurnover] = useState(0);
+  const [totalPayout, setTotalPayout] = useState(0);
+  const [totalWinLoss, setTotalWinLoss] = useState(0); const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
 
   const handleButtonClick = async () => {
     try {
@@ -48,7 +48,26 @@ export default function ReportTable() {
       console.error('Error making POST request:', error);
     }
   };
-
+  const fetchSummary = (username = "") => {
+    let API_URL = `https://api.play888king.com/reports/${username}`;
+    if (startDate) {
+      API_URL += `?startDate=${startDate}`;
+    }
+    if (endDate) {
+      API_URL += startDate ? `&endDate=${endDate}` : `?endDate=${endDate}`;
+    }
+    axiosInstance.get(API_URL)
+      .then(response => {
+        const data = response.data;
+        setTotalGames(data.totalGames);
+        setTotalTurnover(data.totalTurnover);
+        setTotalPayout(data.totalPayoutAmount);
+        setTotalWinLoss(data.totalWinLoss);
+      })
+      .catch(err => {
+        console.error("Error fetching summary:", err);
+      });
+  };
 
   const fetchData = (query = "") => {
     console.log('fetchData called'); // Log when fetchData is called
@@ -64,7 +83,7 @@ export default function ReportTable() {
 
     // Create a new instance of axios
     const axiosInstance = axios.create();
-  
+
     // Set up an Axios request interceptor
     axiosInstance.interceptors.request.use((config) => {
       if (jwtTokenAsString) {
@@ -74,42 +93,31 @@ export default function ReportTable() {
     }, (error) => {
       return Promise.reject(error);
     });
-    const API_URL = `${API_ENDPOINT}?page=${pagination.current}&pageSize=${pagination.pageSize}&specificUsername=${query}`;
-  
+    let API_URL = `${API_ENDPOINT}?page=${pagination.current}&pageSize=${pagination.pageSize}&specificUsername=${query}`;
+    if (startDate) {
+      API_URL += `&startDate=${startDate}`;
+    }
+    if (endDate) {
+      API_URL += `&endDate=${endDate}`;
+    }
     axiosInstance.get(API_URL)
-    .then(response => {
-      const data = response.data;
-      console.log(data); // Log the data
-  
-      if (data && Array.isArray(data)) {
-        setReportData(data);
-        // Assuming each page has a fixed number of items
-        setPagination(prev => ({ ...prev, total: data.length * pagination.pageSize }));
-      }
-      // Calculate total bet stake, total games played, and total win/loss
-      let totalStake = 0;
-      let totalWin = 0;
-      let totalLoss = 0;
-      data.forEach((record: RecordType) => {
-        totalStake += record.bet_stake;
-        const potentialBalance = record.before_balance + record.bet_stake;
-        if (record.payout_amount > 0) {
-          totalWin += (record.payout_amount - potentialBalance);
-        } else {
-          totalLoss += record.bet_stake;
+      .then(response => {
+        const data = response.data;
+        console.log(data); // Log the data
+
+        if (data && Array.isArray(data)) {
+          setReportData(data);
+          // Assuming each page has a fixed number of items
+          setPagination(prev => ({ ...prev, total: data.length * pagination.pageSize }));
         }
+      })
+      .catch(err => {
+        console.error("Error fetching data:", err);
       });
-      setTotalBetStake(totalStake);
-      setTotalGamesPlayed(data.length);
-      setTotalWin(totalWin);
-      setTotalLoss(totalLoss);
-    })
-    .catch(err => {
-      console.error("Error fetching data:", err);
-    });
   };
   useEffect(() => {
     fetchData(searchQuery);
+    fetchSummary(searchQuery);
   }, [pagination.current, searchQuery]);
 
   const handleTableChange = (pagination: { current?: number, pageSize?: number }) => {
@@ -131,18 +139,22 @@ export default function ReportTable() {
         onSearch={handleSearch}
         style={{ marginBottom: 16 }}
       />
+      <div style={{ marginBottom: 16 }}>
+        <DatePicker showTime onChange={(date) => setStartDate(date?.toISOString())} placeholder="Start Date" />
+        <DatePicker showTime onChange={(date) => setEndDate(date?.toISOString())} placeholder="End Date" />
+      </div>
       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
-        <Card title="Total Turnover" style={{ width: 300 }}>
-          <p>{totalBetStake}</p>
-        </Card>
         <Card title="Total Games Played" style={{ width: 300 }}>
-          <p>{totalGamesPlayed}</p>
+          <p>{totalGames}</p>
         </Card>
-        <Card title="Total Win" style={{ width: 300 }}>
-          <p>{totalWin}</p>
+        <Card title="Total Turnover" style={{ width: 300 }}>
+          <p>{totalTurnover}</p>
         </Card>
-        <Card title="Total Loss" style={{ width: 300 }}>
-          <p>{totalLoss}</p>
+        <Card title="Total Payout" style={{ width: 300 }}>
+          <p>{totalPayout}</p>
+        </Card>
+        <Card title="Total Win/Loss" style={{ width: 300 }}>
+          <p>{totalWinLoss}</p>
         </Card>
       </div>
       <Table
