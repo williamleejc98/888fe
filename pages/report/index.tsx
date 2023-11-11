@@ -49,13 +49,24 @@ export default function ReportTable() {
     }
   };
   const fetchSummary = (username = "") => {
-    let API_URL = `https://api.play888king.com/reports/${username}`;
+    let API_URL = `https://api.play888king.com/reports/userstats?specificUsername=${username}`;
     if (startDate) {
       API_URL += `?startDate=${startDate}`;
     }
     if (endDate) {
       API_URL += startDate ? `&endDate=${endDate}` : `?endDate=${endDate}`;
     }
+    const jwtTokenObject = nookies.get(null, 'jwt');
+    console.log(`JWT Object: ${jwtTokenObject}`); // Log the JWT token
+
+    const jwtToken = jwtTokenObject ? jwtTokenObject.jwt : '';
+    console.log(`JWT Token: ${jwtToken}`); // Log the JWT token
+
+    const jwtTokenAsString = jwtToken ? jwtToken.toString() : '';
+    console.log(`JWT Token as string: ${jwtTokenAsString}`); // Log the JWT token
+
+    const axiosInstance = axios.create();
+
     axiosInstance.get(API_URL)
       .then(response => {
         const data = response.data;
