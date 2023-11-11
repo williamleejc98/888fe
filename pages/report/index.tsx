@@ -7,7 +7,7 @@ import { DataProvider } from "@refinedev/core";
 import { IResourceComponentsProps, BaseRecord, useTranslate, useMany } from "@refinedev/core";
 import { useTable, List, EditButton, ShowButton, DeleteButton, MarkdownField, DateField } from "@refinedev/antd";
 import { useState, useEffect } from "react";
-import { Table, Space, Modal, Form, Input, Button, Card, DatePicker, Row, Col } from "antd";
+import { Table, Space, Modal, Form, Input, Button, Card, DatePicker, Row, Col , notification} from "antd";
 import axios from "axios"; // Import axios
 import nookies from 'nookies'; // Assuming you have nookies installed
 import moment from 'moment';
@@ -36,6 +36,8 @@ export default function ReportTable() {
   const [totalWinLoss, setTotalWinLoss] = useState(0);
   const [startDate, setStartDate] = useState<string | null>(null);
   const [endDate, setEndDate] = useState<string | null>(null);
+  const [lastFetched, setLastFetched] = useState<Date | null>(null);
+
   const handleButtonClick = async () => {
     try {
       const response = await axios.post('https://api.play888king.com/reports/crawl', {
@@ -45,18 +47,33 @@ export default function ReportTable() {
       });
 
       console.log(response.data);
+          // Update last fetched time
+          setLastFetched(new Date());
+
+          // Show notification
+          notification.success({
+            message: 'Crawl Reports',
+            description: 'Reports have been successfully crawled.',
+          });
+
     } catch (error) {
       console.error('Error making POST request:', error);
     }
   };
   const fetchSummary = (username = "") => {
-    let API_URL = `https://api.play888king.com/reports/userstats?specificUsername=${username}`;
+    let API_URL = `https://api.play888king.com/reports/userstats`;
+    const params = new URLSearchParams();
+    if (username) {
+      params.append('specificUsername', username);
+    }
     if (startDate) {
-      API_URL += `?startDate=${startDate}`;
+      params.append('startDate', startDate);
     }
     if (endDate) {
-      API_URL += startDate ? `&endDate=${endDate}` : `?endDate=${endDate}`;
+      params.append('endDate', endDate);
     }
+    API_URL += `?${params.toString()}`;
+  
     const jwtTokenObject = nookies.get(null, 'jwt');
     console.log(`JWT Object: ${jwtTokenObject}`); // Log the JWT token
 
@@ -68,6 +85,15 @@ export default function ReportTable() {
 
     const axiosInstance = axios.create();
 
+    axiosInstance.interceptors.request.use((config) => {
+      if (jwtTokenAsString) {
+        config.headers.Authorization = `Bearer ${jwtTokenAsString}`;
+      }
+      return config;
+    }, (error) => {
+      return Promise.reject(error);
+    });
+    
     axiosInstance.get(API_URL)
       .then(response => {
         const data = response.data;
@@ -132,85 +158,77 @@ export default function ReportTable() {
   useEffect(() => {
     fetchData(searchQuery);
     fetchSummary(searchQuery);
-  }, [pagination.current, searchQuery]);
+  }, [pagination.current, searchQuery, startDate, endDate]);
 
-
-  useEffect(() => {
-    fetchSummary(searchQuery);
-  }, []);
   const handleTableChange = (pagination: { current?: number, pageSize?: number }) => {
     setPagination({
       current: pagination.current ?? 1,
       pageSize: pagination.pageSize ?? 10
     });
   };
-  const handleSearch = (value: string) => {
-    setSearchQuery(value);
+
+  const handleSearch = () => {
     setPagination(prev => ({ ...prev, current: 1 }));
+    fetchData(searchQuery);
+    fetchSummary(searchQuery);
   };
+
   return (
     <>
-      <Button onClick={handleButtonClick}>Crawl Reports</Button>
+            <Button onClick={handleButtonClick} style={{ width: '100%', marginBottom: 16 }}>Crawl Reports</Button>
+      {lastFetched && <p>Last fetched time: {lastFetched.toLocaleString()}</p>}
+     <Row gutter={0} style={{ marginBottom: 16 }}>
+   
+      <Col span={12}>
+        <Input
+          placeholder="Search Specific Player"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
+      </Col>
+      <Col span={12}>
+        <DatePicker
+          showTime
+          onChange={(date) => setStartDate(date ? date.toISOString() : null)}
+          placeholder="Start Date"
+        />
+        <DatePicker
+          showTime
+          onChange={(date) => setEndDate(date ? date.toISOString() : null)}
+          placeholder="End Date"
+        />
+         <Button onClick={() => { setStartDate(moment().toISOString()); setEndDate(moment().toISOString()); }}>TODAY</Button>
+        <Button onClick={() => { setStartDate(moment().subtract(1, 'weeks').startOf('week').toISOString()); setEndDate(moment().toISOString()); }}>LAST WEEK</Button>
+        <Button onClick={() => { setStartDate(moment().subtract(1, 'months').startOf('month').toISOString()); setEndDate(moment().toISOString()); }}>LAST MONTH</Button>
+        <Button onClick={() => { setStartDate(null); setEndDate(null); }}>ALL TIME</Button>
+      </Col>
+    
+    
+    </Row>
 
-      <Row gutter={16} style={{ marginBottom: 16 }}>
-        <Col span={12}>
-          <Input
-            placeholder="Search"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-        </Col>
-        <Col span={6}>
-          <DatePicker
-            showTime
-            onChange={(date) => setStartDate(date ? date.toISOString() : null)}
-            placeholder="Start Date"
-          />
-        </Col>
-        <Col span={6}>
-          <DatePicker
-            showTime
-            onChange={(date) => setEndDate(date ? date.toISOString() : null)}
-            placeholder="End Date"
-          />
-        </Col>
 
-      </Row>
-      <Row gutter={16} style={{ marginBottom: 16 }}>
-        <Col span={3}>
-          <Button onClick={() => { setStartDate(moment().toISOString()); setEndDate(moment().toISOString()); }}>TODAY</Button>
-        </Col>
-        <Col span={3}>
-          <Button onClick={() => { setStartDate(moment().subtract(1, 'weeks').startOf('week').toISOString()); setEndDate(moment().toISOString()); }}>LAST WEEK</Button>
-        </Col>
-        <Col span={3}>
-          <Button onClick={() => { setStartDate(moment().subtract(1, 'months').startOf('month').toISOString()); setEndDate(moment().toISOString()); }}>LAST MONTH</Button>
-        </Col>
-        <Col span={3}>
-          <Button onClick={() => { setStartDate(moment().subtract(3, 'months').toISOString()); setEndDate(moment().toISOString()); }}>3 MONTHS</Button>
-        </Col>
-        <Col span={3}>
-          <Button onClick={() => { setStartDate(null); setEndDate(null); }}>ALL TIME</Button>
-        </Col>
-        <Col span={4}>
-          <Button onClick={handleSearch}>Search</Button>
-        </Col>
-      </Row>
-
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
-        <Card title="Total Games Played" style={{ width: 300 }}>
-          <p>{totalGames}</p>
-        </Card>
-        <Card title="Total Turnover" style={{ width: 300 }}>
-          <p>{totalTurnover}</p>
-        </Card>
-        <Card title="Total Payout" style={{ width: 300 }}>
-          <p>{totalPayout}</p>
-        </Card>
-        <Card title="Total Win/Loss" style={{ width: 300 }}>
-          <p>{totalWinLoss}</p>
-        </Card>
-      </div>
+    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
+  <Col span={6}>
+    <Card title="Total Games Played" style={{ width: '100%' }}>
+      <p>{totalGames}</p>
+    </Card>
+  </Col>
+  <Col span={6}>
+    <Card title="Total Turnover" style={{ width: '100%' }}>
+      <p>{totalTurnover}</p>
+    </Card>
+  </Col>
+  <Col span={6}>
+    <Card title="Total Payout" style={{ width: '100%' }}>
+      <p>{totalPayout}</p>
+    </Card>
+  </Col>
+  <Col span={6}>
+    <Card title="Total Win/Loss" style={{ width: '100%' }}>
+      <p>{totalWinLoss}</p>
+    </Card>
+  </Col>
+</div>
       <Table
         dataSource={reportData}
         rowKey="_id"
