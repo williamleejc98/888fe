@@ -24,19 +24,6 @@ type DurationValues = {
 type FormValues = DepositValues | WithdrawValues | DurationValues;
 const API_BASE_URL = "https://api.play888king.com/users";
 
-useEffect(() => {
-  const host_id = 'd2b154ee85f316a9ba2b9273eb2e3470'; // Default host_id
-  const url = `https://api.play888king.com/update-all-balances/${host_id}`; // Update with your actual API endpoint
-
-  axios.put(url)
-    .then(response => {
-      console.log(response.data);
-      // Here you can handle the response, for example update your state
-    })
-    .catch(error => {
-      console.error('Error fetching data:', error);
-    });
-}, []); // Empty dependency array means this effect runs once when the component mounts
 
 /**
  * Your JSDoc comment here...
@@ -179,6 +166,21 @@ export default function UserList() {
     return null;
   };
 
+  useEffect(() => {
+    const host_id = 'd2b154ee85f316a9ba2b9273eb2e3470'; // Default host_id
+    const url = `https://api.play888king.com/update-all-balances/${host_id}`; // Update with your actual API endpoint
+  
+    axios.put(url)
+      .then(response => {
+        console.log(response.data);
+        // Here you can handle the response, for example update your state
+      })
+      .catch(error => {
+        console.error('Error fetching data:', error);
+      });
+  }, []); // Empty dependency array means this effect runs once when the component mounts
+
+  
   return (
     <div>
       <Modal title={modalInfo.type} visible={modalInfo.visible} onCancel={hideModal} onOk={() => form.submit()}>
