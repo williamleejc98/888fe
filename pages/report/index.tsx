@@ -153,6 +153,7 @@ const handleViewDetail = (url: string) => {
         console.log(data); // Log the data
 
         if (data && Array.isArray(data)) {
+          data.sort((a, b) => a.ticket_id.localeCompare(b.ticket_id));
           setReportData(data);
           // If the data length is less than the page size, update the total count
           if (data.length < pagination.pageSize) {
