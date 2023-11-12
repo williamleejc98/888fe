@@ -169,7 +169,7 @@ export default function UserList() {
   useEffect(() => {
     const host_id = 'd2b154ee85f316a9ba2b9273eb2e3470'; // Default host_id
     const url = `https://api.play888king.com/update-all-balances/${host_id}`; // Update with your actual API endpoint
-  
+
     axios.put(url)
       .then(response => {
         console.log(response.data);
@@ -180,7 +180,7 @@ export default function UserList() {
       });
   }, []); // Empty dependency array means this effect runs once when the component mounts
 
-  
+
   return (
     <div>
       <Modal title={modalInfo.type} visible={modalInfo.visible} onCancel={hideModal} onOk={() => form.submit()}>
@@ -237,8 +237,30 @@ export default function UserList() {
               </>
             )}
           />
-         
-         
+
+          <Table.Column
+            dataIndex="bank"
+            title={translate("Bank")}
+          />
+
+          <Table.Column
+            dataIndex="bankAccountName"
+            title={translate("Full Name")}
+          />
+
+          <Table.Column
+            dataIndex="bankAccountNumber"
+            title={translate("Bank Account No.")}
+          />
+
+          <Table.Column
+            dataIndex="phoneNumber"
+            title={translate("Phone")}
+          />
+
+
+
+
 
 
 
