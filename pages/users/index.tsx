@@ -4,7 +4,7 @@ import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import { authProvider } from "src/authProvider";
 import { BaseRecord, useTranslate } from "@refinedev/core";
 import { useTable, List, EditButton, ShowButton, DeleteButton, MarkdownField, DateField } from "@refinedev/antd";
-import { Table, Space, Button, Modal, Form, Input } from "antd";
+import { Table, Space, Button, InputNumber, Modal, Form, Input } from "antd";
 import nookies from 'nookies'; // Make sure you've imported nookies
 import axios from 'axios';
 
@@ -137,7 +137,7 @@ export default function UserList() {
       return (
         <Form form={form} onFinish={handleSubmit}>
           <Form.Item name="depositAmount" label="Deposit Amount" rules={[{ required: true, message: "Please enter the deposit amount" }]}>
-            <InputNumber min={0} precision={2} step={0.10} style={{ width: '100%' }} />
+            <InputNumber min={0} precision={2} step={0.01} style={{ width: '100%' }} />
           </Form.Item>
         </Form>
       );
@@ -147,7 +147,7 @@ export default function UserList() {
       return (
         <Form form={form} onFinish={handleSubmit}>
           <Form.Item name="withdrawAmount" label="Withdraw Amount" rules={[{ required: true, message: "Please enter the withdraw amount" }]}>
-            <InputNumber min={0} precision={2} step={0.10} style={{ width: '100%' }} />
+            <InputNumber min={0} precision={2} step={0.01} style={{ width: '100%' }} />
           </Form.Item>
         </Form>
       );
