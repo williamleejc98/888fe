@@ -4,6 +4,7 @@ import { decode as jwtDecode } from "jsonwebtoken";
 
 interface MyJwtPayload {
   username: string;
+  exp: number; // add this line
   // ... any other fields you expect in the payload
 }
 
