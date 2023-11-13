@@ -23,13 +23,13 @@ export default function AgentList() {
   const translate = useTranslate();
   const { tableProps } = useTable({ syncWithLocation: true });
   const [agents, setAgents] = useState<BaseRecord[]>([]);
-  
+
   const [modalInfo, setModalInfo] = useState<{ type: ModalType | null, visible: boolean, username: string | null }>({
     type: null,
     visible: false,
     username: null
   });
-  
+
   useEffect(() => {
     const host_id = 'd2b154ee85f316a9ba2b9273eb2e3470'; // Default host_id
     const url = `https://api.play888king.com/update-credit/${host_id}`; // Update with your actual API endpoint
@@ -48,117 +48,117 @@ export default function AgentList() {
     try {
       // Construct the request URL to get a single agent by its ID
       const url = `${API_BASE_URL}/username/${username}`;
-  
+
       // Send the request
       const response = await fetch(url, {
         method: "GET",
       });
-  
+
       if (!response.ok) {
         const responseData = await response.json();
         throw new Error(`Failed with status ${response.status}: ${JSON.stringify(responseData)}`);
       }
-  
+
       const agent = await response.json();
-  
+
       // Update the agents state
       setAgents(prevAgents => {
         return prevAgents.map(a => a._id === username ? agent : a);
       });
-  } catch (error) {
-  if (error instanceof Error) {
-    console.error('API call failed:', error.message);
-  } else {
-    console.error('API call failed:', error);
-  }
-}
-
-  }
-  
-
-
-/**
- * Sends an API request to update the balance.
- *
- * @param {string} username - The ID of the member.
- * @param {string} actionType - The type of action (deposit or withdraw).
- * @param {number | string} amount - The amount to be deposited or withdrawn.
- */
-async function sendApiRequest(username: string, actionType: "deposit" | "withdraw", amount: number | string) {
-  // Ensure valid action type
-  if (actionType !== "deposit" && actionType !== "withdraw") {
-    console.error('Invalid actionType:', actionType);
-    return;
-  }
-
-  // Convert amount to a number if it's a string
-  if (typeof amount === "string") {
-    amount = parseFloat(amount);
-  }
-
-  // Ensure valid amount after conversion
-  if (isNaN(amount) || typeof amount !== "number") {
-    console.error('Invalid amount:', amount);
-    return;
-  }
-
-  // Rest of your function...
-
-
-
- // Construct the request URL
- const url = `${API_BASE_URL}/${actionType}/${username}`;
-
- // Fetch the JWT token
- const jwtTokenObject = nookies.get(null, 'jwt');
- const jwtToken = jwtTokenObject ? jwtTokenObject.jwt : '';
-
- // Ensure JWT token is available
- if (!jwtToken) {
-   console.error('JWT token is missing');
-   return;
- }
-
- // Construct the request body
- const body = {
-   amount
- };
-
- // Send the request
- try {
-   const response = await fetch(url, {
-     method: "POST",
-     headers: {
-       "Content-Type": "application/json",
-       "Authorization": `Bearer ${jwtToken}`
-     },
-     body: JSON.stringify(body)
-   });
-
-   if (!response.ok) {
-     const responseData = await response.json();
-     throw new Error(`Failed with status ${response.status}: ${JSON.stringify(responseData)}`);
-   }
-
-   const responseData = await response.json();
-   console.log('Server Response:', responseData);
-  } catch (error) {
-    if (error instanceof Error) {
-      console.error('API call failed:', error.message);
-    } else {
-      console.error('API call failed:', error);
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error('API call failed:', error.message);
+      } else {
+        console.error('API call failed:', error);
+      }
     }
+
   }
 
- refetchAgent(username);
 
-}
+
+  /**
+   * Sends an API request to update the balance.
+   *
+   * @param {string} username - The ID of the member.
+   * @param {string} actionType - The type of action (deposit or withdraw).
+   * @param {number | string} amount - The amount to be deposited or withdrawn.
+   */
+  async function sendApiRequest(username: string, actionType: "deposit" | "withdraw", amount: number | string) {
+    // Ensure valid action type
+    if (actionType !== "deposit" && actionType !== "withdraw") {
+      console.error('Invalid actionType:', actionType);
+      return;
+    }
+
+    // Convert amount to a number if it's a string
+    if (typeof amount === "string") {
+      amount = parseFloat(amount);
+    }
+
+    // Ensure valid amount after conversion
+    if (isNaN(amount) || typeof amount !== "number") {
+      console.error('Invalid amount:', amount);
+      return;
+    }
+
+    // Rest of your function...
+
+
+
+    // Construct the request URL
+    const url = `${API_BASE_URL}/${actionType}/${username}`;
+
+    // Fetch the JWT token
+    const jwtTokenObject = nookies.get(null, 'jwt');
+    const jwtToken = jwtTokenObject ? jwtTokenObject.jwt : '';
+
+    // Ensure JWT token is available
+    if (!jwtToken) {
+      console.error('JWT token is missing');
+      return;
+    }
+
+    // Construct the request body
+    const body = {
+      amount
+    };
+
+    // Send the request
+    try {
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${jwtToken}`
+        },
+        body: JSON.stringify(body)
+      });
+
+      if (!response.ok) {
+        const responseData = await response.json();
+        throw new Error(`Failed with status ${response.status}: ${JSON.stringify(responseData)}`);
+      }
+
+      const responseData = await response.json();
+      console.log('Server Response:', responseData);
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error('API call failed:', error.message);
+      } else {
+        console.error('API call failed:', error);
+      }
+    }
+
+    refetchAgent(username);
+
+  }
 
 
   const form = Form.useForm()[0];
   const showModal = (type: ModalType, username: string) => {
     setModalInfo({ type, visible: true, username });
-};
+  };
   const hideModal = () => {
     setModalInfo(prev => ({ ...prev, visible: false }));
     form.resetFields();
@@ -174,9 +174,9 @@ async function sendApiRequest(username: string, actionType: "deposit" | "withdra
     }
 
     hideModal();
-        window.location.reload();
+    window.location.reload();
 
-};
+  };
   const renderModalContent = () => {
     const modalType = modalInfo.type;
 
@@ -198,7 +198,7 @@ async function sendApiRequest(username: string, actionType: "deposit" | "withdra
           </Form.Item>
         </Form>
       );
-      }
+    }
 
     return null;
   };
@@ -210,7 +210,7 @@ async function sendApiRequest(username: string, actionType: "deposit" | "withdra
         {renderModalContent()}
       </Modal>
       <List>
-      <Table dataSource={agents} {...tableProps} rowKey="_id">
+        <Table dataSource={agents} {...tableProps} rowKey="_id">
           <Table.Column
             dataIndex="username"
             title={translate("Username")}
@@ -226,6 +226,7 @@ async function sendApiRequest(username: string, actionType: "deposit" | "withdra
           <Table.Column
             dataIndex="agentCredit"
             title={translate("Credits")}
+            render={(value: number) => `MYR ${value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
           />
           <Table.Column
             title={translate("table.actions")}
@@ -238,45 +239,45 @@ async function sendApiRequest(username: string, actionType: "deposit" | "withdra
             )}
           />
 
-        <Table.Column
-          dataIndex="subdomain"
-          title={translate("Subdomain")}
-        />
-        <Table.Column
-          dataIndex="logoImage"
-          title={translate("Logo")}
-        />
-        <Table.Column
-          dataIndex="companyName"
-          title={translate("Company Name")}
-        />
-        <Table.Column
-          dataIndex="contactEmail"
-          title={translate("Email")}
-        />
-        <Table.Column
-          dataIndex="contactTelegram"
-          title={translate("Telegram")}
-        />
+          <Table.Column
+            dataIndex="subdomain"
+            title={translate("Subdomain")}
+          />
+          <Table.Column
+            dataIndex="logoImage"
+            title={translate("Logo")}
+          />
+          <Table.Column
+            dataIndex="companyName"
+            title={translate("Company Name")}
+          />
+          <Table.Column
+            dataIndex="contactEmail"
+            title={translate("Email")}
+          />
+          <Table.Column
+            dataIndex="contactTelegram"
+            title={translate("Telegram")}
+          />
 
 
-        <Table.Column
-          title={translate("table.actions")}
-          dataIndex="actions"
-          render={(_, record: BaseRecord) => (
-            <Space>
+          <Table.Column
+            title={translate("table.actions")}
+            dataIndex="actions"
+            render={(_, record: BaseRecord) => (
+              <Space>
 
-              <EditButton
-                hideText
-                size="small"
-                recordItemId={record._id}
-              />
-            </Space>
-          )}
-        />
-      </Table>
-    </List>
-</div>
+                <EditButton
+                  hideText
+                  size="small"
+                  recordItemId={record._id}
+                />
+              </Space>
+            )}
+          />
+        </Table>
+      </List>
+    </div>
 
   );
 }
