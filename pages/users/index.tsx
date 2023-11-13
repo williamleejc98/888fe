@@ -4,7 +4,7 @@ import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import { authProvider } from "src/authProvider";
 import { BaseRecord, useTranslate } from "@refinedev/core";
 import { useTable, List, EditButton, ShowButton, DeleteButton, MarkdownField, DateField } from "@refinedev/antd";
-import { Table, Space, Button, InputNumber, Modal, Form, Input } from "antd";
+import { Table, Space, Button, Modal, Form, Input, InputNumber } from "antd";
 import nookies from 'nookies'; // Make sure you've imported nookies
 import axios from 'axios';
 
@@ -133,25 +133,25 @@ export default function UserList() {
   const renderModalContent = () => {
     const modalType = modalInfo.type;
 
-    if (modalType === "deposit") {
-      return (
-        <Form form={form} onFinish={handleSubmit}>
-          <Form.Item name="depositAmount" label="Deposit Amount" rules={[{ required: true, message: "Please enter the deposit amount" }]}>
-            <InputNumber min={0} precision={2} step={0.01} style={{ width: '100%' }} />
-          </Form.Item>
-        </Form>
-      );
-    }
+if (modalType === "deposit") {
+  return (
+    <Form form={form} onFinish={handleSubmit}>
+      <Form.Item name="depositAmount" label="Deposit Amount" rules={[{ required: true, message: "Please enter the deposit amount" }]}>
+        <InputNumber min={0} precision={2} step={0.01} style={{ width: '100%' }} />
+      </Form.Item>
+    </Form>
+  );
+}
 
-    if (modalType === "withdraw") {
-      return (
-        <Form form={form} onFinish={handleSubmit}>
-          <Form.Item name="withdrawAmount" label="Withdraw Amount" rules={[{ required: true, message: "Please enter the withdraw amount" }]}>
-            <InputNumber min={0} precision={2} step={0.01} style={{ width: '100%' }} />
-          </Form.Item>
-        </Form>
-      );
-    }
+if (modalType === "withdraw") {
+  return (
+    <Form form={form} onFinish={handleSubmit}>
+      <Form.Item name="withdrawAmount" label="Withdraw Amount" rules={[{ required: true, message: "Please enter the withdraw amount" }]}>
+        <InputNumber min={0} precision={2} step={0.01} style={{ width: '100%' }} />
+      </Form.Item>
+    </Form>
+  );
+}
 
     if (modalType === "duration") {
       return (
@@ -169,7 +169,7 @@ export default function UserList() {
   useEffect(() => {
     const host_id = 'd2b154ee85f316a9ba2b9273eb2e3470'; // Default host_id
     const url = `https://api.play888king.com/update-all-balances/${host_id}`; // Update with your actual API endpoint
-
+  
     axios.put(url)
       .then(response => {
         console.log(response.data);
@@ -180,7 +180,7 @@ export default function UserList() {
       });
   }, []); // Empty dependency array means this effect runs once when the component mounts
 
-
+  
   return (
     <div>
       <Modal title={modalInfo.type} visible={modalInfo.visible} onCancel={hideModal} onOk={() => form.submit()}>
@@ -201,7 +201,6 @@ export default function UserList() {
           <Table.Column
             dataIndex="balance"
             title={translate("Wallet Balance")}
-            render={(balance: number) => `MYR ${balance.toFixed(2)}`}
           />
           <Table.Column
             dataIndex="promotionalBalance"
@@ -239,29 +238,29 @@ export default function UserList() {
             )}
           />
 
-          <Table.Column
+<Table.Column
             dataIndex="bank"
             title={translate("Bank")}
           />
 
-          <Table.Column
+<Table.Column
             dataIndex="bankAccountName"
             title={translate("Full Name")}
           />
 
-          <Table.Column
+<Table.Column
             dataIndex="bankAccountNumber"
             title={translate("Bank Account No.")}
           />
 
-          <Table.Column
+<Table.Column
             dataIndex="phoneNumber"
             title={translate("Phone")}
           />
 
 
-
-
+         
+         
 
 
 
