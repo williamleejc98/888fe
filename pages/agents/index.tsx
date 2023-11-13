@@ -5,7 +5,7 @@ import { authProvider } from "src/authProvider";
 import { IResourceComponentsProps, BaseRecord, useTranslate, useMany } from "@refinedev/core";
 import { useTable, List, EditButton, ShowButton, DeleteButton, MarkdownField, DateField } from "@refinedev/antd";
 import { useState, useEffect } from "react";
-import { Table, Space, Modal, Form, Input, Button } from "antd";
+import { Table, Space, Modal, Form, Input, Button, InputNumber } from "antd";
 import nookies from 'nookies';
 import axios from 'axios';
 
@@ -184,7 +184,7 @@ export default function AgentList() {
       return (
         <Form form={form} onFinish={handleSubmit}>
           <Form.Item name="depositAmount" label="Deposit Amount" rules={[{ required: true, message: "Please enter the deposit amount" }]}>
-            <Input />
+          <InputNumber min={0} precision={2} style={{ width: '100%' }} />
           </Form.Item>
         </Form>
       );
@@ -194,7 +194,7 @@ export default function AgentList() {
       return (
         <Form form={form} onFinish={handleSubmit}>
           <Form.Item name="withdrawAmount" label="Withdraw Amount" rules={[{ required: true, message: "Please enter the withdraw amount" }]}>
-            <Input />
+          <InputNumber min={0} precision={2} style={{ width: '100%' }} />
           </Form.Item>
         </Form>
       );
