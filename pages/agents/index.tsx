@@ -184,7 +184,7 @@ export default function AgentList() {
       return (
         <Form form={form} onFinish={handleSubmit}>
           <Form.Item name="depositAmount" label="Deposit Amount" rules={[{ required: true, message: "Please enter the deposit amount" }]}>
-          <InputNumber min={0} precision={2} step={0.01} style={{ width: '100%' }} />
+          <InputNumber min={0} precision={2} step={0.10} style={{ width: '100%' }} />
           </Form.Item>
         </Form>
       );
@@ -194,7 +194,7 @@ export default function AgentList() {
       return (
         <Form form={form} onFinish={handleSubmit}>
           <Form.Item name="withdrawAmount" label="Withdraw Amount" rules={[{ required: true, message: "Please enter the withdraw amount" }]}>
-          <InputNumber min={0} precision={2} step={0.01} style={{ width: '100%' }} />
+          <InputNumber min={0} precision={2} step={0.10} style={{ width: '100%' }} />
           </Form.Item>
         </Form>
       );
