@@ -4,10 +4,11 @@ import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import { authProvider } from "src/authProvider";
 import { BaseRecord, useTranslate } from "@refinedev/core";
 import { useTable, List, EditButton, ShowButton, DeleteButton, MarkdownField, DateField } from "@refinedev/antd";
-import { Table, Space, Button, Modal, Form, Input, InputNumber } from "antd";
+import { Table, Space, Button, Modal, Form, Input, InputNumber, Alert } from "antd";
 import nookies from 'nookies'; // Make sure you've imported nookies
 import axios from 'axios';
 
+import { WhatsAppOutlined } from '@ant-design/icons';
 type CountdownProps = {
   endTime: string;
 };
@@ -146,11 +147,14 @@ export default function UserList() {
 
 if (modalType === "deposit") {
   return (
+    <>
     <Form form={form} onFinish={handleSubmit}>
       <Form.Item name="depositAmount" label="Deposit Amount" rules={[{ required: true, message: "Please enter the deposit amount" }]}>
-        <InputNumber min={0} precision={2} step={0.01} style={{ width: '100%' }} />
+        <InputNumber min={0} precision={2} step={0.01} style={{ width: '100%' }} formatter={value => `RM ${value}`} parser={value => value?.replace('RM ', '') || ''} />
       </Form.Item>
     </Form>
+    <Alert message="Please make sure there is enough credit in your account" type="info" showIcon />
+  </>
   );
 }
 
@@ -212,14 +216,14 @@ if (modalType === "withdraw") {
           <Table.Column
             dataIndex="balance"
             title={translate("Wallet Balance")}
-            render={(value: number) => value ? `MYR ${value.toFixed(2)}` : 'MYR 0.00'}
+            render={(value: number) => value ? `RM ${value.toFixed(2)}` : 'MYR 0.00'}
 
             
           />
           <Table.Column
             dataIndex="promotionalBalance"
             title={translate("Promotional Balance")}
-            render={(value: number) => value ? `MYR ${value.toFixed(2)}` : 'MYR 0.00'}
+            render={(value: number) => value ? `RM ${value.toFixed(2)}` : 'MYR 0.00'}
 
           />
           <Table.Column
@@ -227,11 +231,9 @@ if (modalType === "withdraw") {
             dataIndex="actions"
             render={(_, record: BaseRecord) => (
               <Space>
-                <Button type="primary" size="small" onClick={() => showModal("deposit", record.memberId)}>Deposit</Button>
-
-                <Button type="primary" size="small" onClick={() => showModal("withdraw", record.memberId)}>Withdraw</Button>
-
-              </Space>
+      <Button type="primary" size="small" onClick={() => showModal("deposit", record.memberId)} style={{ backgroundColor: 'green', borderColor: 'green' }}>Deposit</Button>
+      <Button type="primary" size="small" onClick={() => showModal("withdraw", record.memberId)} style={{ backgroundColor: 'red', borderColor: 'red' }}>Withdraw</Button>
+    </Space>
             )}
           />
 
@@ -295,7 +297,7 @@ if (modalType === "withdraw") {
                 {activePromotion.isActive ? (
                   <>
             
-                    Days: {activePromotion.promotionDuration}
+                    {activePromotion.promotionDuration} Days
                   </>
                 ) : (
                   <span style={{ color: "red" }}>Inactive</span>
@@ -319,10 +321,19 @@ if (modalType === "withdraw") {
           />
 
 <Table.Column
-            dataIndex="phoneNumber"
-            title={translate("Phone")}
-          />
-
+  dataIndex="phoneNumber"
+  title={translate("Phone")}
+  render={(phoneNumber: string) => {
+    const whatsappUrl = `https://wa.me/+60${phoneNumber}`;
+    return (
+      <a href={whatsappUrl} target="_blank" rel="noopener noreferrer">
+        <Button type="primary" icon={<WhatsAppOutlined />} style={{ backgroundColor: 'limegreen', borderColor: 'limegreen' }}>
+          +60{phoneNumber}
+        </Button>
+      </a>
+    );
+  }}
+/>
 
          
          
