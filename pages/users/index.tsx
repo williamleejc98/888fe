@@ -201,14 +201,11 @@ if (modalType === "withdraw") {
           <Table.Column
             dataIndex="balance"
             title={translate("Wallet Balance")}
-            render={(value: number) => `MYR ${value.toFixed(2)}`}
-
+            
           />
           <Table.Column
             dataIndex="promotionalBalance"
             title={translate("Promotional Balance")}
-            render={(value: number) => `MYR ${value.toFixed(2)}`}
-
           />
           <Table.Column
             title={translate("Set Credit")}
