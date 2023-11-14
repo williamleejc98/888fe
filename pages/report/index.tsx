@@ -32,6 +32,8 @@ export default function ReportTable() {
   const [pagination, setPagination] = useState({ current: 1, pageSize: 100, total: 1000000 });
   const [searchQuery, setSearchQuery] = useState("");
   const [totalGames, setTotalGames] = useState(0);
+  const [refreshKey, setRefreshKey] = useState(0); // Add this line
+
   const [totalTurnover, setTotalTurnover] = useState(0);
   const [totalPayout, setTotalPayout] = useState(0);
   const [totalWinLoss, setTotalWinLoss] = useState(0);
@@ -47,283 +49,292 @@ const handleViewDetail = (url: string) => {
   setIframeUrl(url);
   setIsModalVisible(true);
 };
-  const handleButtonClick = async () => {
-    try {
-      const response = await axios.post('https://api.play888king.com/reports/crawl', {
-        host_id: 'd2b154ee85f316a9ba2b9273eb2e3470',
-        key: '1',
-        page_size: '1'
-      });
 
-      console.log(response.data);
-          // Update last fetched time
-          setLastFetched(new Date());
+const handleButtonClick = async () => {
+  try {
+    const response = await axios.post('https://api.play888king.com/reports/crawl', {
+      host_id: 'd2b154ee85f316a9ba2b9273eb2e3470',
+      key: '1',
+      page_size: '1'
+    });
 
-          // Show notification
-          notification.success({
-            message: 'Crawl Reports',
-            description: 'Reports have been successfully crawled.',
-          });
+    console.log(response.data);
+    // Update last fetched time
+    setLastFetched(new Date());
 
-    } catch (error) {
-      console.error('Error making POST request:', error);
+    // Show notification
+    notification.success({
+      message: 'Crawl Reports',
+      description: 'Reports have been successfully crawled.',
+    });
+
+    // Refresh the page
+    await fetchData(searchQuery);
+    await fetchSummary(searchQuery);
+    setRefreshKey(oldKey => oldKey + 1); // Add this line
+
+
+  } catch (error) {
+    console.error('Error making POST request:', error);
+  }
+};
+
+const fetchSummary = (username = "") => {
+  let API_URL = `https://api.play888king.com/reports/userstats`;
+  const params = new URLSearchParams();
+  if (username) {
+    params.append('specificUsername', username);
+  }
+  if (startDate) {
+    params.append('startDate', startDate);
+  }
+  if (endDate) {
+    params.append('endDate', endDate);
+  }
+  API_URL += `?${params.toString()}`;
+
+  const jwtTokenObject = nookies.get(null, 'jwt');
+  console.log(`JWT Object: ${jwtTokenObject}`); // Log the JWT token
+
+  const jwtToken = jwtTokenObject ? jwtTokenObject.jwt : '';
+  console.log(`JWT Token: ${jwtToken}`); // Log the JWT token
+
+  const jwtTokenAsString = jwtToken ? jwtToken.toString() : '';
+  console.log(`JWT Token as string: ${jwtTokenAsString}`); // Log the JWT token
+
+  const axiosInstance = axios.create();
+
+  axiosInstance.interceptors.request.use((config) => {
+    if (jwtTokenAsString) {
+      config.headers.Authorization = `Bearer ${jwtTokenAsString}`;
     }
-  };
-  const fetchSummary = (username = "") => {
-    let API_URL = `https://api.play888king.com/reports/userstats`;
-    const params = new URLSearchParams();
-    if (username) {
-      params.append('specificUsername', username);
-    }
-    if (startDate) {
-      params.append('startDate', startDate);
-    }
-    if (endDate) {
-      params.append('endDate', endDate);
-    }
-    API_URL += `?${params.toString()}`;
+    return config;
+  }, (error) => {
+    return Promise.reject(error);
+  });
   
-    const jwtTokenObject = nookies.get(null, 'jwt');
-    console.log(`JWT Object: ${jwtTokenObject}`); // Log the JWT token
-
-    const jwtToken = jwtTokenObject ? jwtTokenObject.jwt : '';
-    console.log(`JWT Token: ${jwtToken}`); // Log the JWT token
-
-    const jwtTokenAsString = jwtToken ? jwtToken.toString() : '';
-    console.log(`JWT Token as string: ${jwtTokenAsString}`); // Log the JWT token
-
-    const axiosInstance = axios.create();
-
-    axiosInstance.interceptors.request.use((config) => {
-      if (jwtTokenAsString) {
-        config.headers.Authorization = `Bearer ${jwtTokenAsString}`;
-      }
-      return config;
-    }, (error) => {
-      return Promise.reject(error);
+  return axiosInstance.get(API_URL)
+    .then(response => {
+      const data = response.data;
+      setTotalGames(data.totalGames);
+      setTotalTurnover(data.totalTurnover);
+      setTotalPayout(data.totalPayoutAmount);
+      setTotalWinLoss(data.totalWinLoss);
+    })
+    .catch(err => {
+      console.error("Error fetching summary:", err);
     });
-    
-    axiosInstance.get(API_URL)
-      .then(response => {
-        const data = response.data;
-        setTotalGames(data.totalGames);
-        setTotalTurnover(data.totalTurnover);
-        setTotalPayout(data.totalPayoutAmount);
-        setTotalWinLoss(data.totalWinLoss);
-      })
-      .catch(err => {
-        console.error("Error fetching summary:", err);
-      });
-  };
+};
 
-  const fetchData = (query = "") => {
-    console.log('fetchData called'); // Log when fetchData is called
+const fetchData = (query = "") => {
+  console.log('fetchData called'); // Log when fetchData is called
 
-    const jwtTokenObject = nookies.get(null, 'jwt');
-    console.log(`JWT Object: ${jwtTokenObject}`); // Log the JWT token
+  const jwtTokenObject = nookies.get(null, 'jwt');
+  console.log(`JWT Object: ${jwtTokenObject}`); // Log the JWT token
 
-    const jwtToken = jwtTokenObject ? jwtTokenObject.jwt : '';
-    console.log(`JWT Token: ${jwtToken}`); // Log the JWT token
+  const jwtToken = jwtTokenObject ? jwtTokenObject.jwt : '';
+  console.log(`JWT Token: ${jwtToken}`); // Log the JWT token
 
-    const jwtTokenAsString = jwtToken ? jwtToken.toString() : '';
-    console.log(`JWT Token as string: ${jwtTokenAsString}`); // Log the JWT token
+  const jwtTokenAsString = jwtToken ? jwtToken.toString() : '';
+  console.log(`JWT Token as string: ${jwtTokenAsString}`); // Log the JWT token
 
-    // Create a new instance of axios
-    const axiosInstance = axios.create();
+  // Create a new instance of axios
+  const axiosInstance = axios.create();
 
-    // Set up an Axios request interceptor
-    axiosInstance.interceptors.request.use((config) => {
-      if (jwtTokenAsString) {
-        config.headers.Authorization = `Bearer ${jwtTokenAsString}`;
-      }
-      return config;
-    }, (error) => {
-      return Promise.reject(error);
-    });
-    let API_URL = `${API_ENDPOINT}?page=${pagination.current}&pageSize=${pagination.pageSize}&specificUsername=${query}`;
-    if (startDate) {
-      API_URL += `&startDate=${startDate}`;
+  // Set up an Axios request interceptor
+  axiosInstance.interceptors.request.use((config) => {
+    if (jwtTokenAsString) {
+      config.headers.Authorization = `Bearer ${jwtTokenAsString}`;
     }
-    if (endDate) {
-      API_URL += `&endDate=${endDate}`;
-    }
-    axiosInstance.get(API_URL)
-      .then(response => {
-        const data = response.data;
-        console.log(data); // Log the data
+    return config;
+  }, (error) => {
+    return Promise.reject(error);
+  });
+  let API_URL = `${API_ENDPOINT}?page=${pagination.current}&pageSize=${pagination.pageSize}&specificUsername=${query}`;
+  if (startDate) {
+    API_URL += `&startDate=${startDate}`;
+  }
+  if (endDate) {
+    API_URL += `&endDate=${endDate}`;
+  }
+  return axiosInstance.get(API_URL)
+    .then(response => {
+      const data = response.data;
+      console.log(data); // Log the data
 
-        if (data && Array.isArray(data)) {
-          data.sort((a, b) => a.ticket_id.localeCompare(b.ticket_id));
-          setReportData(data);
-          // If the data length is less than the page size, update the total count
-          if (data.length < pagination.pageSize) {
-            setPagination(prev => ({ ...prev, total: (pagination.current - 1) * pagination.pageSize + data.length }));
-          }
+      if (data && Array.isArray(data)) {
+        data.sort((a, b) => a.ticket_id.localeCompare(b.ticket_id));
+        setReportData(data);
+        // If the data length is less than the page size, update the total count
+        if (data.length < pagination.pageSize) {
+          setPagination(prev => ({ ...prev, total: (pagination.current - 1) * pagination.pageSize + data.length }));
         }
-      })
-      .catch(err => {
-        console.error("Error fetching data:", err);
-      });
-  };
-  useEffect(() => {
-    fetchData(searchQuery);
-    fetchSummary(searchQuery);
-  }, [pagination.current, searchQuery, startDate, endDate]);
+      }
+    })
+    .catch(err => {
+      console.error("Error fetching data:", err);
+    });
+};
 
-  const handleTableChange = (pagination: { current?: number, pageSize?: number }) => {
-    setPagination(prev => ({
-      current: pagination.current ?? 1,
-      pageSize: pagination.pageSize ?? 10,
-      total: prev.total
-    }));
-  };
+useEffect(() => {
+  fetchData(searchQuery);
+  fetchSummary(searchQuery);
+}, [pagination.current, searchQuery, startDate, endDate]);
 
-  const handleSearch = () => {
-    setPagination(prev => ({ ...prev, current: 1 }));
-    fetchData(searchQuery);
-    fetchSummary(searchQuery);
-  };
+const handleTableChange = (pagination: { current?: number, pageSize?: number }) => {
+  setPagination(prev => ({
+    current: pagination.current ?? 1,
+    pageSize: pagination.pageSize ?? 10,
+    total: prev.total
+  }));
+};
 
-  return (
-    <>
-    <Modal
-  title="Detail View"
-  visible={isModalVisible}
-  onCancel={() => setIsModalVisible(false)}
-  footer={null}
-  width="80%"
+const handleSearch = () => {
+  setPagination(prev => ({ ...prev, current: 1 }));
+  fetchData(searchQuery);
+  fetchSummary(searchQuery);
+};
+
+return (
+  <>
+  <Modal
+title="Detail View"
+visible={isModalVisible}
+onCancel={() => setIsModalVisible(false)}
+footer={null}
+width="80%"
 >
-  <iframe 
-    src={iframeUrl} 
-    style={{ width: '100%', height: '80vh' }} 
-    frameBorder="0"
-  />
+<iframe 
+  src={iframeUrl} 
+  style={{ width: '100%', height: '80vh' }} 
+  frameBorder="0"
+/>
 </Modal>
 
-            <Button onClick={handleButtonClick} style={{ width: '100%', marginBottom: 16 }}>Crawl Reports</Button>
-      {lastFetched && <p>Last fetched time: {lastFetched.toLocaleString()}</p>}
-     <Row gutter={0} style={{ marginBottom: 16 }}>
-   
-      <Col span={10}>
-        <Input
-          placeholder="Search Specific Player"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-        />
-      </Col>
-      <Col span={14}>
-        <DatePicker
-          showTime
-          onChange={(date) => setStartDate(date ? date.toISOString() : null)}
-          placeholder="Start Date"
-        />
-        <DatePicker
-          showTime
-          onChange={(date) => setEndDate(date ? date.toISOString() : null)}
-          placeholder="End Date"
-        />
-         <Button onClick={() => { setStartDate(moment().toISOString()); setEndDate(moment().toISOString()); }}>TODAY</Button>
-        <Button onClick={() => { setStartDate(moment().subtract(1, 'weeks').startOf('week').toISOString()); setEndDate(moment().toISOString()); }}>LAST WEEK</Button>
-        <Button onClick={() => { setStartDate(moment().subtract(1, 'months').startOf('month').toISOString()); setEndDate(moment().toISOString()); }}>LAST MONTH</Button>
-        <Button onClick={() => { setStartDate(null); setEndDate(null); }}>ALL TIME</Button>
-      </Col>
-    
-    
-    </Row>
+      <Button onClick={handleButtonClick} style={{ width: '100%', marginBottom: 16 }}>Crawl Reports</Button>
+{lastFetched && <p>Last fetched time: {lastFetched.toLocaleString()}</p>}
+<Row gutter={0} style={{ marginBottom: 16 }}>
+
+<Col span={10}>
+  <Input
+    placeholder="Search Specific Player"
+    value={searchQuery}
+    onChange={(e) => setSearchQuery(e.target.value)}
+  />
+</Col>
+<Col span={14}>
+  <DatePicker
+    showTime
+    onChange={(date) => setStartDate(date ? date.toISOString() : null)}
+    placeholder="Start Date"
+  />
+  <DatePicker
+    showTime
+    onChange={(date) => setEndDate(date ? date.toISOString() : null)}
+    placeholder="End Date"
+  />
+   <Button onClick={() => { setStartDate(moment().toISOString()); setEndDate(moment().toISOString()); }}>TODAY</Button>
+  <Button onClick={() => { setStartDate(moment().subtract(1, 'weeks').startOf('week').toISOString()); setEndDate(moment().toISOString()); }}>LAST WEEK</Button>
+  <Button onClick={() => { setStartDate(moment().subtract(1, 'months').startOf('month').toISOString()); setEndDate(moment().toISOString()); }}>LAST MONTH</Button>
+  <Button onClick={() => { setStartDate(null); setEndDate(null); }}>ALL TIME</Button>
+</Col>
 
 
-    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
-    <Col span={6}>
-  <Card className={styles.card1}>
-    <h2 className={styles['card-title']}>Total Games Played</h2>
-    <p className={styles['card-content']}>{totalGames} Rounds</p>
-  </Card>
+</Row>
+
+
+<div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
+<Col span={6}>
+<Card className={styles.card1}>
+  <h2 className={styles['card-title']}>Total Games Played</h2>
+  <p className={styles['card-content']}>{totalGames} Rounds</p>
+</Card>
 </Col>
 <Col span={6}>
-  <Card className={styles.card2}>
-    <h2 className={styles['card-title']}>Total Turnover</h2>
-    <p className={styles['card-content']}>RM {totalTurnover}</p>
-  </Card>
+<Card className={styles.card2}>
+  <h2 className={styles['card-title']}>Total Turnover</h2>
+  <p className={styles['card-content']}>RM {totalTurnover}</p>
+</Card>
 </Col>
 <Col span={6}>
-  <Card className={styles.card3}>
-    <h2 className={styles['card-title']}>Total Payout</h2>
-    <p className={styles['card-content']}>RM {totalPayout}</p>
-  </Card>
+<Card className={styles.card3}>
+  <h2 className={styles['card-title']}>Total Payout</h2>
+  <p className={styles['card-content']}>RM {totalPayout}</p>
+</Card>
 </Col>
 <Col span={6}>
-  <Card className={styles.card4}>
-    <h2 className={styles['card-title']}>Total Win/Loss</h2>
-    <p className={styles['card-content']}>{totalWinLoss}</p>
-  </Card>
+<Card className={styles.card4}>
+  <h2 className={styles['card-title']}>Total Win/Loss</h2>
+  <p className={styles['card-content']}>{totalWinLoss}</p>
+</Card>
 </Col>
 </div>
-      <Table
+<Table
         dataSource={reportData}
         rowKey="_id"
         pagination={pagination}
         onChange={handleTableChange}
-
+        key={refreshKey} // Add this line
       >
-        <Table.Column title="Ticket ID" dataIndex="ticket_id" />
-        <Table.Column title="Game Code" dataIndex="game_code" />
-        <Table.Column title="Username" dataIndex="username" />
-        <Table.Column title="Bet Stake" dataIndex="bet_stake" />
-        <Table.Column title="Payout Amount" dataIndex="payout_amount" />
-        <Table.Column 
-    title="Result" 
-    render={(text, record: RecordType) => (
-      <span style={{ color: record.payout_amount > 0 ? 'green' : 'red' }}>
-        {record.payout_amount > 0 ? 'Win' : 'Lose'}
-      </span>
-    )}
-  />
-        <Table.Column title="Before Balance" dataIndex="before_balance" />
-        <Table.Column title="After Balance" dataIndex="after_balance" />
-        <Table.Column title="Report Date" dataIndex="report_date" />
-        <Table.Column 
-  title="Detail" 
-  render={(text, record: RecordType) => (
-    <a 
-      onClick={(e) => {
-        e.preventDefault();
-        handleViewDetail(record.report_link);
-      }} 
-      href={record.report_link} 
-      target="_blank" 
-      rel="noopener noreferrer"
-    >
-      View Detail
-    </a>
-  )} 
+  <Table.Column title="Ticket ID" dataIndex="ticket_id" />
+  <Table.Column title="Game Code" dataIndex="game_code" />
+  <Table.Column title="Username" dataIndex="username" />
+  <Table.Column title="Bet Stake" dataIndex="bet_stake" />
+  <Table.Column title="Payout Amount" dataIndex="payout_amount" />
+  <Table.Column 
+title="Result" 
+render={(text, record: RecordType) => (
+<span style={{ color: record.payout_amount > 0 ? 'green' : 'red' }}>
+  {record.payout_amount > 0 ? 'Win' : 'Lose'}
+</span>
+)}
+/>
+  <Table.Column title="Before Balance" dataIndex="before_balance" />
+  <Table.Column title="After Balance" dataIndex="after_balance" />
+  <Table.Column title="Report Date" dataIndex="report_date" />
+  <Table.Column 
+title="Detail" 
+render={(text, record: RecordType) => (
+<a 
+  onClick={(e) => {
+    e.preventDefault();
+    handleViewDetail(record.report_link);
+  }} 
+  href={record.report_link} 
+  target="_blank" 
+  rel="noopener noreferrer"
+>
+  View Detail
+</a>
+)} 
 />     </Table>
 
-    </>
-  );
+</>
+);
 }
 
 export const getServerSideProps: GetServerSideProps<{}> = async (context) => {
-  const { authenticated, redirectTo } = await authProvider.check(context);
+const { authenticated, redirectTo } = await authProvider.check(context);
 
-  const translateProps = await serverSideTranslations(context.locale ?? "en", [
-    "common",
-  ]);
+const translateProps = await serverSideTranslations(context.locale ?? "en", [
+  "common",
+]);
 
-  if (!authenticated) {
-    return {
-      props: {
-        ...translateProps,
-      },
-      redirect: {
-        destination: `${redirectTo}?to=${encodeURIComponent("/reports")}`,
-        permanent: false,
-      },
-    };
-  }
-
+if (!authenticated) {
   return {
     props: {
       ...translateProps,
     },
+    redirect: {
+      destination: `${redirectTo}?to=${encodeURIComponent("/reports")}`,
+      permanent: false,
+    },
   };
+}
+
+return {
+  props: {
+    ...translateProps,
+  },
+};
 };

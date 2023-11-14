@@ -34,6 +34,8 @@ export default function ReportTable() {
   const [totalGames, setTotalGames] = useState(0);
   const [totalTurnover, setTotalTurnover] = useState(0);
   const [totalPayout, setTotalPayout] = useState(0);
+  const [refreshKey, setRefreshKey] = useState(0); // Add this line
+
   const [totalWinLoss, setTotalWinLoss] = useState(0);
   const [startDate, setStartDate] = useState<string | null>(null);
   const [endDate, setEndDate] = useState<string | null>(null);
@@ -258,12 +260,12 @@ const handleViewDetail = (url: string) => {
   </Card>
 </Col>
 </div>
-      <Table
+<Table
         dataSource={reportData}
         rowKey="_id"
         pagination={pagination}
         onChange={handleTableChange}
-
+        key={refreshKey} // Add this line
       >
         <Table.Column title="Ticket ID" dataIndex="ticket_id" />
         <Table.Column title="Game Code" dataIndex="game_code" />
