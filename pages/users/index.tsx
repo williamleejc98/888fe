@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react';
 import { GetServerSideProps } from "next";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import { authProvider } from "src/authProvider";
@@ -8,7 +8,9 @@ import { Table, Space, Button, Modal, Form, Input, InputNumber } from "antd";
 import nookies from 'nookies'; // Make sure you've imported nookies
 import axios from 'axios';
 
-
+type CountdownProps = {
+  endTime: string;
+};
 type ModalType = "deposit" | "withdraw" | "duration";
 type DepositValues = {
   depositAmount: number;
@@ -97,6 +99,15 @@ async function sendApiRequest(memberId: string | number, actionType: "deposit" |
 export default function UserList() {
   const translate = useTranslate();
   const { tableProps } = useTable({ syncWithLocation: true });
+  const [now, setNow] = useState(new Date());
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setNow(new Date());
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, []);
 
   const [modalInfo, setModalInfo] = useState<{ type: ModalType | null, visible: boolean, memberId: string | null }>({
     type: null,
@@ -106,7 +117,7 @@ export default function UserList() {
 
 
 
-
+ 
   const form = Form.useForm()[0];
   const showModal = (type: ModalType, memberId: string) => {
     setModalInfo({ type, visible: true, memberId });
@@ -224,17 +235,67 @@ if (modalType === "withdraw") {
             )}
           />
 
-          <Table.Column
-            title={translate("Promotion Duration (Timer)")}
+<Table.Column
+  title={translate("Promotion Duration (Timer)")}
+  dataIndex={null}
+  key="activePromotion"
+  render={(record) => {
+    const { activePromotion, lastPromotionClaim } = record;
+    if (activePromotion.isActive) {
+      const claimDate = new Date(lastPromotionClaim);
+      const endDate = new Date(claimDate.getTime() + activePromotion.promotionDuration * 24 * 60 * 60 * 1000); // Add duration days to claim date
+      const diffMs = endDate.getTime() - now.getTime(); // milliseconds between now & end date
+      if (diffMs < 0) {
+        return <span style={{ color: "red" }}>Promo Expired</span>;
+      }
+      const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24)); // days
+
+      const diffHrs = Math.floor((diffMs % 86400000) / 3600000); // hours
+      const diffMins = Math.round(((diffMs % 86400000) % 3600000) / 60000); // minutes
+      const diffSecs = Math.round(((diffMs % 86400000) % 3600000) % 60000 / 1000); // seconds
+
+      // Determine the color based on the remaining days
+      let color = "green";
+      let message = "Active";
+      if (diffDays < 5) {
+        color = "orange";
+      }
+      if (diffDays < 5) {
+        message = "Expiring";
+      }
+
+      return (
+        <>
+          <span style={{ color: color }}>{message}</span>
+          <br />
+          Remaining: {diffDays} Days {diffHrs}:{diffMins}:{diffSecs}
+        </>
+      );
+    } else {
+      return <span style={{ color: "red" }}>Inactive</span>;
+    }
+  }}
+/>
+  
+<Table.Column
+            dataIndex="lastPromotionClaim"
+            title={translate("Last Claimed")}
+            render={(date: string) => {
+              const parsedDate = new Date(date);
+              return parsedDate.toLocaleDateString() + ' ' + parsedDate.toLocaleTimeString();
+            }}
+          />
+
+<Table.Column
+            title={translate("Last Awarded Days")}
             dataIndex="activePromotion"
             key="activePromotion"
             render={(activePromotion) => (
               <>
                 {activePromotion.isActive ? (
                   <>
-                    <span style={{ color: "green" }}>Active</span>
-                    <br />
-                    Duration: {activePromotion.promotionDuration}
+            
+                    Days: {activePromotion.promotionDuration}
                   </>
                 ) : (
                   <span style={{ color: "red" }}>Inactive</span>
@@ -242,7 +303,6 @@ if (modalType === "withdraw") {
               </>
             )}
           />
-
 <Table.Column
             dataIndex="bank"
             title={translate("Bank")}
