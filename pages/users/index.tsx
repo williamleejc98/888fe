@@ -236,7 +236,6 @@ if (modalType === "withdraw") {
 
 <Table.Column
   title={translate("Promotion Duration (Timer)")}
-  dataIndex={null}
   key="activePromotion"
   render={(record) => {
     const { activePromotion, lastPromotionClaim } = record;
