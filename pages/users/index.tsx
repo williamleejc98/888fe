@@ -4,7 +4,7 @@ import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import { authProvider } from "src/authProvider";
 import { BaseRecord, useTranslate } from "@refinedev/core";
 import { useTable, List, EditButton, ShowButton, DeleteButton, MarkdownField, DateField } from "@refinedev/antd";
-import { Table, Space, Button, Modal, Form, Input, InputNumber, Alert } from "antd";
+import { Table, Space, Button, Modal, Form, Input, InputNumber } from "antd";
 import nookies from 'nookies'; // Make sure you've imported nookies
 import axios from 'axios';
 
@@ -118,7 +118,7 @@ export default function UserList() {
 
 
 
-
+ 
   const form = Form.useForm()[0];
   const showModal = (type: ModalType, memberId: string) => {
     setModalInfo({ type, visible: true, memberId });
@@ -145,40 +145,25 @@ export default function UserList() {
   const renderModalContent = () => {
     const modalType = modalInfo.type;
 
-    if (modalType === "deposit") {
-      return (
-        <>
-          <Form form={form} onFinish={handleSubmit}>
-            <Form.Item name="depositAmount" label="Deposit Amount" rules={[{ required: true, message: "Please enter the deposit amount" }]}>
-              <InputNumber
-                min={0}
-                precision={2}
-                step={0.01}
-                style={{ width: '100%' }}
-                formatter={value => `RM ${value}`}
-                parser={value => parseFloat(value?.replace('RM ', '') || "0")}
-              />            </Form.Item>
-          </Form>
-          <Alert message="Please make sure there is enough credit in your account" type="info" showIcon />
-        </>
-      );
-    }
+if (modalType === "deposit") {
+  return (
+    <Form form={form} onFinish={handleSubmit}>
+      <Form.Item name="depositAmount" label="Deposit Amount" rules={[{ required: true, message: "Please enter the deposit amount" }]}>
+        <InputNumber min={0} precision={2} step={0.01} style={{ width: '100%' }} />
+      </Form.Item>
+    </Form>
+  );
+}
 
-    if (modalType === "withdraw") {
-      return (
-        <Form form={form} onFinish={handleSubmit}>
-          <Form.Item name="withdrawAmount" label="Withdraw Amount" rules={[{ required: true, message: "Please enter the withdraw amount" }]}>
-            <InputNumber
-              min={0}
-              precision={2}
-              step={0.01}
-              style={{ width: '100%' }}
-              formatter={value => `RM ${value}`}
-              parser={value => parseFloat(value?.replace('RM ', '') || "0")}
-            />      </Form.Item>
-        </Form>
-      );
-    }
+if (modalType === "withdraw") {
+  return (
+    <Form form={form} onFinish={handleSubmit}>
+      <Form.Item name="withdrawAmount" label="Withdraw Amount" rules={[{ required: true, message: "Please enter the withdraw amount" }]}>
+        <InputNumber min={0} precision={2} step={0.01} style={{ width: '100%' }} />
+      </Form.Item>
+    </Form>
+  );
+}
 
     if (modalType === "duration") {
       return (
@@ -196,7 +181,7 @@ export default function UserList() {
   useEffect(() => {
     const host_id = 'd2b154ee85f316a9ba2b9273eb2e3470'; // Default host_id
     const url = `https://api.play888king.com/update-all-balances/${host_id}`; // Update with your actual API endpoint
-
+  
     axios.put(url)
       .then(response => {
         console.log(response.data);
@@ -207,7 +192,7 @@ export default function UserList() {
       });
   }, []); // Empty dependency array means this effect runs once when the component mounts
 
-
+  
   return (
     <div>
       <Modal title={modalInfo.type} visible={modalInfo.visible} onCancel={hideModal} onOk={() => form.submit()}>
@@ -230,7 +215,7 @@ export default function UserList() {
             title={translate("Wallet Balance")}
             render={(value: number) => value ? `RM ${value.toFixed(2)}` : 'MYR 0.00'}
 
-
+            
           />
           <Table.Column
             dataIndex="promotionalBalance"
@@ -243,55 +228,55 @@ export default function UserList() {
             dataIndex="actions"
             render={(_, record: BaseRecord) => (
               <Space>
-                <Button type="primary" size="small" onClick={() => showModal("deposit", record.memberId)} style={{ backgroundColor: 'green', borderColor: 'green' }}>Deposit</Button>
-                <Button type="primary" size="small" onClick={() => showModal("withdraw", record.memberId)} style={{ backgroundColor: 'red', borderColor: 'red' }}>Withdraw</Button>
-              </Space>
+      <Button type="primary" size="small" onClick={() => showModal("deposit", record.memberId)} style={{ backgroundColor: 'green', borderColor: 'green' }}>Deposit</Button>
+      <Button type="primary" size="small" onClick={() => showModal("withdraw", record.memberId)} style={{ backgroundColor: 'red', borderColor: 'red' }}>Withdraw</Button>
+    </Space>
             )}
           />
 
-          <Table.Column
-            title={translate("Promotion Duration (Timer)")}
-            dataIndex={null}
-            key="activePromotion"
-            render={(record) => {
-              const { activePromotion, lastPromotionClaim } = record;
-              if (activePromotion.isActive) {
-                const claimDate = new Date(lastPromotionClaim);
-                const endDate = new Date(claimDate.getTime() + activePromotion.promotionDuration * 24 * 60 * 60 * 1000); // Add duration days to claim date
-                const diffMs = endDate.getTime() - now.getTime(); // milliseconds between now & end date
-                if (diffMs < 0) {
-                  return <span style={{ color: "red" }}>Promo Expired</span>;
-                }
-                const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24)); // days
+<Table.Column
+  title={translate("Promotion Duration (Timer)")}
+  dataIndex={null}
+  key="activePromotion"
+  render={(record) => {
+    const { activePromotion, lastPromotionClaim } = record;
+    if (activePromotion.isActive) {
+      const claimDate = new Date(lastPromotionClaim);
+      const endDate = new Date(claimDate.getTime() + activePromotion.promotionDuration * 24 * 60 * 60 * 1000); // Add duration days to claim date
+      const diffMs = endDate.getTime() - now.getTime(); // milliseconds between now & end date
+      if (diffMs < 0) {
+        return <span style={{ color: "red" }}>Promo Expired</span>;
+      }
+      const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24)); // days
 
-                const diffHrs = Math.floor((diffMs % 86400000) / 3600000); // hours
-                const diffMins = Math.round(((diffMs % 86400000) % 3600000) / 60000); // minutes
-                const diffSecs = Math.round(((diffMs % 86400000) % 3600000) % 60000 / 1000); // seconds
+      const diffHrs = Math.floor((diffMs % 86400000) / 3600000); // hours
+      const diffMins = Math.round(((diffMs % 86400000) % 3600000) / 60000); // minutes
+      const diffSecs = Math.round(((diffMs % 86400000) % 3600000) % 60000 / 1000); // seconds
 
-                // Determine the color based on the remaining days
-                let color = "green";
-                let message = "Active";
-                if (diffDays < 5) {
-                  color = "orange";
-                }
-                if (diffDays < 5) {
-                  message = "Expiring";
-                }
+      // Determine the color based on the remaining days
+      let color = "green";
+      let message = "Active";
+      if (diffDays < 5) {
+        color = "orange";
+      }
+      if (diffDays < 5) {
+        message = "Expiring";
+      }
 
-                return (
-                  <>
-                    <span style={{ color: color }}>{message}</span>
-                    <br />
-                    Remaining: {diffDays} Days {diffHrs}:{diffMins}:{diffSecs}
-                  </>
-                );
-              } else {
-                return <span style={{ color: "red" }}>Inactive</span>;
-              }
-            }}
-          />
-
-          <Table.Column
+      return (
+        <>
+          <span style={{ color: color }}>{message}</span>
+          <br />
+          Remaining: {diffDays} Days {diffHrs}:{diffMins}:{diffSecs}
+        </>
+      );
+    } else {
+      return <span style={{ color: "red" }}>Inactive</span>;
+    }
+  }}
+/>
+  
+<Table.Column
             dataIndex="lastPromotionClaim"
             title={translate("Last Claimed")}
             render={(date: string) => {
@@ -300,7 +285,7 @@ export default function UserList() {
             }}
           />
 
-          <Table.Column
+<Table.Column
             title={translate("Last Awarded Days")}
             dataIndex="activePromotion"
             key="activePromotion"
@@ -308,7 +293,7 @@ export default function UserList() {
               <>
                 {activePromotion.isActive ? (
                   <>
-
+            
                     {activePromotion.promotionDuration} Days
                   </>
                 ) : (
@@ -317,38 +302,38 @@ export default function UserList() {
               </>
             )}
           />
-          <Table.Column
+<Table.Column
             dataIndex="bank"
             title={translate("Bank")}
           />
 
-          <Table.Column
+<Table.Column
             dataIndex="bankAccountName"
             title={translate("Full Name")}
           />
 
-          <Table.Column
+<Table.Column
             dataIndex="bankAccountNumber"
             title={translate("Bank Account No.")}
           />
 
-          <Table.Column
-            dataIndex="phoneNumber"
-            title={translate("Phone")}
-            render={(phoneNumber: string) => {
-              const whatsappUrl = `https://wa.me/+60${phoneNumber}`;
-              return (
-                <a href={whatsappUrl} target="_blank" rel="noopener noreferrer">
-                  <Button type="primary" icon={<WhatsAppOutlined />} style={{ backgroundColor: 'limegreen', borderColor: 'limegreen' }}>
-                    +60{phoneNumber}
-                  </Button>
-                </a>
-              );
-            }}
-          />
+<Table.Column
+  dataIndex="phoneNumber"
+  title={translate("Phone")}
+  render={(phoneNumber: string) => {
+    const whatsappUrl = `https://wa.me/+60${phoneNumber}`;
+    return (
+      <a href={whatsappUrl} target="_blank" rel="noopener noreferrer">
+        <Button type="primary" icon={<WhatsAppOutlined />} style={{ backgroundColor: 'limegreen', borderColor: 'limegreen' }}>
+          +60{phoneNumber}
+        </Button>
+      </a>
+    );
+  }}
+/>
 
-
-
+         
+         
 
 
 
