@@ -156,7 +156,7 @@ export default function UserList() {
                 step={0.01}
                 style={{ width: '100%' }}
                 formatter={value => `RM ${value}`}
-                parser={value => parseFloat(value?.replace('RM ', '') || '0')}
+                parser={value => parseFloat(value?.replace('RM ', '') || "0")}
               />            </Form.Item>
           </Form>
           <Alert message="Please make sure there is enough credit in your account" type="info" showIcon />
@@ -174,7 +174,7 @@ export default function UserList() {
               step={0.01}
               style={{ width: '100%' }}
               formatter={value => `RM ${value}`}
-              parser={value => parseFloat(value?.replace('RM ', '') || '0')}
+              parser={value => parseFloat(value?.replace('RM ', '') || "0")}
             />      </Form.Item>
         </Form>
       );
