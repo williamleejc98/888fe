@@ -1,17 +1,21 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { GetServerSideProps } from "next";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import { authProvider } from "src/authProvider";
 import { useTranslate } from "@refinedev/core";
 import { Create, useForm, getValueFromEvent } from "@refinedev/antd";
-import { Form, Input, Row, Col, Alert, Upload } from "antd";
+import { Form, Input, Row, Col, Alert, Upload, Button } from "antd";
 import axios from 'axios';
+import { UploadOutlined } from '@ant-design/icons';
+
 export default function AgentCreate() {
     const translate = useTranslate();
     const [form] = Form.useForm();
 
     const { formProps, saveButtonProps } = useForm();
     const [subdomainPreview, setSubdomainPreview] = useState("");
+    const [filePath, setFilePath] = useState(''); // Move this line here
+
 
     const handleFileUpload = async (file) => {
         const formData = new FormData();
@@ -21,10 +25,17 @@ export default function AgentCreate() {
                 'Content-Type': 'multipart/form-data',
             },
         });
-        return response.data.filePath; // Assuming the server returns an object with a filePath property
+        const filePath = typeof response.data.filePath === 'string' ? response.data.filePath : '';
+
+        setFilePath(filePath);
+        form.setFieldsValue({ logoImage: filePath });
+
+        return filePath;
     };
 
-    const [filePath, setFilePath] = useState('');
+    useEffect(() => {
+        form.setFieldsValue({ logoImage: filePath });
+    }, [filePath]);
     return (
         <div style={{ maxWidth: "800px" }}>
 
@@ -32,6 +43,7 @@ export default function AgentCreate() {
                 <Form
                     {...formProps}
                     layout="vertical"
+                    initialValues={{ logoImage: filePath }}
                     onValuesChange={(changedValues) => {
                         if (changedValues.subdomain) {
                             setSubdomainPreview(changedValues.subdomain + ".play888king.com");
@@ -170,38 +182,30 @@ export default function AgentCreate() {
                             >
                                 <Input />
                             </Form.Item>
+
+
+
+
+
                             <Form.Item
-    label={translate("Company Logo")}
-    name={['companyLogo']}
-    rules={[
-        {
-            required: true,
-        },
-    ]}
->
-    <Upload.Dragger
-        listType="picture"
-        multiple={false}
-        beforeUpload={async (file) => {
-            const filePath = await handleFileUpload(file);
-            setFilePath(filePath);
-            // Set form field value
-            form.setFieldsValue({ companyLogo: filePath });
-            return false;
-        }}
-        accept=".png,.jpg,.jpeg"
-    >
-        <p className="ant-upload-text">
-            Drag & drop a file in this area
-        </p>
-    </Upload.Dragger>
-</Form.Item>
-<Form.Item
-    name={['companyLogoPath']}
-    style={{ display: 'none' }} // Hide this field
->
-    <Input value={filePath} readOnly />
-</Form.Item>
+                                label={translate("Logo")}
+
+                                name={['logoImage']}
+                                rules={[
+                                    {
+                                        required: true,
+                                    },
+                                ]}
+                            >
+                                <Upload
+                                    listType="picture"
+                                    beforeUpload={handleFileUpload}
+                                    accept=".png,.jpg,.jpeg"
+                                >
+                                    <Button icon={<UploadOutlined />}>Click to Upload</Button>
+                                </Upload>
+                                <Input value={filePath} />
+                            </Form.Item>
                         </Col>
                     </Row>
                 </Form>

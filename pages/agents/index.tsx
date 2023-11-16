@@ -243,10 +243,13 @@ export default function AgentList() {
             dataIndex="subdomain"
             title={translate("Subdomain")}
           />
-          <Table.Column
-            dataIndex="logoImage"
-            title={translate("Logo")}
-          />
+        <Table.Column
+  dataIndex="logoImage"
+  title={translate("Logo")}
+  render={(filePath: string) => (
+    <img src={`https://api.play888king.com/${filePath}`} alt="Logo" style={{ width: '50px', height: '50px' }} />
+  )}
+/>
           <Table.Column
             dataIndex="companyName"
             title={translate("Company Name")}

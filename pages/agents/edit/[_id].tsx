@@ -53,18 +53,7 @@ export const AgentEdit: React.FC<IResourceComponentsProps> = () => {
                 >
                     <Input />
                 </Form.Item>
-                <Form.Item
-                    label={translate("Logo")}
-                    name={["logoImage"]}
-                    rules={[
-                        {
-                            required: false,
-                            message: 'Please upload a logo!',
-                        },
-                    ]}
-                >
-              
-                </Form.Item>
+    
 
                 <Form.Item
                     label={translate("Company Name")}
