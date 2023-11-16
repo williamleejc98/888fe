@@ -2,8 +2,11 @@ import React from 'react';
 import { Upload, Button, Input } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
 import axios from 'axios';
-
-const LogoUpload = ({ value = '', onChange }) => {
+type LogoUploadProps = {
+    value?: string;
+    onChange?: (filePath: string) => void;
+  };
+  const LogoUpload = ({ value = '', onChange }: LogoUploadProps) => {
     const handleFileUpload = async (file: File) => {
         const formData = new FormData();
         formData.append('file', file);

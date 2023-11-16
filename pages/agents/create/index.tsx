@@ -5,7 +5,6 @@ import { authProvider } from "src/authProvider";
 import { useTranslate } from "@refinedev/core";
 import { Create, useForm, getValueFromEvent } from "@refinedev/antd";
 import { Form, Input, Row, Col, Alert, Upload, Button } from "antd";
-import axios from 'axios';
 import LogoUpload from "./logoupload";
 
 export default function AgentCreate() {
@@ -17,20 +16,6 @@ export default function AgentCreate() {
     const [filePath, setFilePath] = useState(''); // Move this line here
 
 
-    const handleFileUpload = async (file: File) => {
-        const formData = new FormData();
-        formData.append('file', file);
-        const response = await axios.post('http://api.play888king.com/upload', formData, {
-            headers: {
-                'Content-Type': 'multipart/form-data',
-            },
-        });
-        const filePath = typeof response.data.filePath === 'string' ? response.data.filePath : '';
-
-        setFilePath(filePath);
-        form.setFieldsValue({ logoImage: filePath });
-        return filePath;
-    };
 
 
     return (
