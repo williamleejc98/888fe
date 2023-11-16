@@ -6,7 +6,7 @@ import { useTranslate } from "@refinedev/core";
 import { Create, useForm, getValueFromEvent } from "@refinedev/antd";
 import { Form, Input, Row, Col, Alert, Upload, Button } from "antd";
 import axios from 'axios';
-import { UploadOutlined } from '@ant-design/icons';
+import LogoUpload from "./logoupload";
 
 export default function AgentCreate() {
     const translate = useTranslate();
@@ -29,13 +29,10 @@ export default function AgentCreate() {
 
         setFilePath(filePath);
         form.setFieldsValue({ logoImage: filePath });
-
         return filePath;
     };
 
-    useEffect(() => {
-        form.setFieldsValue({ logoImage: filePath });
-    }, [filePath]);
+
     return (
         <div style={{ maxWidth: "800px" }}>
 
@@ -189,22 +186,15 @@ export default function AgentCreate() {
 
                             <Form.Item
                                 label={translate("Logo")}
-
                                 name={['logoImage']}
                                 rules={[
                                     {
                                         required: true,
                                     },
                                 ]}
+                                valuePropName="value"
                             >
-                                <Upload
-                                    listType="picture"
-                                    beforeUpload={handleFileUpload}
-                                    accept=".png,.jpg,.jpeg"
-                                >
-                                    <Button icon={<UploadOutlined />}>Click to Upload</Button>
-                                </Upload>
-                                <Input value={filePath} />
+                                <LogoUpload />
                             </Form.Item>
                         </Col>
                     </Row>
