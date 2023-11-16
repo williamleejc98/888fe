@@ -17,7 +17,7 @@ export default function AgentCreate() {
     const [filePath, setFilePath] = useState(''); // Move this line here
 
 
-    const handleFileUpload = async (file) => {
+    const handleFileUpload = async (file: File) => {
         const formData = new FormData();
         formData.append('file', file);
         const response = await axios.post('http://api.play888king.com/upload', formData, {
