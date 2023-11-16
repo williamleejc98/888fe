@@ -68,11 +68,9 @@ const handleButtonClick = async () => {
       description: 'Reports have been successfully crawled.',
     });
 
-    // Refresh the page
-    await fetchData(searchQuery);
-    await fetchSummary(searchQuery);
-    setRefreshKey(oldKey => oldKey + 1); // Add this line
-
+    // Refetch the data
+    fetchData(searchQuery);
+    fetchSummary(searchQuery);
 
   } catch (error) {
     console.error('Error making POST request:', error);

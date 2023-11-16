@@ -7,7 +7,7 @@ import { DataProvider } from "@refinedev/core";
 import { IResourceComponentsProps, BaseRecord, useTranslate, useMany } from "@refinedev/core";
 import { useTable, List, EditButton, ShowButton, DeleteButton, MarkdownField, DateField } from "@refinedev/antd";
 import { useState, useEffect } from "react";
-import { Table, Space, Modal, Form, Input, Button, Card, DatePicker, Row, Col , notification} from "antd";
+import { Table, Space, Modal, Form, Input, Button, Card, DatePicker, Row, Col, notification } from "antd";
 import axios from "axios"; // Import axios
 import nookies from 'nookies'; // Assuming you have nookies installed
 import moment from 'moment';
@@ -42,13 +42,13 @@ export default function ReportTable() {
   const [lastFetched, setLastFetched] = useState<Date | null>(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
 
- 
-const [iframeUrl, setIframeUrl] = useState("");
 
-const handleViewDetail = (url: string) => {
-  setIframeUrl(url);
-  setIsModalVisible(true);
-};
+  const [iframeUrl, setIframeUrl] = useState("");
+
+  const handleViewDetail = (url: string) => {
+    setIframeUrl(url);
+    setIsModalVisible(true);
+  };
   const handleButtonClick = async () => {
     try {
       const response = await axios.post('https://api.play888king.com/promoreports/crawl', {
@@ -58,14 +58,18 @@ const handleViewDetail = (url: string) => {
       });
 
       console.log(response.data);
-          // Update last fetched time
-          setLastFetched(new Date());
+      // Update last fetched time
+      setLastFetched(new Date());
 
-          // Show notification
-          notification.success({
-            message: 'Crawl Reports',
-            description: 'Reports have been successfully crawled.',
-          });
+      // Show notification
+      notification.success({
+        message: 'Crawl Reports',
+        description: 'Reports have been successfully crawled.',
+      });
+
+      // Refetch the data
+      fetchData(searchQuery);
+      fetchSummary(searchQuery);
 
     } catch (error) {
       console.error('Error making POST request:', error);
@@ -84,7 +88,7 @@ const handleViewDetail = (url: string) => {
       params.append('endDate', endDate);
     }
     API_URL += `?${params.toString()}`;
-  
+
     const jwtTokenObject = nookies.get(null, 'jwt');
     console.log(`JWT Object: ${jwtTokenObject}`); // Log the JWT token
 
@@ -104,7 +108,7 @@ const handleViewDetail = (url: string) => {
     }, (error) => {
       return Promise.reject(error);
     });
-    
+
     axiosInstance.get(API_URL)
       .then(response => {
         const data = response.data;
@@ -188,79 +192,79 @@ const handleViewDetail = (url: string) => {
 
   return (
     <>
-    <Modal
-  title="Detail View"
-  visible={isModalVisible}
-  onCancel={() => setIsModalVisible(false)}
-  footer={null}
-  width="80%"
->
-  <iframe 
-    src={iframeUrl} 
-    style={{ width: '100%', height: '80vh' }} 
-    frameBorder="0"
-  />
-</Modal>
+      <Modal
+        title="Detail View"
+        visible={isModalVisible}
+        onCancel={() => setIsModalVisible(false)}
+        footer={null}
+        width="80%"
+      >
+        <iframe
+          src={iframeUrl}
+          style={{ width: '100%', height: '80vh' }}
+          frameBorder="0"
+        />
+      </Modal>
 
-            <Button onClick={handleButtonClick} style={{ width: '100%', marginBottom: 16 }}>Crawl Promotion Reports</Button>
+      <Button onClick={handleButtonClick} style={{ width: '100%', marginBottom: 16 }}>Crawl Promotion Reports</Button>
       {lastFetched && <p>Last fetched time: {lastFetched.toLocaleString()}</p>}
-     <Row gutter={0} style={{ marginBottom: 16 }}>
-   
-      <Col span={10}>
-        <Input
-          placeholder="Search Specific Player"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-        />
-      </Col>
-      <Col span={14}>
-        <DatePicker
-          showTime
-          onChange={(date) => setStartDate(date ? date.toISOString() : null)}
-          placeholder="Start Date"
-        />
-        <DatePicker
-          showTime
-          onChange={(date) => setEndDate(date ? date.toISOString() : null)}
-          placeholder="End Date"
-        />
-         <Button onClick={() => { setStartDate(moment().toISOString()); setEndDate(moment().toISOString()); }}>TODAY</Button>
-        <Button onClick={() => { setStartDate(moment().subtract(1, 'weeks').startOf('week').toISOString()); setEndDate(moment().toISOString()); }}>LAST WEEK</Button>
-        <Button onClick={() => { setStartDate(moment().subtract(1, 'months').startOf('month').toISOString()); setEndDate(moment().toISOString()); }}>LAST MONTH</Button>
-        <Button onClick={() => { setStartDate(null); setEndDate(null); }}>ALL TIME</Button>
-      </Col>
-    
-    
-    </Row>
+      <Row gutter={0} style={{ marginBottom: 16 }}>
+
+        <Col span={10}>
+          <Input
+            placeholder="Search Specific Player"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+        </Col>
+        <Col span={14}>
+          <DatePicker
+            showTime
+            onChange={(date) => setStartDate(date ? date.toISOString() : null)}
+            placeholder="Start Date"
+          />
+          <DatePicker
+            showTime
+            onChange={(date) => setEndDate(date ? date.toISOString() : null)}
+            placeholder="End Date"
+          />
+          <Button onClick={() => { setStartDate(moment().toISOString()); setEndDate(moment().toISOString()); }}>TODAY</Button>
+          <Button onClick={() => { setStartDate(moment().subtract(1, 'weeks').startOf('week').toISOString()); setEndDate(moment().toISOString()); }}>LAST WEEK</Button>
+          <Button onClick={() => { setStartDate(moment().subtract(1, 'months').startOf('month').toISOString()); setEndDate(moment().toISOString()); }}>LAST MONTH</Button>
+          <Button onClick={() => { setStartDate(null); setEndDate(null); }}>ALL TIME</Button>
+        </Col>
 
 
-    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
-    <Col span={6}>
-  <Card className={styles.card1}>
-    <h2 className={styles['card-title']}>Total Promo Games Played</h2>
-    <p className={styles['card-content']}>{totalGames} Rounds</p>
-  </Card>
-</Col>
-<Col span={6}>
-  <Card className={styles.card2}>
-    <h2 className={styles['card-title']}>Total Promo Turnover</h2>
-    <p className={styles['card-content']}>RM {totalTurnover}</p>
-  </Card>
-</Col>
-<Col span={6}>
-  <Card className={styles.card3}>
-    <h2 className={styles['card-title']}>Total Promo Payout</h2>
-    <p className={styles['card-content']}>RM {totalPayout}</p>
-  </Card>
-</Col>
-<Col span={6}>
-  <Card className={styles.card4}>
-    <h2 className={styles['card-title']}>Total Win/Loss</h2>
-    <p className={styles['card-content']}>{totalWinLoss}</p>
-  </Card>
-</Col>
-</div>
-<Table
+      </Row>
+
+
+      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
+        <Col span={6}>
+          <Card className={styles.card1}>
+            <h2 className={styles['card-title']}>Total Promo Games Played</h2>
+            <p className={styles['card-content']}>{totalGames} Rounds</p>
+          </Card>
+        </Col>
+        <Col span={6}>
+          <Card className={styles.card2}>
+            <h2 className={styles['card-title']}>Total Promo Turnover</h2>
+            <p className={styles['card-content']}>RM {totalTurnover}</p>
+          </Card>
+        </Col>
+        <Col span={6}>
+          <Card className={styles.card3}>
+            <h2 className={styles['card-title']}>Total Promo Payout</h2>
+            <p className={styles['card-content']}>RM {totalPayout}</p>
+          </Card>
+        </Col>
+        <Col span={6}>
+          <Card className={styles.card4}>
+            <h2 className={styles['card-title']}>Total Win/Loss</h2>
+            <p className={styles['card-content']}>{totalWinLoss}</p>
+          </Card>
+        </Col>
+      </div>
+      <Table
         dataSource={reportData}
         rowKey="_id"
         pagination={pagination}
@@ -272,33 +276,33 @@ const handleViewDetail = (url: string) => {
         <Table.Column title="Username" dataIndex="username" />
         <Table.Column title="Bet Stake" dataIndex="bet_stake" />
         <Table.Column title="Payout Amount" dataIndex="payout_amount" />
-        <Table.Column 
-    title="Result" 
-    render={(text, record: RecordType) => (
-      <span style={{ color: record.payout_amount > 0 ? 'green' : 'red' }}>
-        {record.payout_amount > 0 ? 'Win' : 'Lose'}
-      </span>
-    )}
-  />
+        <Table.Column
+          title="Result"
+          render={(text, record: RecordType) => (
+            <span style={{ color: record.payout_amount > 0 ? 'green' : 'red' }}>
+              {record.payout_amount > 0 ? 'Win' : 'Lose'}
+            </span>
+          )}
+        />
         <Table.Column title="Before Balance" dataIndex="before_balance" />
         <Table.Column title="After Balance" dataIndex="after_balance" />
         <Table.Column title="Report Date" dataIndex="report_date" />
-        <Table.Column 
-  title="Detail" 
-  render={(text, record: RecordType) => (
-    <a 
-      onClick={(e) => {
-        e.preventDefault();
-        handleViewDetail(record.report_link);
-      }} 
-      href={record.report_link} 
-      target="_blank" 
-      rel="noopener noreferrer"
-    >
-      View Detail
-    </a>
-  )} 
-/>     </Table>
+        <Table.Column
+          title="Detail"
+          render={(text, record: RecordType) => (
+            <a
+              onClick={(e) => {
+                e.preventDefault();
+                handleViewDetail(record.report_link);
+              }}
+              href={record.report_link}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              View Detail
+            </a>
+          )}
+        />     </Table>
 
     </>
   );
