@@ -11,7 +11,7 @@ type LogoUploadProps = {
         const formData = new FormData();
         formData.append('file', file);
     
-        const response = await axios.post('http://api.play888king.com/upload', formData, {
+        const response = await axios.post('https://api.play888king.com/upload', formData, {
             headers: {
                 'Content-Type': 'multipart/form-data',
             },
