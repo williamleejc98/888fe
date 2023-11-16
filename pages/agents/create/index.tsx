@@ -123,7 +123,8 @@ export default function AgentCreate() {
                                     },
                                 ]}
                             >
-                                <Input addonBefore="+6" />                            </Form.Item>
+                                <Input />
+                            </Form.Item>
                         </Col>
                     </Row>
                     <Row gutter={16}>
@@ -170,37 +171,37 @@ export default function AgentCreate() {
                                 <Input />
                             </Form.Item>
                             <Form.Item
-                                label={translate("Company Logo")}
-                                name={['companyLogo']}
-                                rules={[
-                                    {
-                                        required: true,
-                                    },
-                                ]}
-                                valuePropName="fileList"
-                                getValueFromEvent={getValueFromEvent}
-                            >
-                                <Upload.Dragger
-                                    listType="picture"
-                                    multiple={false}
-                                    beforeUpload={async (file) => {
-                                        const filePath = await handleFileUpload(file);
-                                        setFilePath(filePath);
-                                        // Set form field value
-                                        form.setFieldsValue({ companyLogo: filePath });
-                                        return false;
-                                    }}
-                                    accept=".png,.jpg,.jpeg"
-                                >
-                                    <p className="ant-upload-text">
-                                        Drag & drop a file in this area
-                                    </p>
-                                    
-                                </Upload.Dragger>
-                                <div>
-    {filePath && <p>Uploaded file path: {filePath}</p>}
-</div>
-                            </Form.Item>
+    label={translate("Company Logo")}
+    name={['companyLogo']}
+    rules={[
+        {
+            required: true,
+        },
+    ]}
+>
+    <Upload.Dragger
+        listType="picture"
+        multiple={false}
+        beforeUpload={async (file) => {
+            const filePath = await handleFileUpload(file);
+            setFilePath(filePath);
+            // Set form field value
+            form.setFieldsValue({ companyLogo: filePath });
+            return false;
+        }}
+        accept=".png,.jpg,.jpeg"
+    >
+        <p className="ant-upload-text">
+            Drag & drop a file in this area
+        </p>
+    </Upload.Dragger>
+</Form.Item>
+<Form.Item
+    name={['companyLogoPath']}
+    style={{ display: 'none' }} // Hide this field
+>
+    <Input value={filePath} readOnly />
+</Form.Item>
                         </Col>
                     </Row>
                 </Form>
