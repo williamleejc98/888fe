@@ -5,7 +5,7 @@ import { IResourceComponentsProps, useTranslate } from "@refinedev/core";
 import { Edit, useForm } from "@refinedev/antd";
 import { Form, Input, message } from "antd";
 import React, { useState } from 'react';
-
+import axios from 'axios';
 
 export const AgentEdit: React.FC<IResourceComponentsProps> = () => {
 
@@ -14,11 +14,19 @@ export const AgentEdit: React.FC<IResourceComponentsProps> = () => {
     const { formProps, saveButtonProps, queryResult } = useForm();
     const agentsData = queryResult?.data?.data;
     const username = agentsData?.username;
-
+    const handleSubmit = async (values) => {
+        try {
+            const response = await axios.patch(`/agent/${username}`, values);
+            // handle your response
+            message.success(translate("Successfully updated!"));
+        } catch (error) {
+            // handle your error
+            message.error(translate("Update failed!"));
+        }
+    };
     
     return (
-        <Edit saveButtonProps={saveButtonProps}>
-            <Form {...formProps} layout="vertical">
+    <Form {...formProps} layout="vertical" onFinish={handleSubmit}>
                 <Form.Item
                     label={translate("Contact Person")}
                     name={["contactPerson"]}
@@ -100,7 +108,6 @@ export const AgentEdit: React.FC<IResourceComponentsProps> = () => {
                     <Input />
                 </Form.Item>
             </Form>
-        </Edit>
     );
 }
 
