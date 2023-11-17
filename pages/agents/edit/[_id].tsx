@@ -16,7 +16,7 @@ export const AgentEdit: React.FC<IResourceComponentsProps> = () => {
     const username = agentsData?.username;
     const handleSubmit = async (values) => {
         try {
-            const response = await axios.patch(`/agent/${username}`, values);
+            const response = await axios.patch(`/agents/${username}`, values);
             // handle your response
             message.success(translate("Successfully updated!"));
         } catch (error) {
