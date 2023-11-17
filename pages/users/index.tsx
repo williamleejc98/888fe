@@ -147,8 +147,8 @@ export default function UserList() {
 
  
   const form = Form.useForm()[0];
-  const showModal = (type: ModalType, memberId: string) => {
-    setModalInfo({ type, visible: true, memberId });
+  const showModal = (type: ModalType, memberId: string, balance: number | null = null) => {
+    setModalInfo({ type, visible: true, memberId, balance });
   };
   const hideModal = () => {
     setModalInfo(prev => ({ ...prev, visible: false }));
