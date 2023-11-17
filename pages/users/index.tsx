@@ -4,12 +4,9 @@ import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import { authProvider } from "src/authProvider";
 import { BaseRecord, useTranslate } from "@refinedev/core";
 import { useTable, List, EditButton, ShowButton, DeleteButton, MarkdownField, DateField } from "@refinedev/antd";
-import { Table, Space, Button, Modal, Form, Input, InputNumber, Alert, Row, Col, Card,} from "antd";
+import { Table, Space, Button, Modal, Form, Input, InputNumber, Alert } from "antd";
 import nookies from 'nookies'; // Make sure you've imported nookies
 import axios from 'axios';
-
-
-
 
 import { WhatsAppOutlined } from '@ant-design/icons';
 type CountdownProps = {
@@ -102,12 +99,9 @@ async function sendApiRequest(memberId: string | number, actionType: "deposit" |
 }
 export default function UserList() {
   const translate = useTranslate();
-  const [searchTerm, setSearchTerm] = useState("");
   const { tableProps } = useTable({ syncWithLocation: true });
   const [now, setNow] = useState(new Date());
   const [lastFetched, setLastFetched] = useState<Date | null>(null);
-  const [data, setData] = useState([]);
-
   const handleUpdateBalances = async () => {
     const host_id = 'd2b154ee85f316a9ba2b9273eb2e3470'; // Replace with your actual host_id
     const url = `https://api.play888king.com/update-all-balances/${host_id}`; // Update with your actual API endpoint
@@ -130,25 +124,12 @@ export default function UserList() {
       console.log(response.data);
       // Update last fetched time
       setLastFetched(new Date());
+      window.location.reload();
+
     } catch (error) {
       console.error('Error fetching data:', error);
     }
-    fetchData();
   };
-
-  const filteredData = data.filter((item) =>
-  item.memberId.includes(searchTerm) || 
-  item.agent.includes(searchTerm)
-  // Add more conditions based on which fields you want to search in
-);
-const fetchData = async () => {
-  const response = await axios.get('https://api.play888king.com/users');
-  setData(response.data);
-};
-
-useEffect(() => {
-  fetchData();
-}, []);
   useEffect(() => {
     const timer = setInterval(() => {
       setNow(new Date());
@@ -248,32 +229,15 @@ if (modalType === "withdraw") {
   <p>Current Balance: RM {modalInfo.balance?.toFixed(2) || '0.00'}</p>
   {renderModalContent()}
 </Modal>
-<Row gutter={16}>
-      <Col span={24}>
-        <Card>
-          <Alert
-            message="Before you make any deposits/withdraws, please fetch balances first here"
-            type="info"
-            showIcon
-          />
-        </Card>
-      </Col>
-    </Row>
-    <Row gutter={16}>
-      <Col span={12}>
-        <Card>
-          <Button type="primary" onClick={handleUpdateBalances}>Update Balances</Button>
-        </Card>
-      </Col>
-      <Col span={12}>
-        <Card>
-          {lastFetched && <p>Last fetched time: {lastFetched.toLocaleString()}</p>}
-        </Card>
-      </Col>
-    </Row>
-            <List>
-            <Input placeholder="Search" onChange={e => setSearchTerm(e.target.value)} />
-            <Table dataSource={filteredData} {...tableProps} rowKey="id">
+      <Alert
+  message="Before you make any deposits/withdraws, please fetch balances first here"
+  type="info"
+  showIcon
+/>
+      <Button type="primary" onClick={handleUpdateBalances}>Update Balances</Button>
+      {lastFetched && <p>Last fetched time: {lastFetched.toLocaleString()}</p>}
+      <List>
+        <Table {...tableProps} rowKey="id">
 
           <Table.Column
             dataIndex="memberId"
