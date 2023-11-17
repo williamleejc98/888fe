@@ -4,7 +4,7 @@ import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import { authProvider } from "src/authProvider";
 import { BaseRecord, useTranslate } from "@refinedev/core";
 import { useTable, List, EditButton, ShowButton, DeleteButton, MarkdownField, DateField } from "@refinedev/antd";
-import { Table, Space, Button, Modal, Form, Input, InputNumber } from "antd";
+import { Table, Space, Button, Modal, Form, Input, InputNumber, Alert } from "antd";
 import nookies from 'nookies'; // Make sure you've imported nookies
 import axios from 'axios';
 
@@ -101,7 +101,33 @@ export default function UserList() {
   const translate = useTranslate();
   const { tableProps } = useTable({ syncWithLocation: true });
   const [now, setNow] = useState(new Date());
-
+  const [lastFetched, setLastFetched] = useState<Date | null>(null);
+  const handleUpdateBalances = async () => {
+    const host_id = 'd2b154ee85f316a9ba2b9273eb2e3470'; // Replace with your actual host_id
+    const url = `https://api.play888king.com/update-all-balances/${host_id}`; // Update with your actual API endpoint
+  
+    const jwtTokenObject = nookies.get(null, 'jwt');
+    const jwtToken = jwtTokenObject ? jwtTokenObject.jwt : '';
+  
+    if (!jwtToken) {
+      console.error('JWT token is missing');
+      return;
+    }
+  
+    try {
+      const response = await axios.put(url, {}, {
+        headers: {
+          "Authorization": `Bearer ${jwtToken}`
+        }
+      });
+    
+      console.log(response.data);
+      // Update last fetched time
+      setLastFetched(new Date());
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
   useEffect(() => {
     const timer = setInterval(() => {
       setNow(new Date());
@@ -110,10 +136,11 @@ export default function UserList() {
     return () => clearInterval(timer);
   }, []);
 
-  const [modalInfo, setModalInfo] = useState<{ type: ModalType | null, visible: boolean, memberId: string | null }>({
+  const [modalInfo, setModalInfo] = useState<{ type: ModalType | null, visible: boolean, memberId: string | null, balance: number | null }>({
     type: null,
     visible: false,
-    memberId: null
+    memberId: null,
+    balance: null
   });
 
 
@@ -136,6 +163,7 @@ export default function UserList() {
     } else if (modalInfo.type === "withdraw" && 'withdrawAmount' in values) {
       sendApiRequest(modalInfo.memberId!, modalInfo.type, values.withdrawAmount);
     }
+
 
     hideModal();
     window.location.reload();
@@ -195,10 +223,17 @@ if (modalType === "withdraw") {
   
   return (
     <div>
-      <Modal title={modalInfo.type} visible={modalInfo.visible} onCancel={hideModal} onOk={() => form.submit()}>
-        {renderModalContent()}
-      </Modal>
-
+    <Modal title={modalInfo.type} visible={modalInfo.visible} onCancel={hideModal} onOk={() => form.submit()}>
+  <p>Current Balance: RM {modalInfo.balance?.toFixed(2) || '0.00'}</p>
+  {renderModalContent()}
+</Modal>
+      <Alert
+  message="Before you make any deposits/withdraws, please fetch balances first here"
+  type="info"
+  showIcon
+/>
+      <Button type="primary" onClick={handleUpdateBalances}>Update Balances</Button>
+      {lastFetched && <p>Last fetched time: {lastFetched.toLocaleString()}</p>}
       <List>
         <Table {...tableProps} rowKey="id">
 
@@ -223,16 +258,36 @@ if (modalType === "withdraw") {
             render={(value: number) => value ? `RM ${value.toFixed(2)}` : 'MYR 0.00'}
 
           />
-          <Table.Column
-            title={translate("Set Credit")}
-            dataIndex="actions"
-            render={(_, record: BaseRecord) => (
-              <Space>
-      <Button type="primary" size="small" onClick={() => showModal("deposit", record.memberId)} style={{ backgroundColor: 'green', borderColor: 'green' }}>Deposit</Button>
-      <Button type="primary" size="small" onClick={() => showModal("withdraw", record.memberId)} style={{ backgroundColor: 'red', borderColor: 'red' }}>Withdraw</Button>
-    </Space>
-            )}
-          />
+         <Table.Column
+  title={translate("Set Credit")}
+  dataIndex="actions"
+  render={(_, record: BaseRecord) => (
+<Space>
+  <Button 
+    type="primary" 
+    size="small" 
+    onClick={() => {
+      showModal("deposit", record.memberId, record.balance);
+      handleUpdateBalances();
+    }} 
+    style={{ backgroundColor: 'green', borderColor: 'green' }}
+  >
+    Deposit
+  </Button>
+  <Button 
+    type="primary" 
+    size="small" 
+    onClick={() => {
+      showModal("withdraw", record.memberId, record.balance);
+      handleUpdateBalances();
+    }} 
+    style={{ backgroundColor: 'red', borderColor: 'red' }}
+  >
+    Withdraw
+  </Button>
+</Space>
+  )}
+/>
 
 <Table.Column
   title={translate("Promotion Duration (Timer)")}
