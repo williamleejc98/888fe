@@ -3,10 +3,11 @@ import { GetServerSideProps } from "next";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import { authProvider } from "src/authProvider";
 import { BaseRecord, useTranslate } from "@refinedev/core";
-import { useTable, List, EditButton, ShowButton, DeleteButton, MarkdownField, DateField } from "@refinedev/antd";
+import { useTable, List, EditButton, ShowButton, DeleteButton, MarkdownField, DateField, Search } from "@refinedev/antd";
 import { Table, Space, Button, Modal, Form, Input, InputNumber, Alert, Row, Col, Card } from "antd";
 import nookies from 'nookies'; // Make sure you've imported nookies
 import axios from 'axios';
+import { useTable } from "@refinedev/core";
 
 import { WhatsAppOutlined } from '@ant-design/icons';
 type CountdownProps = {
@@ -99,9 +100,12 @@ async function sendApiRequest(memberId: string | number, actionType: "deposit" |
 }
 export default function UserList() {
   const translate = useTranslate();
-  const { tableProps } = useTable({ syncWithLocation: true });
+  
+  const { tableProps, searchProps } = useTable({ syncWithLocation: true });
   const [now, setNow] = useState(new Date());
   const [lastFetched, setLastFetched] = useState<Date | null>(null);
+  const [data, setData] = useState([]);
+
   const handleUpdateBalances = async () => {
     const host_id = 'd2b154ee85f316a9ba2b9273eb2e3470'; // Replace with your actual host_id
     const url = `https://api.play888king.com/update-all-balances/${host_id}`; // Update with your actual API endpoint
@@ -130,20 +134,20 @@ export default function UserList() {
     fetchData();
   };
 
+  const filteredData = data.filter((item) => 
+    item.memberId.includes(searchProps.search) || 
+    item.agent.includes(searchProps.search)
+    // Add more conditions based on which fields you want to search in
+  );
 
 const fetchData = async () => {
-  // Fetch the data from the server
   const response = await axios.get('https://api.play888king.com/users');
-
-  // Update the state with the new data
-  setTableProps(response.data);
+  setData(response.data);
 };
 
-// Call fetchData in a useEffect hook to fetch the data when the component mounts
 useEffect(() => {
   fetchData();
 }, []);
-
   useEffect(() => {
     const timer = setInterval(() => {
       setNow(new Date());
@@ -267,7 +271,9 @@ if (modalType === "withdraw") {
       </Col>
     </Row>
             <List>
-        <Table {...tableProps} rowKey="id">
+            <Search {...searchProps} />
+
+            <Table dataSource={filteredData} {...tableProps} rowKey="id">
 
           <Table.Column
             dataIndex="memberId"
