@@ -78,6 +78,17 @@ export const AgentEdit: React.FC<IResourceComponentsProps> = () => {
                     <Input />
                 </Form.Item>
                 <Form.Item
+                    label={translate("Contact Number")}
+                    name={["contactNumber"]}
+                    rules={[
+                        {
+                            required: true,
+                        },
+                    ]}
+                >
+                    <Input />
+                </Form.Item>
+                <Form.Item
                     label={translate("@Telegram")}
                     name={["contactTelegram"]}
                     rules={[
