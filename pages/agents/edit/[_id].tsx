@@ -3,7 +3,7 @@ import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import { authProvider } from "src/authProvider";
 import { IResourceComponentsProps, useTranslate } from "@refinedev/core";
 import { Edit, useForm } from "@refinedev/antd";
-import { Form, Input, message } from "antd";
+import { Form, Input, message, Button } from "antd";
 import React, { useState } from 'react';
 import axios from 'axios';
 
@@ -107,6 +107,12 @@ export const AgentEdit: React.FC<IResourceComponentsProps> = () => {
                 >
                     <Input />
                 </Form.Item>
+
+        <Form.Item>
+            <Button type="primary" htmlType="submit">
+                {translate("Submit")}
+            </Button>
+        </Form.Item>
             </Form>
     );
 }
