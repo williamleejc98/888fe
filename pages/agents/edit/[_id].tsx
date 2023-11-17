@@ -6,28 +6,33 @@ import { Edit, useForm } from "@refinedev/antd";
 import { Form, Input, message, Button } from "antd";
 import React, { useState } from 'react';
 import axios from 'axios';
+import { useRouter } from 'next/router';
 
 export const AgentEdit: React.FC<IResourceComponentsProps> = () => {
-
-
     const translate = useTranslate();
     const { formProps, queryResult } = useForm();
+    console.log('formProps:', formProps); // Log formProps
+    console.log('queryResult:', queryResult); // Log queryResult
+
     const agentsData = queryResult?.data?.data;
+    console.log('agentsData:', agentsData); // Log agentsData
+
     const username = agentsData?.username;
+    console.log('username:', username); // Log username
+    const router = useRouter();
     const handleSubmit = async (values: { [key: string]: any }) => {
         console.log('handleSubmit called with values:', values);
         console.log('username:', username);
         try {
-            await axios.patch(`/agents/${username}`, values);
-            // handle your response
+            const response = await axios.patch(`https://api.play888king.com/agents/${username}`, values);
+            console.log('response:', response); // Log response
             message.success(translate("Successfully updated!"));
+            router.push('/agents'); // Redirect to /agents
         } catch (error) {
-            // handle your error
             console.log('axios request failed with error:', error);
             message.error(translate("Update failed!"));
         }
     };
-    
     return (
     <Form {...formProps} layout="vertical" onFinish={handleSubmit}>
                 <Form.Item
