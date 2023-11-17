@@ -15,12 +15,15 @@ export const AgentEdit: React.FC<IResourceComponentsProps> = () => {
     const agentsData = queryResult?.data?.data;
     const username = agentsData?.username;
     const handleSubmit = async (values: { [key: string]: any }) => {
+        console.log('handleSubmit called with values:', values);
+        console.log('username:', username);
         try {
             await axios.patch(`/agents/${username}`, values);
             // handle your response
             message.success(translate("Successfully updated!"));
         } catch (error) {
             // handle your error
+            console.log('axios request failed with error:', error);
             message.error(translate("Update failed!"));
         }
     };
