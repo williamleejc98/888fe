@@ -8,6 +8,7 @@ import { useState, useEffect } from "react";
 import { Table, Space, Modal, Form, Input, Button, InputNumber } from "antd";
 import nookies from 'nookies';
 import axios from 'axios';
+import { WhatsAppOutlined } from '@ant-design/icons';
 
 const API_BASE_URL = "https://api.play888king.com/agents";  // Update the endpoint as needed
 
@@ -254,10 +255,21 @@ export default function AgentList() {
             dataIndex="companyName"
             title={translate("Company Name")}
           />
-          <Table.Column
-            dataIndex="contactEmail"
-            title={translate("Email")}
-          />
+         <Table.Column
+  dataIndex="contactNumber"
+  title={translate("Phone")}
+  render={(phoneNumber: string) => {
+    const whatsappUrl = `https://wa.me/+60${phoneNumber}`;
+    return (
+      <a href={whatsappUrl} target="_blank" rel="noopener noreferrer">
+        <Button type="primary" icon={<WhatsAppOutlined />} style={{ backgroundColor: 'limegreen', borderColor: 'limegreen' }}>
+          +60{phoneNumber}
+        </Button>
+      </a>
+    );
+  }}
+/>
+
           <Table.Column
             dataIndex="contactTelegram"
             title={translate("Telegram")}
