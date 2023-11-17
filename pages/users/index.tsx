@@ -102,9 +102,8 @@ async function sendApiRequest(memberId: string | number, actionType: "deposit" |
 }
 export default function UserList() {
   const translate = useTranslate();
-  const Search = Input.Search;
-
-  const { tableProps, searchProps } = useTable({ syncWithLocation: true });
+  const [searchTerm, setSearchTerm] = useState("");
+  const { tableProps } = useTable({ syncWithLocation: true });
   const [now, setNow] = useState(new Date());
   const [lastFetched, setLastFetched] = useState<Date | null>(null);
   const [data, setData] = useState([]);
@@ -137,12 +136,11 @@ export default function UserList() {
     fetchData();
   };
 
-  const filteredData = data.filter((item) => 
-    item.memberId.includes(searchProps.search) || 
-    item.agent.includes(searchProps.search)
-    // Add more conditions based on which fields you want to search in
-  );
-
+  const filteredData = data.filter((item) =>
+  item.memberId.includes(searchTerm) || 
+  item.agent.includes(searchTerm)
+  // Add more conditions based on which fields you want to search in
+);
 const fetchData = async () => {
   const response = await axios.get('https://api.play888king.com/users');
   setData(response.data);
@@ -274,8 +272,7 @@ if (modalType === "withdraw") {
       </Col>
     </Row>
             <List>
-            <Search {...searchProps} />
-
+            <Input placeholder="Search" onChange={e => setSearchTerm(e.target.value)} />
             <Table dataSource={filteredData} {...tableProps} rowKey="id">
 
           <Table.Column
