@@ -11,12 +11,12 @@ export const AgentEdit: React.FC<IResourceComponentsProps> = () => {
 
 
     const translate = useTranslate();
-    const { formProps, saveButtonProps, queryResult } = useForm();
+    const { formProps, queryResult } = useForm();
     const agentsData = queryResult?.data?.data;
     const username = agentsData?.username;
-    const handleSubmit = async (values) => {
+    const handleSubmit = async (values: { [key: string]: any }) => {
         try {
-            const response = await axios.patch(`/agents/${username}`, values);
+            await axios.patch(`/agents/${username}`, values);
             // handle your response
             message.success(translate("Successfully updated!"));
         } catch (error) {
