@@ -3,10 +3,13 @@ import { GetServerSideProps } from "next";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import { authProvider } from "src/authProvider";
 import { BaseRecord, useTranslate } from "@refinedev/core";
-import { useTable, List, EditButton, ShowButton, DeleteButton, MarkdownField, DateField, Search } from "@refinedev/antd";
-import { Table, Space, Button, Modal, Form, Input, InputNumber, Alert, Row, Col, Card } from "antd";
+import { useTable, List, EditButton, ShowButton, DeleteButton, MarkdownField, DateField } from "@refinedev/antd";
+import { Table, Space, Button, Modal, Form, Input, InputNumber, Alert, Row, Col, Card,} from "antd";
 import nookies from 'nookies'; // Make sure you've imported nookies
 import axios from 'axios';
+
+
+
 
 import { WhatsAppOutlined } from '@ant-design/icons';
 type CountdownProps = {
@@ -99,7 +102,8 @@ async function sendApiRequest(memberId: string | number, actionType: "deposit" |
 }
 export default function UserList() {
   const translate = useTranslate();
-  
+  const Search = Input.Search;
+
   const { tableProps, searchProps } = useTable({ syncWithLocation: true });
   const [now, setNow] = useState(new Date());
   const [lastFetched, setLastFetched] = useState<Date | null>(null);
