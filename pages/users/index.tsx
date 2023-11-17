@@ -7,7 +7,6 @@ import { useTable, List, EditButton, ShowButton, DeleteButton, MarkdownField, Da
 import { Table, Space, Button, Modal, Form, Input, InputNumber, Alert, Row, Col, Card } from "antd";
 import nookies from 'nookies'; // Make sure you've imported nookies
 import axios from 'axios';
-import { useTable } from "@refinedev/core";
 
 import { WhatsAppOutlined } from '@ant-design/icons';
 type CountdownProps = {
