@@ -4,7 +4,7 @@ import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import { authProvider } from "src/authProvider";
 import { BaseRecord, useTranslate } from "@refinedev/core";
 import { useTable, List, EditButton, ShowButton, DeleteButton, MarkdownField, DateField } from "@refinedev/antd";
-import { Table, Space, Button, Modal, Form, Input, InputNumber, Alert } from "antd";
+import { Table, Space, Button, Modal, Form, Input, InputNumber, Alert, Row, Col, Card } from "antd";
 import nookies from 'nookies'; // Make sure you've imported nookies
 import axios from 'axios';
 
@@ -127,7 +127,23 @@ export default function UserList() {
     } catch (error) {
       console.error('Error fetching data:', error);
     }
+    fetchData();
   };
+
+
+const fetchData = async () => {
+  // Fetch the data from the server
+  const response = await axios.get('https://api.play888king.com/users');
+
+  // Update the state with the new data
+  setTableProps(response.data);
+};
+
+// Call fetchData in a useEffect hook to fetch the data when the component mounts
+useEffect(() => {
+  fetchData();
+}, []);
+
   useEffect(() => {
     const timer = setInterval(() => {
       setNow(new Date());
@@ -227,14 +243,30 @@ if (modalType === "withdraw") {
   <p>Current Balance: RM {modalInfo.balance?.toFixed(2) || '0.00'}</p>
   {renderModalContent()}
 </Modal>
-      <Alert
-  message="Before you make any deposits/withdraws, please fetch balances first here"
-  type="info"
-  showIcon
-/>
-      <Button type="primary" onClick={handleUpdateBalances}>Update Balances</Button>
-      {lastFetched && <p>Last fetched time: {lastFetched.toLocaleString()}</p>}
-      <List>
+<Row gutter={16}>
+      <Col span={24}>
+        <Card>
+          <Alert
+            message="Before you make any deposits/withdraws, please fetch balances first here"
+            type="info"
+            showIcon
+          />
+        </Card>
+      </Col>
+    </Row>
+    <Row gutter={16}>
+      <Col span={12}>
+        <Card>
+          <Button type="primary" onClick={handleUpdateBalances}>Update Balances</Button>
+        </Card>
+      </Col>
+      <Col span={12}>
+        <Card>
+          {lastFetched && <p>Last fetched time: {lastFetched.toLocaleString()}</p>}
+        </Card>
+      </Col>
+    </Row>
+            <List>
         <Table {...tableProps} rowKey="id">
 
           <Table.Column
