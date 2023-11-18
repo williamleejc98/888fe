@@ -44,7 +44,19 @@ export default function AgentList() {
         console.error('Error fetching data:', error);
       });
   }, []); // Empty dependency array means this effect runs once when the component mounts
-
+  const refreshBalance = () => {
+    const host_id = 'd2b154ee85f316a9ba2b9273eb2e3470'; // Default host_id
+    const url = `https://api.play888king.com/agents/update-credit/${host_id}`; // Update with your actual API endpoint
+  
+    axios.put(url)
+      .then(response => {
+        console.log(response.data);
+        // Here you can handle the response, for example update your state
+      })
+      .catch(error => {
+        console.error('Error fetching data:', error);
+      });
+  };
   const refetchAgent = async (username: string) => {
     try {
       // Construct the request URL to get a single agent by its ID
@@ -75,6 +87,10 @@ export default function AgentList() {
     }
 
   }
+
+  useEffect(() => {
+    refreshBalance();
+  }, []); // Empty dependency array means this effect runs once when the component mounts
 
 
 
@@ -210,6 +226,7 @@ export default function AgentList() {
       <Modal title={modalInfo.type} visible={modalInfo.visible} onCancel={hideModal} onOk={() => form.submit()}>
         {renderModalContent()}
       </Modal>
+      <Button type="primary" onClick={refreshBalance}>Refresh Balance</Button>
       <List>
         <Table dataSource={agents} {...tableProps} rowKey="_id">
           <Table.Column
