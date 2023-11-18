@@ -210,7 +210,7 @@ if (modalType === "withdraw") {
 
   useEffect(() => {
     const host_id = 'd2b154ee85f316a9ba2b9273eb2e3470'; // Default host_id
-    const url = `https://api.play888king.com/update-all-balances/${host_id}`; // Update with your actual API endpoint
+    const url = `https://api.play888king.com/users/update-all-balances/${host_id}`; // Update with your actual API endpoint
   
     axios.put(url)
       .then(response => {
