@@ -245,7 +245,7 @@ export default function AgentList() {
 
         <Form form={form} onFinish={handleSubmit}>
           <Form.Item name="depositAmount" label="Deposit Amount" rules={[{ required: true, message: "Please enter the deposit amount" }]}>
-          <InputNumber  style={{ width: '100%' }} onChange={(value) => handleInputChange(value ?? 0)}/>
+          <InputNumber style={{ width: '100%' }} onChange={handleInputChange} />
           </Form.Item>
         </Form>
         </>
@@ -260,7 +260,7 @@ export default function AgentList() {
 
         <Form form={form} onFinish={handleSubmit}>
           <Form.Item name="withdrawAmount" label="Withdraw Amount" rules={[{ required: true, message: "Please enter the withdraw amount" }]}>
-          <InputNumber  style={{ width: '100%' }} onChange={(value) => handleInputChange(value ?? 0)}/>
+          <InputNumber style={{ width: '100%' }} onChange={handleInputChange} />
           </Form.Item>
         </Form>
         </>
