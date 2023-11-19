@@ -205,6 +205,7 @@ export default function AgentList() {
 
   };
   const [showAlert, setShowAlert] = useState(false);
+  const [showNegativeAlert, setShowNegativeAlert] = useState(false);
   const handleInputChange = (value: number | null) => {
     if (value !== null) {
       const decimal = value.toString().split('.')[1];
@@ -212,6 +213,11 @@ export default function AgentList() {
         setShowAlert(true);
       } else {
         setShowAlert(false);
+      }
+      if (value < 0) {
+        setShowNegativeAlert(true);
+      } else {
+        setShowNegativeAlert(false);
       }
     }
   };
@@ -224,6 +230,8 @@ export default function AgentList() {
       return (
         <>
         {showAlert && <Alert message="Your input can only be in two decimals" type="error" />}
+        {showNegativeAlert && <Alert message="Your input cannot be negative" type="error" />}
+
         <Form form={form} onFinish={handleSubmit}>
           <Form.Item name="depositAmount" label="Deposit Amount" rules={[{ required: true, message: "Please enter the deposit amount" }]}>
           <InputNumber min={0} style={{ width: '100%' }} onChange={(value) => handleInputChange(value ?? 0)}/>
@@ -237,6 +245,8 @@ export default function AgentList() {
       return (
         <>
         {showAlert && <Alert message="Your input can only be in two decimals" type="error" />}
+        {showNegativeAlert && <Alert message="Your input cannot be negative" type="error" />}
+
         <Form form={form} onFinish={handleSubmit}>
           <Form.Item name="withdrawAmount" label="Withdraw Amount" rules={[{ required: true, message: "Please enter the withdraw amount" }]}>
           <InputNumber min={0} style={{ width: '100%' }} onChange={(value) => handleInputChange(value ?? 0)}/>

@@ -103,7 +103,7 @@ export default function UserList() {
   const [now, setNow] = useState(new Date());
   const [lastFetched, setLastFetched] = useState<Date | null>(null);
   const [showAlert, setShowAlert] = useState(false);
-
+  const [showNegativeAlert, setShowNegativeAlert] = useState(false);
   const handleUpdateBalances = async () => {
     const host_id = 'd2b154ee85f316a9ba2b9273eb2e3470'; // Replace with your actual host_id
     const url = `https://api.play888king.com/update-all-balances/${host_id}`; // Update with your actual API endpoint
@@ -161,7 +161,7 @@ export default function UserList() {
   };
   const handleSubmit = (values: FormValues) => {
     if (showAlert) {
-      console.error("Your input can only be in two decimals");
+      alert("Your input can only be in two decimals");
       return;
     }
   
@@ -180,6 +180,7 @@ export default function UserList() {
   const handleInputChange = (value: number | 0 | null) => {
     if (value === null) {
       setShowAlert(false);
+      setShowNegativeAlert(false);
       return;
     }
     const decimal = value.toString().split('.')[1];
@@ -187,6 +188,11 @@ export default function UserList() {
       setShowAlert(true);
     } else {
       setShowAlert(false);
+    }
+    if (value < 0) {
+      setShowNegativeAlert(true);
+    } else {
+      setShowNegativeAlert(false);
     }
   };
   const renderModalContent = () => {
@@ -196,9 +202,11 @@ export default function UserList() {
       return (
         <>
           {showAlert && <Alert message="Your input can only be in two decimals" type="error" />}
+          {showNegativeAlert && <Alert message="Your input cannot be negative" type="error" />}
+
           <Form form={form} onFinish={handleSubmit}>
             <Form.Item name="depositAmount" label="Deposit Amount" rules={[{ required: true, message: "Please enter the deposit amount" }]}>
-              <InputNumber min={0} style={{ width: '100%' }} onChange={handleInputChange} />
+              <InputNumber  style={{ width: '100%' }} onChange={handleInputChange} />
             </Form.Item>
           </Form>
         </>
@@ -209,9 +217,11 @@ export default function UserList() {
       return (
         <>
           {showAlert && <Alert message="Your input can only be in two decimals" type="error" />}
+          {showNegativeAlert && <Alert message="Your input cannot be negative" type="error" />}
+
           <Form form={form} onFinish={handleSubmit}>
             <Form.Item name="withdrawAmount" label="Withdraw Amount" rules={[{ required: true, message: "Please enter the withdraw amount" }]}>
-              <InputNumber min={0} style={{ width: '100%' }} onChange={handleInputChange} />
+              <InputNumber style={{ width: '100%' }} onChange={handleInputChange} />
             </Form.Item>
           </Form>
         </>
