@@ -205,7 +205,7 @@ export default function AgentList() {
 
   };
 
-  const handleInputChange = (value: number | null) => {
+  const handleInputChange = (value: number | 0 | null) => {
     if (value !== null) {
       const decimal = value.toString().split('.')[1];
       if (decimal && decimal.length > 2) {
