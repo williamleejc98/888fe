@@ -7,7 +7,7 @@ import { Form, Input, message, Button } from "antd";
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/router';
-
+import LogoUpload from "../create/logoupload";
 export const AgentEdit: React.FC<IResourceComponentsProps> = () => {
     const translate = useTranslate();
     const { formProps, queryResult } = useForm();
@@ -33,12 +33,23 @@ export const AgentEdit: React.FC<IResourceComponentsProps> = () => {
             message.error(translate("Update failed!"));
         }
     };
-    return (
+    return (b
     <Form {...formProps} layout="vertical" onFinish={handleSubmit}>
            
             
 
-        
+           <Form.Item
+    label={translate("Logo")}
+    name={['logoImage']}
+    rules={[
+        {
+            required: true,
+        },
+    ]}
+    valuePropName="value"
+>
+    <LogoUpload />
+</Form.Item>
 
                 <Form.Item
                     label={translate("Company Name")}
