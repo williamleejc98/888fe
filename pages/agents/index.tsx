@@ -205,7 +205,7 @@ export default function AgentList() {
 
   };
 
-  const handleInputChange = (value: number) => {
+  const handleInputChange = (value: number | null) => {
     if (value !== null) {
       const decimal = value.toString().split('.')[1];
       if (decimal && decimal.length > 2) {
@@ -215,7 +215,6 @@ export default function AgentList() {
       }
     }
   };
-  
   const renderModalContent = () => {
     const modalType = modalInfo.type;
 
