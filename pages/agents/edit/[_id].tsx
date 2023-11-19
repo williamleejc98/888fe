@@ -33,7 +33,7 @@ export const AgentEdit: React.FC<IResourceComponentsProps> = () => {
             message.error(translate("Update failed!"));
         }
     };
-    return (b
+    return (
     <Form {...formProps} layout="vertical" onFinish={handleSubmit}>
            
             
