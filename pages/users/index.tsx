@@ -177,7 +177,7 @@ export default function UserList() {
     hideModal();
     window.location.reload();
   };
-  const handleInputChange = (value: number | null) => {
+  const handleInputChange = (value: number | 0 | null) => {
     if (value === null) {
       setShowAlert(false);
       return;
