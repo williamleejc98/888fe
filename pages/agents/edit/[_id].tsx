@@ -35,41 +35,10 @@ export const AgentEdit: React.FC<IResourceComponentsProps> = () => {
     };
     return (
     <Form {...formProps} layout="vertical" onFinish={handleSubmit}>
-                <Form.Item
-                    label={translate("Contact Person")}
-                    name={["contactPerson"]}
-                    rules={[
-                        {
-                            required: true,
-                        },
-                    ]}
-                >
-                    <Input />
-                </Form.Item>
-                <Form.Item
-                    label={translate("Username")}
-                    name={["username"]}
-                    rules={[
-                        {
-                            required: true,
-                        },
-                    ]}
-                >
-                    <Input />
-                </Form.Item>
+           
+            
 
-                <Form.Item
-                    label={translate("Subdomain (XYZ.PLAY888KING.COM)")}
-                    name={["subdomain"]}
-                    rules={[
-                        {
-                            required: true,
-                        },
-                    ]}
-                >
-                    <Input />
-                </Form.Item>
-    
+        
 
                 <Form.Item
                     label={translate("Company Name")}
@@ -82,17 +51,7 @@ export const AgentEdit: React.FC<IResourceComponentsProps> = () => {
                 >
                     <Input />
                 </Form.Item>
-                <Form.Item
-                    label={translate("Contact Email")}
-                    name={["contactEmail"]}
-                    rules={[
-                        {
-                            required: true,
-                        },
-                    ]}
-                >
-                    <Input />
-                </Form.Item>
+           
                 <Form.Item
                     label={translate("Contact Number")}
                     name={["contactNumber"]}

@@ -102,10 +102,13 @@ export default function UserList() {
   const { tableProps } = useTable({ syncWithLocation: true });
   const [now, setNow] = useState(new Date());
   const [lastFetched, setLastFetched] = useState<Date | null>(null);
+  const [showAlert, setShowAlert] = useState(false);
+
   const handleUpdateBalances = async () => {
     const host_id = 'd2b154ee85f316a9ba2b9273eb2e3470'; // Replace with your actual host_id
     const url = `https://api.play888king.com/update-all-balances/${host_id}`; // Update with your actual API endpoint
   
+
     const jwtTokenObject = nookies.get(null, 'jwt');
     const jwtToken = jwtTokenObject ? jwtTokenObject.jwt : '';
   
@@ -157,43 +160,60 @@ export default function UserList() {
     form.resetFields();
   };
   const handleSubmit = (values: FormValues) => {
+    if (showAlert) {
+      console.error("Your input can only be in two decimals");
+      return;
+    }
+  
     console.log(`${modalInfo.type} form values:`, values);
     console.log("Member ID:", modalInfo.memberId);
-
+  
     if (modalInfo.type === "deposit" && 'depositAmount' in values) {
       sendApiRequest(modalInfo.memberId!, modalInfo.type, values.depositAmount);
     } else if (modalInfo.type === "withdraw" && 'withdrawAmount' in values) {
       sendApiRequest(modalInfo.memberId!, modalInfo.type, values.withdrawAmount);
     }
-
-
+  
     hideModal();
     window.location.reload();
-
   };
-
+  const handleInputChange = (value: number) => {
+    const decimal = value.toString().split('.')[1];
+    if (decimal && decimal.length > 2) {
+      setShowAlert(true);
+    } else {
+      setShowAlert(false);
+    }
+  };
+  
   const renderModalContent = () => {
     const modalType = modalInfo.type;
 
-if (modalType === "deposit") {
-  return (
-    <Form form={form} onFinish={handleSubmit}>
-      <Form.Item name="depositAmount" label="Deposit Amount" rules={[{ required: true, message: "Please enter the deposit amount" }]}>
-        <InputNumber min={0} precision={2} step={0.01} style={{ width: '100%' }} />
-      </Form.Item>
-    </Form>
-  );
-}
-
-if (modalType === "withdraw") {
-  return (
-    <Form form={form} onFinish={handleSubmit}>
-      <Form.Item name="withdrawAmount" label="Withdraw Amount" rules={[{ required: true, message: "Please enter the withdraw amount" }]}>
-        <InputNumber min={0} precision={2} step={0.01} style={{ width: '100%' }} />
-      </Form.Item>
-    </Form>
-  );
-}
+    if (modalType === "deposit") {
+      return (
+        <>
+          {showAlert && <Alert message="Your input can only be in two decimals" type="error" />}
+          <Form form={form} onFinish={handleSubmit}>
+            <Form.Item name="depositAmount" label="Deposit Amount" rules={[{ required: true, message: "Please enter the deposit amount" }]}>
+              <InputNumber min={0} style={{ width: '100%' }} onChange={handleInputChange} />
+            </Form.Item>
+          </Form>
+        </>
+      );
+    }
+    
+    if (modalType === "withdraw") {
+      return (
+        <>
+          {showAlert && <Alert message="Your input can only be in two decimals" type="error" />}
+          <Form form={form} onFinish={handleSubmit}>
+            <Form.Item name="withdrawAmount" label="Withdraw Amount" rules={[{ required: true, message: "Please enter the withdraw amount" }]}>
+              <InputNumber min={0} style={{ width: '100%' }} onChange={handleInputChange} />
+            </Form.Item>
+          </Form>
+        </>
+      );
+    }
 
     if (modalType === "duration") {
       return (

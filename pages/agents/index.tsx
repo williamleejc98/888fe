@@ -5,7 +5,7 @@ import { authProvider } from "src/authProvider";
 import { IResourceComponentsProps, BaseRecord, useTranslate, useMany } from "@refinedev/core";
 import { useTable, List, EditButton, ShowButton, DeleteButton, MarkdownField, DateField } from "@refinedev/antd";
 import { useState, useEffect } from "react";
-import { Table, Space, Modal, Form, Input, Button, InputNumber } from "antd";
+import { Table, Space, Modal, Form, Input, Button, InputNumber, Alert } from "antd";
 import nookies from 'nookies';
 import axios from 'axios';
 import { WhatsAppOutlined } from '@ant-design/icons';
@@ -24,6 +24,7 @@ export default function AgentList() {
   const translate = useTranslate();
   const { tableProps } = useTable({ syncWithLocation: true });
   const [agents, setAgents] = useState<BaseRecord[]>([]);
+  const [showAlert, setShowAlert] = useState(false);
 
   const [modalInfo, setModalInfo] = useState<{ type: ModalType | null, visible: boolean, username: string | null }>({
     type: null,
@@ -181,6 +182,15 @@ export default function AgentList() {
     form.resetFields();
   };
   const handleSubmit = (values: FormValues) => {
+    if (showAlert) {
+      Modal.error({
+        title: 'Input Error',
+        content: 'Your input can only be in two decimals',
+      });
+      return;
+    }
+  
+
     console.log(`${modalInfo.type} form values:`, values);
     console.log("Username:", modalInfo.username);
 
@@ -194,26 +204,44 @@ export default function AgentList() {
     window.location.reload();
 
   };
+
+  const handleInputChange = (value: number) => {
+    if (value !== null) {
+      const decimal = value.toString().split('.')[1];
+      if (decimal && decimal.length > 2) {
+        setShowAlert(true);
+      } else {
+        setShowAlert(false);
+      }
+    }
+  };
+  
   const renderModalContent = () => {
     const modalType = modalInfo.type;
 
     if (modalType === "deposit") {
       return (
+        <>
+        {showAlert && <Alert message="Your input can only be in two decimals" type="error" />}
         <Form form={form} onFinish={handleSubmit}>
           <Form.Item name="depositAmount" label="Deposit Amount" rules={[{ required: true, message: "Please enter the deposit amount" }]}>
-          <InputNumber min={0} precision={2} step={0.01} style={{ width: '100%' }} />
+            <InputNumber min={0}  onChange={handleInputChange} style={{ width: '100%' }} />
           </Form.Item>
         </Form>
+        </>
       );
     }
     
     if (modalType === "withdraw") {
       return (
+        <>
+        {showAlert && <Alert message="Your input can only be in two decimals" type="error" />}
         <Form form={form} onFinish={handleSubmit}>
           <Form.Item name="withdrawAmount" label="Withdraw Amount" rules={[{ required: true, message: "Please enter the withdraw amount" }]}>
-          <InputNumber min={0} precision={2} step={0.01} style={{ width: '100%' }} />
+          <InputNumber min={0}  onChange={handleInputChange} style={{ width: '100%' }} />
           </Form.Item>
         </Form>
+        </>
       );
     }
 
