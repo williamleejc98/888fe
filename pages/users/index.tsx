@@ -177,7 +177,11 @@ export default function UserList() {
     hideModal();
     window.location.reload();
   };
-  const handleInputChange = (value: number) => {
+  const handleInputChange = (value: number | null) => {
+    if (value === null) {
+      setShowAlert(false);
+      return;
+    }
     const decimal = value.toString().split('.')[1];
     if (decimal && decimal.length > 2) {
       setShowAlert(true);
@@ -185,7 +189,6 @@ export default function UserList() {
       setShowAlert(false);
     }
   };
-  
   const renderModalContent = () => {
     const modalType = modalInfo.type;
 

@@ -24,14 +24,12 @@ export default function AgentList() {
   const translate = useTranslate();
   const { tableProps } = useTable({ syncWithLocation: true });
   const [agents, setAgents] = useState<BaseRecord[]>([]);
-  const [showAlert, setShowAlert] = useState(false);
 
   const [modalInfo, setModalInfo] = useState<{ type: ModalType | null, visible: boolean, username: string | null }>({
     type: null,
     visible: false,
     username: null
   });
-
   useEffect(() => {
     const host_id = 'd2b154ee85f316a9ba2b9273eb2e3470'; // Default host_id
     const url = `https://api.play888king.com/agents/update-credit/${host_id}`; // Update with your actual API endpoint
@@ -189,23 +187,25 @@ export default function AgentList() {
       });
       return;
     }
-  
 
     console.log(`${modalInfo.type} form values:`, values);
     console.log("Username:", modalInfo.username);
-
-    if (modalInfo.type === "deposit" && 'depositAmount' in values) {
-      sendApiRequest(modalInfo.username!, modalInfo.type, values.depositAmount || 0);
-    } else if (modalInfo.type === "withdraw" && 'withdrawAmount' in values) {
-      sendApiRequest(modalInfo.username!, modalInfo.type, values.withdrawAmount || 0);
+    if (modalInfo.username) {
+      if (modalInfo.type === "deposit" && 'depositAmount' in values) {
+        sendApiRequest(modalInfo.username, modalInfo.type, values.depositAmount || 0);
+      } else if (modalInfo.type === "withdraw" && 'withdrawAmount' in values) {
+        sendApiRequest(modalInfo.username, modalInfo.type, values.withdrawAmount || 0);
+      }
+    } else {
+      console.error('Username is missing');
     }
 
     hideModal();
     window.location.reload();
 
   };
-
-  const handleInputChange = (value: number | 0 | null) => {
+  const [showAlert, setShowAlert] = useState(false);
+  const handleInputChange = (value: number | null) => {
     if (value !== null) {
       const decimal = value.toString().split('.')[1];
       if (decimal && decimal.length > 2) {
@@ -215,7 +215,9 @@ export default function AgentList() {
       }
     }
   };
+  
   const renderModalContent = () => {
+    
     const modalType = modalInfo.type;
 
     if (modalType === "deposit") {
@@ -224,7 +226,7 @@ export default function AgentList() {
         {showAlert && <Alert message="Your input can only be in two decimals" type="error" />}
         <Form form={form} onFinish={handleSubmit}>
           <Form.Item name="depositAmount" label="Deposit Amount" rules={[{ required: true, message: "Please enter the deposit amount" }]}>
-            <InputNumber min={0}  onChange={handleInputChange} style={{ width: '100%' }} />
+          <InputNumber min={0} style={{ width: '100%' }} onChange={(value) => handleInputChange(value ?? 0)}/>
           </Form.Item>
         </Form>
         </>
@@ -237,7 +239,7 @@ export default function AgentList() {
         {showAlert && <Alert message="Your input can only be in two decimals" type="error" />}
         <Form form={form} onFinish={handleSubmit}>
           <Form.Item name="withdrawAmount" label="Withdraw Amount" rules={[{ required: true, message: "Please enter the withdraw amount" }]}>
-          <InputNumber min={0}  onChange={handleInputChange} style={{ width: '100%' }} />
+          <InputNumber min={0} style={{ width: '100%' }} onChange={(value) => handleInputChange(value ?? 0)}/>
           </Form.Item>
         </Form>
         </>
