@@ -188,6 +188,14 @@ export default function AgentList() {
       return;
     }
 
+      // Add this condition
+  if (showNegativeAlert) {
+    Modal.error({
+      title: 'Input Error',
+      content: 'Your input cannot be negative',
+    });    return;
+  }
+
     console.log(`${modalInfo.type} form values:`, values);
     console.log("Username:", modalInfo.username);
     if (modalInfo.username) {
@@ -206,19 +214,22 @@ export default function AgentList() {
   };
   const [showAlert, setShowAlert] = useState(false);
   const [showNegativeAlert, setShowNegativeAlert] = useState(false);
-  const handleInputChange = (value: number | null) => {
-    if (value !== null) {
-      const decimal = value.toString().split('.')[1];
-      if (decimal && decimal.length > 2) {
-        setShowAlert(true);
-      } else {
-        setShowAlert(false);
-      }
-      if (value < 0) {
-        setShowNegativeAlert(true);
-      } else {
-        setShowNegativeAlert(false);
-      }
+  const handleInputChange = (value: number | 0 | null) => {
+    if (value === null) {
+      setShowAlert(false);
+      setShowNegativeAlert(false);
+      return;
+    }
+    const decimal = value.toString().split('.')[1];
+    if (decimal && decimal.length > 2) {
+      setShowAlert(true);
+    } else {
+      setShowAlert(false);
+    }
+    if (value < 0) {
+      setShowNegativeAlert(true);
+    } else {
+      setShowNegativeAlert(false);
     }
   };
   
@@ -234,7 +245,7 @@ export default function AgentList() {
 
         <Form form={form} onFinish={handleSubmit}>
           <Form.Item name="depositAmount" label="Deposit Amount" rules={[{ required: true, message: "Please enter the deposit amount" }]}>
-          <InputNumber min={0} style={{ width: '100%' }} onChange={(value) => handleInputChange(value ?? 0)}/>
+          <InputNumber  style={{ width: '100%' }} onChange={(value) => handleInputChange(value ?? 0)}/>
           </Form.Item>
         </Form>
         </>
@@ -249,7 +260,7 @@ export default function AgentList() {
 
         <Form form={form} onFinish={handleSubmit}>
           <Form.Item name="withdrawAmount" label="Withdraw Amount" rules={[{ required: true, message: "Please enter the withdraw amount" }]}>
-          <InputNumber min={0} style={{ width: '100%' }} onChange={(value) => handleInputChange(value ?? 0)}/>
+          <InputNumber  style={{ width: '100%' }} onChange={(value) => handleInputChange(value ?? 0)}/>
           </Form.Item>
         </Form>
         </>

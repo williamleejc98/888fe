@@ -161,10 +161,21 @@ export default function UserList() {
   };
   const handleSubmit = (values: FormValues) => {
     if (showAlert) {
-      alert("Your input can only be in two decimals");
+      Modal.error({
+        title: 'Input Error',
+        content: 'Your input can only be in two decimals',
+      });
       return;
     }
-  
+
+      // Add this condition
+  if (showNegativeAlert) {
+    Modal.error({
+      title: 'Input Error',
+      content: 'Your input cannot be negative',
+    });    return;
+  }
+
     console.log(`${modalInfo.type} form values:`, values);
     console.log("Member ID:", modalInfo.memberId);
   
