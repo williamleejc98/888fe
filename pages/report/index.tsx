@@ -78,6 +78,10 @@ const handleButtonClick = async () => {
 };
 
 const fetchSummary = (username = "") => {
+  if (startDate && endDate && moment(endDate).diff(moment(startDate), 'days') > 33) {
+    console.error("Date range should not exceed 33 days");
+    return;
+  }
   let API_URL = `https://api.play888king.com/reports/userstats`;
   const params = new URLSearchParams();
   if (username) {
@@ -125,6 +129,11 @@ const fetchSummary = (username = "") => {
 };
 
 const fetchData = (query = "") => {
+  if (startDate && endDate && moment(endDate).diff(moment(startDate), 'days') > 33) {
+    console.error("Date range should not exceed 33 days");
+    return;
+  }
+
   console.log('fetchData called'); // Log when fetchData is called
 
   const jwtTokenObject = nookies.get(null, 'jwt');
@@ -221,20 +230,24 @@ width="80%"
   />
 </Col>
 <Col span={14}>
-  <DatePicker
-    showTime
-    onChange={(date) => setStartDate(date ? date.toISOString() : null)}
+<DatePicker
+    showTime={{ format: 'HH:mm:ss' }}
+    format="YYYY-MM-DD HH:mm:ss"
+    onChange={(date) => setStartDate(date ? date.startOf('day').toISOString() : null)}
     placeholder="Start Date"
+    disabledDate={(current) => current && current > moment().endOf('day')}
   />
   <DatePicker
-    showTime
-    onChange={(date) => setEndDate(date ? date.toISOString() : null)}
+    showTime={{ format: 'HH:mm:ss' }}
+    format="YYYY-MM-DD HH:mm:ss"
+    onChange={(date) => setEndDate(date ? date.endOf('day').toISOString() : null)}
     placeholder="End Date"
+    disabledDate={(current) => current && current > moment().endOf('day')}
   />
-   <Button onClick={() => { setStartDate(moment().toISOString()); setEndDate(moment().toISOString()); }}>TODAY</Button>
+    <Button onClick={() => { setStartDate(moment().subtract(1, 'days').startOf('day').toISOString()); setEndDate(moment().subtract(1, 'days').endOf('day').toISOString()); }}>YESTERDAY</Button>
+  <Button onClick={() => { setStartDate(moment().startOf('month').toISOString()); setEndDate(moment().endOf('month').toISOString()); }}>THIS MONTH</Button>
+  <Button onClick={() => { setStartDate(moment().toISOString()); setEndDate(moment().toISOString()); }}>TODAY</Button>
   <Button onClick={() => { setStartDate(moment().subtract(1, 'weeks').startOf('week').toISOString()); setEndDate(moment().toISOString()); }}>LAST WEEK</Button>
-  <Button onClick={() => { setStartDate(moment().subtract(1, 'months').startOf('month').toISOString()); setEndDate(moment().toISOString()); }}>LAST MONTH</Button>
-  <Button onClick={() => { setStartDate(null); setEndDate(null); }}>ALL TIME</Button>
 </Col>
 
 

@@ -320,13 +320,13 @@ export default function AgentList() {
           />
          <Table.Column
   dataIndex="contactNumber"
-  title={translate("Phone")}
+  title={translate("Whatsapp Contact Number")}
   render={(phoneNumber: string) => {
     const whatsappUrl = `https://wa.me/+6${phoneNumber}`;
     return (
       <a href={whatsappUrl} target="_blank" rel="noopener noreferrer">
         <Button type="primary" icon={<WhatsAppOutlined />} style={{ backgroundColor: 'limegreen', borderColor: 'limegreen' }}>
-          +60{phoneNumber}
+          +6{phoneNumber}
         </Button>
       </a>
     );
