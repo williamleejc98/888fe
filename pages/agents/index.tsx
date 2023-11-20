@@ -284,10 +284,6 @@ export default function AgentList() {
             title={translate("Username")}
           />
           <Table.Column
-            dataIndex="positionTaking"
-            title={translate("PT%")}
-          />
-          <Table.Column
             dataIndex="agentUplineUsername"
             title={translate("Upline Agent")}
           />
@@ -326,7 +322,7 @@ export default function AgentList() {
   dataIndex="contactNumber"
   title={translate("Phone")}
   render={(phoneNumber: string) => {
-    const whatsappUrl = `https://wa.me/+60${phoneNumber}`;
+    const whatsappUrl = `https://wa.me/+6${phoneNumber}`;
     return (
       <a href={whatsappUrl} target="_blank" rel="noopener noreferrer">
         <Button type="primary" icon={<WhatsAppOutlined />} style={{ backgroundColor: 'limegreen', borderColor: 'limegreen' }}>

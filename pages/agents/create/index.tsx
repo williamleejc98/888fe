@@ -124,18 +124,7 @@ export default function AgentCreate() {
                     <Row gutter={16}>
 
                         <Col span={24}>
-                            <Alert message="Profit Taking and Balance" type="info" />
-                            <Form.Item
-                                label={translate("PT% - Profit Taking")}
-                                name={["positionTaking"]}
-                                rules={[
-                                    {
-                                        required: true,
-                                    },
-                                ]}
-                            >
-                                <Input />
-                            </Form.Item>
+                         
                             <Form.Item
                                 label={translate("(MYR) Starting Credit Balance - Ensure you have enough credit in your account")}
                                 name={["agentCredit"]}
