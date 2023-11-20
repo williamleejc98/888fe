@@ -9,6 +9,11 @@ import moment from 'moment';
 import styles from './report.module.css';
 import gameCodes from '../../public/game-codes.json';
 
+type GameCodesType = {
+  [key: string]: string;
+}
+
+const gameCodesTyped: GameCodesType = gameCodes as GameCodesType;
 const API_ENDPOINT = "https://api.play888king.com/reports/all";
 type RecordType = {
   id: string;
@@ -279,12 +284,12 @@ width="80%"
       >
   <Table.Column title="Ticket ID" dataIndex="ticket_id" />
   <Table.Column 
-  title="Game Name" 
-  render={(text, record: RecordType) => {
-    const gameName = gameCodes[record.game_code];
-    return gameName ? gameName : record.game_code;
-  }}
-/>  <Table.Column title="Username" dataIndex="username" />
+        title="Game Name" 
+        render={(text, record: RecordType) => {
+          const gameName = gameCodesTyped[record.game_code];
+          return gameName ? gameName : record.game_code;
+        }}
+      />   <Table.Column title="Username" dataIndex="username" />
   <Table.Column title="Bet Stake" dataIndex="bet_stake" />
   <Table.Column title="Payout Amount" dataIndex="payout_amount" />
   <Table.Column 
