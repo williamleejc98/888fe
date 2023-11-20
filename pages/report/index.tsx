@@ -1,18 +1,13 @@
-import { AntdListInferencer } from "@refinedev/inferencer/antd";
 import { GetServerSideProps } from "next";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import { authProvider } from "src/authProvider";
-import { stringify } from "query-string";
-import { DataProvider } from "@refinedev/core";
-import { IResourceComponentsProps, BaseRecord, useTranslate, useMany } from "@refinedev/core";
-import { useTable, List, EditButton, ShowButton, DeleteButton, MarkdownField, DateField } from "@refinedev/antd";
 import { useState, useEffect } from "react";
 import { Table, Space, Modal, Form, Input, Button, Card, DatePicker, Row, Col , notification} from "antd";
 import axios from "axios"; // Import axios
 import nookies from 'nookies'; // Assuming you have nookies installed
 import moment from 'moment';
 import styles from './report.module.css';
-
+import gameCodes from '../../public/game-codes.json';
 
 const API_ENDPOINT = "https://api.play888king.com/reports/all";
 type RecordType = {
@@ -245,26 +240,34 @@ width="80%"
 <Col span={6}>
 <Card className={styles.card1}>
   <h2 className={styles['card-title']}>Total Games Played</h2>
+  <p>Number of Rounds</p>
+
   <p className={styles['card-content']}>{totalGames} Rounds</p>
 </Card>
 </Col>
 <Col span={6}>
 <Card className={styles.card2}>
   <h2 className={styles['card-title']}>Total Turnover</h2>
+  <p>Amount Bet by Users </p>
+
   <p className={styles['card-content']}>RM {totalTurnover}</p>
 </Card>
 </Col>
 <Col span={6}>
 <Card className={styles.card3}>
   <h2 className={styles['card-title']}>Total Payout</h2>
+  <p>Amount Games Paid Out</p>
+
   <p className={styles['card-content']}>RM {totalPayout}</p>
 </Card>
 </Col>
 <Col span={6}>
 <Card className={styles.card4}>
   <h2 className={styles['card-title']}>Total Win/Loss</h2>
-  <p className={styles['card-content']}>{totalWinLoss}</p>
-</Card>
+  <p>Your Profit/Loss</p>
+  <p className={styles['card-content']}>
+  {totalWinLoss < 0 ? '+' : '-'} RM {Math.abs(totalWinLoss)}
+</p></Card>
 </Col>
 </div>
 <Table
@@ -275,8 +278,13 @@ width="80%"
         key={refreshKey} // Add this line
       >
   <Table.Column title="Ticket ID" dataIndex="ticket_id" />
-  <Table.Column title="Game Code" dataIndex="game_code" />
-  <Table.Column title="Username" dataIndex="username" />
+  <Table.Column 
+  title="Game Name" 
+  render={(text, record: RecordType) => {
+    const gameName = gameCodes[record.game_code];
+    return gameName ? gameName : record.game_code;
+  }}
+/>  <Table.Column title="Username" dataIndex="username" />
   <Table.Column title="Bet Stake" dataIndex="bet_stake" />
   <Table.Column title="Payout Amount" dataIndex="payout_amount" />
   <Table.Column 

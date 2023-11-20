@@ -12,6 +12,7 @@ import axios from "axios"; // Import axios
 import nookies from 'nookies'; // Assuming you have nookies installed
 import moment from 'moment';
 import styles from './report.module.css';
+import gameCodes from '../../public/game-codes.json';
 
 
 const API_ENDPOINT = "https://api.play888king.com/promoreports/all";
@@ -260,7 +261,9 @@ export default function ReportTable() {
         <Col span={6}>
           <Card className={styles.card4}>
             <h2 className={styles['card-title']}>Total Win/Loss</h2>
-            <p className={styles['card-content']}>{totalWinLoss}</p>
+            <p className={styles['card-content']}>
+  {totalWinLoss < 0 ? '+' : '-'} RM {Math.abs(totalWinLoss)}
+</p>
           </Card>
         </Col>
       </div>
@@ -272,8 +275,13 @@ export default function ReportTable() {
         key={refreshKey} // Add this line
       >
         <Table.Column title="Ticket ID" dataIndex="ticket_id" />
-        <Table.Column title="Game Code" dataIndex="game_code" />
-        <Table.Column title="Username" dataIndex="username" />
+        <Table.Column 
+  title="Game Name" 
+  render={(text, record: RecordType) => {
+    const gameName = gameCodes[record.game_code];
+    return gameName ? gameName : record.game_code;
+  }}
+/>        <Table.Column title="Username" dataIndex="username" />
         <Table.Column title="Bet Stake" dataIndex="bet_stake" />
         <Table.Column title="Payout Amount" dataIndex="payout_amount" />
         <Table.Column
