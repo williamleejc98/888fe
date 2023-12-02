@@ -42,7 +42,10 @@ export default function AgentCreate() {
                                     {
                                         required: true,
                                     },
+                                    
                                 ]}
+                                normalize={(value) => value.toLowerCase()}
+
                             >
                                 <Input />
                             </Form.Item>

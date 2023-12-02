@@ -30,16 +30,17 @@ export default function UserCreate() {
         </Form.Item>
 
         <Form.Item
-          label={translate("Username (Your player will login with this username")}
-          name={["memberId"]}
-          rules={[
-            {
-              required: true,
-            },
-          ]}
-        >
-          <Input />
-        </Form.Item>
+  label={translate("Username (Your player will login with this username")}
+  name={["memberId"]}
+  rules={[
+    {
+      required: true,
+    },
+  ]}
+  normalize={(value) => value.toLowerCase()}
+>
+  <Input />
+</Form.Item>
         <Form.Item name="phoneNumber" rules={[{ required: true, message: 'Sila masukkan nombor telefon anda!' }]}>
           <Input addonBefore="+6" placeholder="0108881988" />
         </Form.Item>

@@ -55,8 +55,10 @@ export default function Login() {
           name="username"
           rules={[{ required: true, message: "Please enter your username" }]}
         >
-          <Input placeholder="Username" />
-        </Form.Item>
+  <Input 
+    placeholder="Username" 
+    onChange={e => e.target.value = e.target.value.toLowerCase()} 
+  />        </Form.Item>
 
         <Form.Item
           name="password"
