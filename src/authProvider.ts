@@ -69,15 +69,19 @@ export const authProvider: AuthBindings = {
       redirectTo: "/login",
     };
   },
-
   check: async (ctx: any) => {
     const cookies = nookies.get(ctx);
     if (cookies["jwt"] && cookies["auth"]) {
-      return {
-        authenticated: true,
-      };
+      const decodedToken = jwtDecode(cookies["jwt"]) as MyJwtPayload;
+      const currentTimestamp = Math.floor(Date.now() / 1000); // in seconds
+  
+      if (decodedToken.exp > currentTimestamp) {
+        return {
+          authenticated: true,
+        };
+      }
     }
-
+  
     return {
       authenticated: false,
       logout: true,
