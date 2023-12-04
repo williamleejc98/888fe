@@ -107,6 +107,32 @@ export default function UserList() {
   const [now, setNow] = useState(new Date());
   const [lastFetched, setLastFetched] = useState<Date | null>(null);
   const [showAlert, setShowAlert] = useState(false);
+  const [isSuspended, setIsSuspended] = useState(false);
+
+  const handleSuspendToggle = async (memberId: string, checked: boolean) => {
+    setIsSuspended(checked); // Update local state immediately (optional)
+  
+    try {
+      const jwtTokenObject = nookies.get(null, 'jwt');
+      const jwtToken = jwtTokenObject ? jwtTokenObject.jwt : '';
+  
+      if (!jwtToken) {
+        console.error('JWT token is missing');
+        return;
+      }
+  
+      await axios.put(`https://api.play888king.com/users/${memberId}/suspend`, { suspended: checked }, {
+        headers: {
+          "Authorization": `Bearer ${jwtToken}`
+        }
+      });
+      // Refresh the user data after toggling the suspension
+    } catch (error) {
+      console.error('Failed to toggle suspension:', error);
+    }
+  };
+  
+
   const [showNegativeAlert, setShowNegativeAlert] = useState(false);
   const handleUpdateBalances = async () => {
     const host_id = 'd2b154ee85f316a9ba2b9273eb2e3470'; // Replace with your actual host_id
@@ -325,8 +351,10 @@ export default function UserList() {
       return (
         <>
           <p>User Actions</p>
-          <Button onClick={() => modalInfo.memberId && handleSuspend(modalInfo.memberId)}>Suspend User</Button>
-<Button onClick={() => modalInfo.memberId && handleKick(modalInfo.memberId)}>Kick User</Button>
+          <Switch 
+          checked={isSuspended} 
+          onChange={(checked) => modalInfo.memberId && handleSuspendToggle(modalInfo.memberId, checked)} 
+        /><Button onClick={() => modalInfo.memberId && handleKick(modalInfo.memberId)}>Kick User</Button>
 
         <p>Set new Password</p>
 
@@ -530,8 +558,16 @@ export default function UserList() {
 />
 
 
+
+
 <Table.Column
-  title={translate("Set Credit")}
+  dataIndex="suspended"
+  title={translate("Status")}
+  render={(suspended: boolean) => suspended ? "Suspended" : "Active"}
+/>
+
+<Table.Column
+  title={translate("Manage")}
   dataIndex="actions"
   render={(_, record: BaseRecord) => (
 <Space>
@@ -539,7 +575,7 @@ export default function UserList() {
     type="primary" 
     size="small" 
     onClick={() => {
-      showModal("manage", record.memberId);
+      showModal("manage", record.memberId, record.balance);
       handleUpdateBalances();
     }} 
     style={{ backgroundColor: 'green', borderColor: 'green' }}
