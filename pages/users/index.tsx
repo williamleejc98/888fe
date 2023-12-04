@@ -564,7 +564,6 @@ export default function UserList() {
       checked={suspended}
       onChange={(checked) => handleSuspendToggle(record.memberId, checked)}
     />
-    <Button onClick={() => modalInfo.memberId && handleKick(modalInfo.memberId)}>Kick User</Button>
     </>
 
   )}
@@ -572,7 +571,21 @@ export default function UserList() {
 
 
 <Table.Column
-  title={translate("Reset Pass")}
+  title={translate("Kick User")}
+  dataIndex="actions"
+  render={(_, record: BaseRecord) => (
+    <Button 
+      type="primary" 
+      size="small" 
+      onClick={() => record.memberId && handleKick(record.memberId)}
+    >
+      Kick User
+    </Button>
+  )}
+/>
+
+<Table.Column
+  title={translate("Reset Access")}
   dataIndex="actions"
   render={(_, record: BaseRecord) => (
 <Space>
