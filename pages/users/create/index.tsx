@@ -4,8 +4,11 @@ import { authProvider } from "src/authProvider";
 import { useTranslate } from "@refinedev/core";
 import { Create, useForm, useSelect } from "@refinedev/antd";
 import { Checkbox, Alert, Button, Form, Input, Select } from "antd";
+interface UserCreateProps {
+  subdomain: string;
+}
 
-export default function UserCreate({subdomain}) {
+export default function UserCreate({subdomain}: UserCreateProps) {
   const translate = useTranslate();
   const { formProps, saveButtonProps, queryResult } = useForm();
 
