@@ -143,8 +143,20 @@ export default function UserList() {
 
 
   const toggleSuspension = async (memberId: string | number) => {
+    const jwtTokenObject = nookies.get(null, 'jwt');
+    const jwtToken = jwtTokenObject ? jwtTokenObject.jwt : '';
+  
+    if (!jwtToken) {
+      console.error('JWT token is missing');
+      return;
+    }
+  
     try {
-      await axios.put(`https://api.play888king.com/users/${memberId}/suspend`);
+      await axios.put(`https://api.play888king.com/users/${memberId}/suspend`, {}, {
+        headers: {
+          "Authorization": `Bearer ${jwtToken}`
+        }
+      });
       // Refresh the user data after toggling the suspension
     } catch (error) {
       console.error('Failed to toggle suspension:', error);
