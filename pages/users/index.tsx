@@ -293,6 +293,8 @@ export default function UserList() {
           {showAlert && <Alert message="Your input can only be in two decimals" type="error" />}
           {showNegativeAlert && <Alert message="Your input cannot be negative" type="error" />}
 
+          <p>Current Balance: RM {modalInfo.balance?.toFixed(2) || '0.00'}</p>
+
           <Form form={form} onFinish={handleSubmit}>
             <Form.Item name="depositAmount" label="Deposit Amount" rules={[{ required: true, message: "Please enter the deposit amount" }]}>
               <InputNumber  style={{ width: '100%' }} onChange={handleInputChange} />
@@ -307,6 +309,9 @@ export default function UserList() {
         <>
           {showAlert && <Alert message="Your input can only be in two decimals" type="error" />}
           {showNegativeAlert && <Alert message="Your input cannot be negative" type="error" />}
+
+          <p>Current Balance: RM {modalInfo.balance?.toFixed(2) || '0.00'}</p>
+
 
           <Form form={form} onFinish={handleSubmit}>
             <Form.Item name="withdrawAmount" label="Withdraw Amount" rules={[{ required: true, message: "Please enter the withdraw amount" }]}>
@@ -330,9 +335,7 @@ export default function UserList() {
     if (modalType === "reset") {
       return (
         <>
-    
         <p>Set new Password</p>
-
           <Form form={form} onFinish={handleResetSubmit}>
         <Form.Item name="newPassword" label="New Password" rules={[{ required: true, message: "Please enter the new password" }]}>
           <Input type="password" />
@@ -369,8 +372,7 @@ export default function UserList() {
 
   return (
     <div>
-    <Modal title={modalInfo.type} visible={modalInfo.visible} onCancel={hideModal} onOk={() => form.submit()}>
-  <p>Current Balance: RM {modalInfo.balance?.toFixed(2) || '0.00'}</p>
+<Modal title={modalInfo.type?.toUpperCase()} visible={modalInfo.visible} onCancel={hideModal} onOk={() => form.submit()}>
   {renderModalContent()}
 </Modal>
       <Alert
