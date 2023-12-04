@@ -4,7 +4,7 @@ import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import { authProvider } from "src/authProvider";
 import { BaseRecord, useTranslate } from "@refinedev/core";
 import { useTable, List, EditButton, ShowButton, DeleteButton, MarkdownField, DateField } from "@refinedev/antd";
-import { Table, Space, Button, Modal, Form, Input, InputNumber, Alert } from "antd";
+import { Table, Space, Button, Modal, Form, Input, InputNumber, Alert, Switch } from "antd";
 import nookies from 'nookies'; // Make sure you've imported nookies
 import axios from 'axios';
 
@@ -140,6 +140,17 @@ export default function UserList() {
 
     return () => clearInterval(timer);
   }, []);
+
+
+  const toggleSuspension = async (memberId) => {
+    try {
+      await axios.put(`https://api.play888king.com/users/${memberId}/suspend`);
+      // Refresh the user data after toggling the suspension
+    } catch (error) {
+      console.error('Failed to toggle suspension:', error);
+    }
+  };
+
 
   const [modalInfo, setModalInfo] = useState<{ type: ModalType | null, visible: boolean, memberId: string | null, balance: number | null }>({
     type: null,
@@ -432,6 +443,17 @@ export default function UserList() {
   }}
 />
 
+<Table.Column
+  title="Suspended"
+  dataIndex="suspended"
+  key="suspended"
+  render={(suspended, user) => (
+    <Switch
+      checked={suspended}
+      onChange={() => toggleSuspension(user.memberId)}
+    />
+  )}
+/>
          
          
 
