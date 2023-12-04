@@ -142,7 +142,7 @@ export default function UserList() {
   }, []);
 
 
-  const toggleSuspension = async (memberId) => {
+  const toggleSuspension = async (memberId: string | number) => {
     try {
       await axios.put(`https://api.play888king.com/users/${memberId}/suspend`);
       // Refresh the user data after toggling the suspension
@@ -150,7 +150,6 @@ export default function UserList() {
       console.error('Failed to toggle suspension:', error);
     }
   };
-
 
   const [modalInfo, setModalInfo] = useState<{ type: ModalType | null, visible: boolean, memberId: string | null, balance: number | null }>({
     type: null,
