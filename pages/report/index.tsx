@@ -33,7 +33,6 @@ export default function ReportTable() {
   const [searchQuery, setSearchQuery] = useState("");
   const [totalGames, setTotalGames] = useState(0);
   const [refreshKey, setRefreshKey] = useState(0); // Add this line
-  const sortedData = [...reportData].sort((a, b) => new Date(b.report_date).getTime() - new Date(a.report_date).getTime());
   const [totalTurnover, setTotalTurnover] = useState(0);
   const [totalPayout, setTotalPayout] = useState(0);
   const [totalWinLoss, setTotalWinLoss] = useState(0);
@@ -289,7 +288,7 @@ width="80%"
 </Col>
 </div>
 <Table
-        dataSource={sortedData}
+        dataSource={reportData}
         rowKey="_id"
         pagination={pagination}
         onChange={handleTableChange}
