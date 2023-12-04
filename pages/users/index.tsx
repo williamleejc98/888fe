@@ -325,8 +325,8 @@ export default function UserList() {
       return (
         <>
           <p>User Actions</p>
-          <Button onClick={() => handleSuspend(modalInfo.memberId)}>Suspend User</Button>
-        <Button onClick={() => handleKick(modalInfo.memberId)}>Kick User</Button>
+          <Button onClick={() => modalInfo.memberId && handleSuspend(modalInfo.memberId)}>Suspend User</Button>
+<Button onClick={() => modalInfo.memberId && handleKick(modalInfo.memberId)}>Kick User</Button>
 
         <p>Set new Password</p>
 
