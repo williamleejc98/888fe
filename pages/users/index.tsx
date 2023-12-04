@@ -184,7 +184,7 @@ export default function UserList() {
     }
   
     try {
-      await axios.put(`https://api.play888king.com/users/${memberId}/kick`, {}, {
+      await axios.post(`https://api.play888king.com/users/${memberId}/kick`, {}, {
         headers: {
           "Authorization": `Bearer ${jwtToken}`
         }
