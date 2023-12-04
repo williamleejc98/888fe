@@ -448,9 +448,9 @@ export default function UserList() {
   key="suspended"
   render={(suspended, user) => (
     <Switch
-      checked={suspended}
-      onChange={() => toggleSuspension(user.memberId)}
-    />
+    checked={suspended}
+    onChange={() => toggleSuspension((user as { memberId: string | number }).memberId)}
+  />
   )}
 />
          
