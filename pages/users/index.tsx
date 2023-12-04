@@ -189,7 +189,8 @@ export default function UserList() {
           "Authorization": `Bearer ${jwtToken}`
         }
       });
-      // Handle the response or perform any necessary actions after kicking the user
+      window.alert('User kicked successfully');
+
     } catch (error) {
       console.error('Failed to kick user:', error);
     }
