@@ -252,7 +252,7 @@ export default function AgentList() {
         return;
       }
   
-      await axios.put(`https://api.play888king.com/users/${username}/suspend`, { suspended: checked }, {
+      await axios.put(`https://api.play888king.com/agents/${username}/suspend`, { suspended: checked }, {
         headers: {
           "Authorization": `Bearer ${jwtToken}`
         }
@@ -274,7 +274,7 @@ export default function AgentList() {
     }
   
     try {
-      await axios.post(`https://api.play888king.com/users/${username}/kick`, {}, {
+      await axios.post(`https://api.play888king.com/agents/${username}/kick`, {}, {
         headers: {
           "Authorization": `Bearer ${jwtToken}`
         }
@@ -296,7 +296,7 @@ export default function AgentList() {
     }
   
     try {
-      await axios.put(`https://api.play888king.com/users/${user.username}/reset-password`, { newPassword: user.newPassword }, {
+      await axios.put(`https://api.play888king.com/agents/${user.username}/reset-password`, { newPassword: user.newPassword }, {
         headers: {
           "Authorization": `Bearer ${jwtToken}`
         }
