@@ -12,9 +12,13 @@ import { WhatsAppOutlined } from '@ant-design/icons';
 type CountdownProps = {
   endTime: string;
 };
-type ModalType = "deposit" | "withdraw" | "duration";
+type ModalType = "deposit" | "withdraw" | "duration" | "manage";
 type DepositValues = {
   depositAmount: number;
+};
+type ResetPasswordFormValues = {
+  newPassword: string;
+  // Add other properties as needed
 };
 
 type WithdrawValues = {
@@ -142,7 +146,7 @@ export default function UserList() {
   }, []);
 
 
-  const toggleSuspension = async (memberId: string | number) => {
+  const handleSuspend = async (memberId: string | number) => {
     const jwtTokenObject = nookies.get(null, 'jwt');
     const jwtToken = jwtTokenObject ? jwtTokenObject.jwt : '';
   
@@ -160,6 +164,49 @@ export default function UserList() {
       // Refresh the user data after toggling the suspension
     } catch (error) {
       console.error('Failed to toggle suspension:', error);
+    }
+  };
+
+
+  const handleKick = async (memberId: string | number) => {
+    const jwtTokenObject = nookies.get(null, 'jwt');
+    const jwtToken = jwtTokenObject ? jwtTokenObject.jwt : '';
+  
+    if (!jwtToken) {
+      console.error('JWT token is missing');
+      return;
+    }
+  
+    try {
+      await axios.put(`https://api.play888king.com/users/${memberId}/kick`, {}, {
+        headers: {
+          "Authorization": `Bearer ${jwtToken}`
+        }
+      });
+      // Handle the response or perform any necessary actions after kicking the user
+    } catch (error) {
+      console.error('Failed to kick user:', error);
+    }
+  };
+
+  const handleResetPassword = async (user: { memberId: string | null, newPassword: string }) => {
+    const jwtTokenObject = nookies.get(null, 'jwt');
+    const jwtToken = jwtTokenObject ? jwtTokenObject.jwt : '';
+  
+    if (!jwtToken) {
+      console.error('JWT token is missing');
+      return;
+    }
+  
+    try {
+      await axios.put(`https://api.play888king.com/users/${user.memberId}/reset-password`, { newPassword: user.newPassword }, {
+        headers: {
+          "Authorization": `Bearer ${jwtToken}`
+        }
+      });
+      // Handle the response or perform any necessary actions after resetting the password
+    } catch (error) {
+      console.error('Failed to reset password:', error);
     }
   };
 
@@ -210,6 +257,9 @@ export default function UserList() {
     hideModal();
     window.location.reload();
   };
+
+  
+
   const handleInputChange = (value: number | 0 | null) => {
     if (value === null) {
       setShowAlert(false);
@@ -271,9 +321,33 @@ export default function UserList() {
       );
     }
 
+    if (modalType === "manage") {
+      return (
+        <>
+          <p>User Actions</p>
+          <Button onClick={() => handleSuspend(modalInfo.memberId)}>Suspend User</Button>
+        <Button onClick={() => handleKick(modalInfo.memberId)}>Kick User</Button>
+
+        <p>Set new Password</p>
+
+          <Form form={form} onFinish={handleResetSubmit}>
+        <Form.Item name="newPassword" label="New Password" rules={[{ required: true, message: "Please enter the new password" }]}>
+          <Input type="password" />
+        </Form.Item>
+        <Button htmlType="submit">Reset Password</Button>
+      </Form>
+        </>
+      );
+      }
     return null;
   };
 
+
+  const handleResetSubmit = (values: ResetPasswordFormValues) => {
+    const newPassword = values.newPassword; // Get the new password from the form values
+    handleResetPassword({ memberId: modalInfo.memberId, newPassword }); // Call handleResetPassword with the new password
+  };
+  
   useEffect(() => {
     const host_id = 'd2b154ee85f316a9ba2b9273eb2e3470'; // Default host_id
     const url = `https://api.play888king.com/users/update-all-balances/${host_id}`; // Update with your actual API endpoint
@@ -289,6 +363,7 @@ export default function UserList() {
   }, []); // Empty dependency array means this effect runs once when the component mounts
 
   
+
   return (
     <div>
     <Modal title={modalInfo.type} visible={modalInfo.visible} onCancel={hideModal} onOk={() => form.submit()}>
@@ -454,18 +529,27 @@ export default function UserList() {
   }}
 />
 
+
 <Table.Column
-  title="Suspended"
-  dataIndex="suspended"
-  key="suspended"
-  render={(suspended, user) => (
-    <Switch
-    checked={suspended}
-    onChange={() => toggleSuspension((user as { memberId: string | number }).memberId)}
-  />
+  title={translate("Set Credit")}
+  dataIndex="actions"
+  render={(_, record: BaseRecord) => (
+<Space>
+  <Button 
+    type="primary" 
+    size="small" 
+    onClick={() => {
+      showModal("manage", record.memberId);
+      handleUpdateBalances();
+    }} 
+    style={{ backgroundColor: 'green', borderColor: 'green' }}
+  >
+    Manage
+  </Button>
+</Space>
   )}
 />
-         
+
          
 
 
