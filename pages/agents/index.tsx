@@ -296,7 +296,7 @@ export default function AgentList() {
     }
   
     try {
-      await axios.put(`https://api.play888king.com/users/${user.memberId}/reset-password`, { newPassword: user.newPassword }, {
+      await axios.put(`https://api.play888king.com/users/${user.username}/reset-password`, { newPassword: user.newPassword }, {
         headers: {
           "Authorization": `Bearer ${jwtToken}`
         }
