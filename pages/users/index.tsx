@@ -351,10 +351,15 @@ export default function UserList() {
       return (
         <>
           <p>User Actions</p>
+
+          <p>Suspend Account</p>
           <Switch 
           checked={isSuspended} 
           onChange={(checked) => modalInfo.memberId && handleSuspendToggle(modalInfo.memberId, checked)} 
-        /><Button onClick={() => modalInfo.memberId && handleKick(modalInfo.memberId)}>Kick User</Button>
+        />
+        
+        <p>Kick Account</p>
+        <Button onClick={() => modalInfo.memberId && handleKick(modalInfo.memberId)}>Kick User</Button>
 
         <p>Set new Password</p>
 
