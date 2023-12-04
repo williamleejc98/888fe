@@ -47,8 +47,7 @@ export default function ReportTable() {
   const [lastFetched, setLastFetched] = useState<Date | null>(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
 
-  const sortedData = [...reportData].sort((a, b) => new Date(b.report_date) - new Date(a.report_date));
-
+  const sortedData = [...reportData].sort((a, b) => new Date(b.report_date).getTime() - new Date(a.report_date).getTime());
   const [iframeUrl, setIframeUrl] = useState("");
 
   const handleViewDetail = (url: string) => {
