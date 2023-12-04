@@ -5,7 +5,7 @@ import { authProvider } from "src/authProvider";
 import { IResourceComponentsProps, BaseRecord, useTranslate, useMany } from "@refinedev/core";
 import { useTable, List, EditButton, ShowButton, DeleteButton, MarkdownField, DateField } from "@refinedev/antd";
 import { useState, useEffect } from "react";
-import { Table, Space, Modal, Form, Input, Button, InputNumber, Alert } from "antd";
+import { Table, Space, Modal, Form, Input, Button, InputNumber, Alert, Switch } from "antd";
 import nookies from 'nookies';
 import axios from 'axios';
 import { WhatsAppOutlined } from '@ant-design/icons';
