@@ -12,7 +12,7 @@ import { WhatsAppOutlined } from '@ant-design/icons';
 type CountdownProps = {
   endTime: string;
 };
-type ModalType = "deposit" | "withdraw" | "duration" | "manage";
+type ModalType = "deposit" | "withdraw" | "duration" | "reset";
 type DepositValues = {
   depositAmount: number;
 };
@@ -347,20 +347,10 @@ export default function UserList() {
       );
     }
 
-    if (modalType === "manage") {
+    if (modalType === "reset") {
       return (
         <>
-          <p>User Actions</p>
-
-          <p>Suspend Account</p>
-          <Switch 
-          checked={isSuspended} 
-          onChange={(checked) => modalInfo.memberId && handleSuspendToggle(modalInfo.memberId, checked)} 
-        />
-        
-        <p>Kick Account</p>
-        <Button onClick={() => modalInfo.memberId && handleKick(modalInfo.memberId)}>Kick User</Button>
-
+    
         <p>Set new Password</p>
 
           <Form form={form} onFinish={handleResetSubmit}>
@@ -568,11 +558,21 @@ export default function UserList() {
 <Table.Column
   dataIndex="suspended"
   title={translate("Status")}
-  render={(suspended: boolean) => suspended ? "Suspended" : "Active"}
+  render={(suspended: boolean, record: BaseRecord) => (
+    <>
+    <Switch
+      checked={suspended}
+      onChange={(checked) => handleSuspendToggle(record.memberId, checked)}
+    />
+    <Button onClick={() => modalInfo.memberId && handleKick(modalInfo.memberId)}>Kick User</Button>
+    </>
+
+  )}
 />
 
+
 <Table.Column
-  title={translate("Manage")}
+  title={translate("Reset Pass")}
   dataIndex="actions"
   render={(_, record: BaseRecord) => (
 <Space>
@@ -580,8 +580,7 @@ export default function UserList() {
     type="primary" 
     size="small" 
     onClick={() => {
-      showModal("manage", record.memberId, record.balance);
-      handleUpdateBalances();
+      showModal("reset", record.memberId, record.balance);
     }} 
     style={{ backgroundColor: 'green', borderColor: 'green' }}
   >
