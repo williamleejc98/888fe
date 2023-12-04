@@ -47,6 +47,7 @@ export default function ReportTable() {
   const [lastFetched, setLastFetched] = useState<Date | null>(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
 
+  const sortedData = [...reportData].sort((a, b) => new Date(b.report_date) - new Date(a.report_date));
 
   const [iframeUrl, setIframeUrl] = useState("");
 
@@ -272,7 +273,7 @@ export default function ReportTable() {
         </Col>
       </div>
       <Table
-        dataSource={reportData}
+        dataSource={sortedData}
         rowKey="_id"
         pagination={pagination}
         onChange={handleTableChange}

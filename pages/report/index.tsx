@@ -33,6 +33,7 @@ export default function ReportTable() {
   const [searchQuery, setSearchQuery] = useState("");
   const [totalGames, setTotalGames] = useState(0);
   const [refreshKey, setRefreshKey] = useState(0); // Add this line
+  const sortedData = [...reportData].sort((a, b) => new Date(b.report_date) - new Date(a.report_date));
 
   const [totalTurnover, setTotalTurnover] = useState(0);
   const [totalPayout, setTotalPayout] = useState(0);
@@ -42,7 +43,7 @@ export default function ReportTable() {
   const [lastFetched, setLastFetched] = useState<Date | null>(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
 
- 
+
 const [iframeUrl, setIframeUrl] = useState("");
 
 const handleViewDetail = (url: string) => {
@@ -289,7 +290,7 @@ width="80%"
 </Col>
 </div>
 <Table
-        dataSource={reportData}
+        dataSource={sortedData}
         rowKey="_id"
         pagination={pagination}
         onChange={handleTableChange}
