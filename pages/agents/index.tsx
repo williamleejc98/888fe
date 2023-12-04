@@ -12,13 +12,17 @@ import { WhatsAppOutlined } from '@ant-design/icons';
 
 const API_BASE_URL = "https://api.play888king.com/agents";  // Update the endpoint as needed
 
-type ModalType = "deposit" | "withdraw" | "duration";
+type ModalType = "deposit" | "withdraw" | "duration" | "reset";
 type FormValues = {
   depositAmount?: number;
   withdrawAmount?: number;
   duration?: number;
 };
 
+type ResetPasswordFormValues = {
+  newPassword: string;
+  // Add other properties as needed
+};
 
 export default function AgentList() {
   const translate = useTranslate();
@@ -233,6 +237,76 @@ export default function AgentList() {
     }
   };
   
+
+
+  const handleSuspendToggle = async (username: string, checked: boolean) => {
+    setIsSuspended(checked); // Update local state immediately (optional)
+  
+    try {
+      const jwtTokenObject = nookies.get(null, 'jwt');
+      const jwtToken = jwtTokenObject ? jwtTokenObject.jwt : '';
+  
+      if (!jwtToken) {
+        console.error('JWT token is missing');
+        return;
+      }
+  
+      await axios.put(`https://api.play888king.com/users/${username}/suspend`, { suspended: checked }, {
+        headers: {
+          "Authorization": `Bearer ${jwtToken}`
+        }
+      });
+      window.location.reload();
+    } catch (error) {
+      console.error('Failed to toggle suspension:', error);
+    }
+  };
+  
+
+  const handleKick = async (username: string | number) => {
+    const jwtTokenObject = nookies.get(null, 'jwt');
+    const jwtToken = jwtTokenObject ? jwtTokenObject.jwt : '';
+  
+    if (!jwtToken) {
+      console.error('JWT token is missing');
+      return;
+    }
+  
+    try {
+      await axios.post(`https://api.play888king.com/users/${username}/kick`, {}, {
+        headers: {
+          "Authorization": `Bearer ${jwtToken}`
+        }
+      });
+      window.alert('User kicked successfully');
+
+    } catch (error) {
+      console.error('Failed to kick user:', error);
+    }
+  };
+
+  const handleResetPassword = async (user: { username: string | null, newPassword: string }) => {
+    const jwtTokenObject = nookies.get(null, 'jwt');
+    const jwtToken = jwtTokenObject ? jwtTokenObject.jwt : '';
+  
+    if (!jwtToken) {
+      console.error('JWT token is missing');
+      return;
+    }
+  
+    try {
+      await axios.put(`https://api.play888king.com/users/${user.memberId}/reset-password`, { newPassword: user.newPassword }, {
+        headers: {
+          "Authorization": `Bearer ${jwtToken}`
+        }
+      });
+      // Handle the response or perform any necessary actions after resetting the password
+    } catch (error) {
+      console.error('Failed to reset password:', error);
+    }
+  };
+
+
   const renderModalContent = () => {
     
     const modalType = modalInfo.type;
@@ -337,6 +411,55 @@ export default function AgentList() {
             dataIndex="contactTelegram"
             title={translate("Telegram")}
           />
+
+
+<Table.Column
+  dataIndex="suspended"
+  title={translate("Status")}
+  render={(suspended: boolean, record: BaseRecord) => (
+    <>
+      {suspended ? "Suspended" : "Active"}
+      <Switch
+        checked={suspended}
+        onChange={(checked) => handleSuspendToggle(record.username, checked)}
+      />
+      <span style={{ marginLeft: '8px' }}>Suspend</span>
+    </>
+  )}
+/>
+
+<Table.Column
+  title={translate("Kick User")}
+  dataIndex="actions"
+  render={(_, record: BaseRecord) => (
+    <Button 
+      type="primary" 
+      size="small" 
+      onClick={() => record.username && handleKick(record.username)}
+    >
+      Kick User
+    </Button>
+  )}
+/>
+
+<Table.Column
+  title={translate("Reset Access")}
+  dataIndex="actions"
+  render={(_, record: BaseRecord) => (
+<Space>
+  <Button 
+    type="primary" 
+    size="small" 
+    onClick={() => {
+      showModal("reset", record.username);
+    }} 
+    style={{ backgroundColor: 'green', borderColor: 'green' }}
+  >
+    Manage
+  </Button>
+</Space>
+  )}
+/>
 
 
           <Table.Column
