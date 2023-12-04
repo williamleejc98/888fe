@@ -4,11 +4,9 @@ import { authProvider } from "src/authProvider";
 import { useTranslate } from "@refinedev/core";
 import { Create, useForm, useSelect } from "@refinedev/antd";
 import { Checkbox, Alert, Button, Form, Input, Select } from "antd";
-interface UserCreateProps {
-  subdomain: string;
-}
 
-export default function UserCreate({subdomain}: UserCreateProps) {
+
+export default function UserCreate() {
   const translate = useTranslate();
   const { formProps, saveButtonProps, queryResult } = useForm();
 
@@ -131,7 +129,6 @@ export const getServerSideProps: GetServerSideProps<{}> = async (context) => {
   const translateProps = await serverSideTranslations(context.locale ?? "en", [
     "common",
   ]);
-  const subdomain = await fetchSubdomainFromAgentDatabase(context);
 
 
   if (!authenticated) {
@@ -149,7 +146,6 @@ export const getServerSideProps: GetServerSideProps<{}> = async (context) => {
   return {
     props: {
       ...translateProps,
-      subdomain,
     },
   };
 };
