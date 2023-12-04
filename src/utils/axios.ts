@@ -10,7 +10,7 @@ axiosInstance.interceptors.response.use(
     async (error) => {
         if (error.response?.status === 401) {
             // Unauthorized, log out the user
-            await authProvider.logout({});        }
+            await authProvider.logout(null);      }
         const customError: HttpError = {
             ...error,
             message: error.response?.data?.message,
