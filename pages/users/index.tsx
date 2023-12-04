@@ -126,7 +126,7 @@ export default function UserList() {
           "Authorization": `Bearer ${jwtToken}`
         }
       });
-      // Refresh the user data after toggling the suspension
+      window.location.reload();
     } catch (error) {
       console.error('Failed to toggle suspension:', error);
     }
@@ -172,26 +172,6 @@ export default function UserList() {
   }, []);
 
 
-  const handleSuspend = async (memberId: string | number) => {
-    const jwtTokenObject = nookies.get(null, 'jwt');
-    const jwtToken = jwtTokenObject ? jwtTokenObject.jwt : '';
-  
-    if (!jwtToken) {
-      console.error('JWT token is missing');
-      return;
-    }
-  
-    try {
-      await axios.put(`https://api.play888king.com/users/${memberId}/suspend`, {}, {
-        headers: {
-          "Authorization": `Bearer ${jwtToken}`
-        }
-      });
-      // Refresh the user data after toggling the suspension
-    } catch (error) {
-      console.error('Failed to toggle suspension:', error);
-    }
-  };
 
 
   const handleKick = async (memberId: string | number) => {
@@ -560,15 +540,15 @@ export default function UserList() {
   title={translate("Status")}
   render={(suspended: boolean, record: BaseRecord) => (
     <>
-    <Switch
-      checked={suspended}
-      onChange={(checked) => handleSuspendToggle(record.memberId, checked)}
-    />
+      {suspended ? "Suspended" : "Active"}
+      <Switch
+        checked={suspended}
+        onChange={(checked) => handleSuspendToggle(record.memberId, checked)}
+      />
+      <span style={{ marginLeft: '8px' }}>Suspend</span>
     </>
-
   )}
 />
-
 
 <Table.Column
   title={translate("Kick User")}
