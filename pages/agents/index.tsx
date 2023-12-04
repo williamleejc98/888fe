@@ -28,6 +28,7 @@ export default function AgentList() {
   const translate = useTranslate();
   const { tableProps } = useTable({ syncWithLocation: true });
   const [agents, setAgents] = useState<BaseRecord[]>([]);
+  const [isSuspended, setIsSuspended] = useState(false);
 
   const [modalInfo, setModalInfo] = useState<{ type: ModalType | null, visible: boolean, username: string | null }>({
     type: null,
