@@ -328,7 +328,6 @@ export default function UserList() {
             <Form.Item name="newPassword" label="New Password" rules={[{ required: true, message: "Please enter the new password" }]}>
               <Input type="password" />
             </Form.Item>
-            <Button htmlType="submit">Reset Password</Button>
           </Form>
         </>
       );
@@ -347,6 +346,7 @@ export default function UserList() {
       console.error('Username is null');
       // Handle the case where username is null, e.g., show an error message to the user
     }
+
   };
 
   const handleResetPassword = async (user: { memberId: string, newPassword: string }) => {
@@ -369,10 +369,11 @@ export default function UserList() {
       });
   
       // Handle the response
-      console.log('Password reset response:', response.data);
+      window.alert('Password reset response:' + JSON.stringify(response.data));
     } catch (error) {
-      console.error('Failed to reset password:', error);
+      window.alert('Failed to Reset Password:', error');
     }
+    hideModal();
   };
 
   useEffect(() => {
@@ -440,8 +441,6 @@ export default function UserList() {
       </div>
 
       <List>
-
-        
   <Table
           {...tableProps}
           rowKey="id"

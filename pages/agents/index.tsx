@@ -322,12 +322,15 @@ export default function AgentList() {
         }
       });
   
+      //
       // Handle the response
-      console.log('Password reset response:', response.data);
+      window.alert('Password reset response:' + JSON.stringify(response.data));
     } catch (error) {
-      console.error('Failed to reset password:', error);
+      window.alert('Failed to Reset Password:', error');
     }
+    hideModal();
   };
+  
   
 
   const renderModalContent = () => {
@@ -372,7 +375,6 @@ export default function AgentList() {
             <Form.Item name="newPassword" label="New Password" rules={[{ required: true, message: "Please enter the new password" }]}>
               <Input type="password" />
             </Form.Item>
-            <Button htmlType="submit">Reset Password</Button>
           </Form>
         </>
       );
