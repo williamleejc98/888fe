@@ -202,26 +202,7 @@ export default function UserList() {
     }
   };
 
-  const handleResetPassword = async (user: { memberId: string | null, newPassword: string }) => {
-    const jwtTokenObject = nookies.get(null, 'jwt');
-    const jwtToken = jwtTokenObject ? jwtTokenObject.jwt : '';
 
-    if (!jwtToken) {
-      console.error('JWT token is missing');
-      return;
-    }
-
-    try {
-      await axios.put(`https://api.play888king.com/users/${user.memberId}/reset-password`, { newPassword: user.newPassword }, {
-        headers: {
-          "Authorization": `Bearer ${jwtToken}`
-        }
-      });
-      // Handle the response or perform any necessary actions after resetting the password
-    } catch (error) {
-      console.error('Failed to reset password:', error);
-    }
-  };
 
   const [modalInfo, setModalInfo] = useState<{ type: ModalType | null, visible: boolean, memberId: string | null, balance: number | null }>({
     type: null,
@@ -358,9 +339,35 @@ export default function UserList() {
 
   const handleResetSubmit = (values: ResetPasswordFormValues) => {
     const newPassword = values.newPassword; // Get the new password from the form values
-    handleResetPassword({ memberId: modalInfo.memberId, newPassword }); // Call handleResetPassword with the new password
+    handleResetPassword({ username: modalInfo.username, newPassword }); // Call handleResetPassword with the new password
   };
 
+  const handleResetPassword = async (user: { memberId: string, newPassword: string }) => {
+    const jwtTokenObject = nookies.get(null, 'jwt');
+    const jwtToken = jwtTokenObject ? jwtTokenObject.jwt : '';
+  
+    if (!jwtToken) {
+      console.error('JWT token is missing');
+      return;
+    }
+  
+    try {
+      const response = await axios.post(`https://api.play888king.com/users/reset-password`, {
+        memberId: user.memberId,
+        newPassword: user.newPassword
+      }, {
+        headers: {
+          "Authorization": `Bearer ${jwtToken}`
+        }
+      });
+  
+      // Handle the response
+      console.log('Password reset response:', response.data);
+    } catch (error) {
+      console.error('Failed to reset password:', error);
+    }
+  };
+  
   useEffect(() => {
     const host_id = 'd2b154ee85f316a9ba2b9273eb2e3470'; // Default host_id
     const url = `https://api.play888king.com/users/update-all-balances/${host_id}`; // Update with your actual API endpoint

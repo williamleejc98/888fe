@@ -291,27 +291,37 @@ export default function AgentList() {
     }
   };
 
-  const handleResetPassword = async (user: { username: string | null, newPassword: string }) => {
+  const handleResetSubmit = (values: ResetPasswordFormValues) => {
+    const newPassword = values.newPassword; // Get the new password from the form values
+    handleResetPassword({ username: modalInfo.username, newPassword }); // Call handleResetPassword with the new password
+  };
+
+  const handleResetPassword = async (user: { username: string, newPassword: string }) => {
     const jwtTokenObject = nookies.get(null, 'jwt');
     const jwtToken = jwtTokenObject ? jwtTokenObject.jwt : '';
-
+  
     if (!jwtToken) {
       console.error('JWT token is missing');
       return;
     }
-
+  
     try {
-      await axios.put(`https://api.play888king.com/agents/${user.username}/reset-password`, { newPassword: user.newPassword }, {
+      const response = await axios.post(`https://api.play888king.com/agents/reset-password`, {
+        username: user.username,
+        newPassword: user.newPassword
+      }, {
         headers: {
           "Authorization": `Bearer ${jwtToken}`
         }
       });
-      // Handle the response or perform any necessary actions after resetting the password
+  
+      // Handle the response
+      console.log('Password reset response:', response.data);
     } catch (error) {
       console.error('Failed to reset password:', error);
     }
   };
-
+  
 
   const renderModalContent = () => {
 
@@ -342,6 +352,20 @@ export default function AgentList() {
             <Form.Item name="withdrawAmount" label="Withdraw Amount" rules={[{ required: true, message: "Please enter the withdraw amount" }]}>
               <InputNumber style={{ width: '100%' }} onChange={handleInputChange} />
             </Form.Item>
+          </Form>
+        </>
+      );
+    }
+
+    if (modalType === "reset") {
+      return (
+        <>
+          <p>Set new Password</p>
+          <Form form={form} onFinish={handleResetSubmit}>
+            <Form.Item name="newPassword" label="New Password" rules={[{ required: true, message: "Please enter the new password" }]}>
+              <Input type="password" />
+            </Form.Item>
+            <Button htmlType="submit">Reset Password</Button>
           </Form>
         </>
       );
