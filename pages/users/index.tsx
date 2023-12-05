@@ -108,19 +108,24 @@ export default function UserList() {
   const [lastFetched, setLastFetched] = useState<Date | null>(null);
   const [showAlert, setShowAlert] = useState(false);
   const [isSuspended, setIsSuspended] = useState(false);
+  const [searchUsername, setSearchUsername] = useState('');
+  const [searchFullName, setSearchFullName] = useState('');
+  const [searchContactNumber, setSearchContactNumber] = useState('');
+  const [searchBankAccountNumber, setSearchBankAccountNumber] = useState('');
+
 
   const handleSuspendToggle = async (memberId: string, checked: boolean) => {
     setIsSuspended(checked); // Update local state immediately (optional)
-  
+
     try {
       const jwtTokenObject = nookies.get(null, 'jwt');
       const jwtToken = jwtTokenObject ? jwtTokenObject.jwt : '';
-  
+
       if (!jwtToken) {
         console.error('JWT token is missing');
         return;
       }
-  
+
       await axios.put(`https://api.play888king.com/users/${memberId}/suspend`, { suspended: checked }, {
         headers: {
           "Authorization": `Bearer ${jwtToken}`
@@ -131,30 +136,30 @@ export default function UserList() {
       console.error('Failed to toggle suspension:', error);
     }
   };
-  
 
-  
+
+
   const [showNegativeAlert, setShowNegativeAlert] = useState(false);
   const handleUpdateBalances = async () => {
     const host_id = 'd2b154ee85f316a9ba2b9273eb2e3470'; // Replace with your actual host_id
     const url = `https://api.play888king.com/update-all-balances/${host_id}`; // Update with your actual API endpoint
-  
+
 
     const jwtTokenObject = nookies.get(null, 'jwt');
     const jwtToken = jwtTokenObject ? jwtTokenObject.jwt : '';
-  
+
     if (!jwtToken) {
       console.error('JWT token is missing');
       return;
     }
-  
+
     try {
       const response = await axios.put(url, {}, {
         headers: {
           "Authorization": `Bearer ${jwtToken}`
         }
       });
-    
+
       console.log(response.data);
       // Update last fetched time
       setLastFetched(new Date());
@@ -178,12 +183,12 @@ export default function UserList() {
   const handleKick = async (memberId: string | number) => {
     const jwtTokenObject = nookies.get(null, 'jwt');
     const jwtToken = jwtTokenObject ? jwtTokenObject.jwt : '';
-  
+
     if (!jwtToken) {
       console.error('JWT token is missing');
       return;
     }
-  
+
     try {
       await axios.post(`https://api.play888king.com/users/${memberId}/kick`, {}, {
         headers: {
@@ -200,12 +205,12 @@ export default function UserList() {
   const handleResetPassword = async (user: { memberId: string | null, newPassword: string }) => {
     const jwtTokenObject = nookies.get(null, 'jwt');
     const jwtToken = jwtTokenObject ? jwtTokenObject.jwt : '';
-  
+
     if (!jwtToken) {
       console.error('JWT token is missing');
       return;
     }
-  
+
     try {
       await axios.put(`https://api.play888king.com/users/${user.memberId}/reset-password`, { newPassword: user.newPassword }, {
         headers: {
@@ -227,7 +232,7 @@ export default function UserList() {
 
 
 
- 
+
   const form = Form.useForm()[0];
   const showModal = (type: ModalType, memberId: string, balance: number | null = null) => {
     setModalInfo({ type, visible: true, memberId, balance });
@@ -245,28 +250,28 @@ export default function UserList() {
       return;
     }
 
-      // Add this condition
-  if (showNegativeAlert) {
-    Modal.error({
-      title: 'Input Error',
-      content: 'Your input cannot be negative',
-    });    return;
-  }
+    // Add this condition
+    if (showNegativeAlert) {
+      Modal.error({
+        title: 'Input Error',
+        content: 'Your input cannot be negative',
+      }); return;
+    }
 
     console.log(`${modalInfo.type} form values:`, values);
     console.log("Member ID:", modalInfo.memberId);
-  
+
     if (modalInfo.type === "deposit" && 'depositAmount' in values) {
       sendApiRequest(modalInfo.memberId!, modalInfo.type, values.depositAmount);
     } else if (modalInfo.type === "withdraw" && 'withdrawAmount' in values) {
       sendApiRequest(modalInfo.memberId!, modalInfo.type, values.withdrawAmount);
     }
-  
+
     hideModal();
     window.location.reload();
   };
 
-  
+
 
   const handleInputChange = (value: number | 0 | null) => {
     if (value === null) {
@@ -299,13 +304,13 @@ export default function UserList() {
 
           <Form form={form} onFinish={handleSubmit}>
             <Form.Item name="depositAmount" label="Deposit Amount" rules={[{ required: true, message: "Please enter the deposit amount" }]}>
-              <InputNumber  style={{ width: '100%' }} onChange={handleInputChange} />
+              <InputNumber style={{ width: '100%' }} onChange={handleInputChange} />
             </Form.Item>
           </Form>
         </>
       );
     }
-    
+
     if (modalType === "withdraw") {
       return (
         <>
@@ -337,16 +342,16 @@ export default function UserList() {
     if (modalType === "reset") {
       return (
         <>
-        <p>Set new Password</p>
+          <p>Set new Password</p>
           <Form form={form} onFinish={handleResetSubmit}>
-        <Form.Item name="newPassword" label="New Password" rules={[{ required: true, message: "Please enter the new password" }]}>
-          <Input type="password" />
-        </Form.Item>
-        <Button htmlType="submit">Reset Password</Button>
-      </Form>
+            <Form.Item name="newPassword" label="New Password" rules={[{ required: true, message: "Please enter the new password" }]}>
+              <Input type="password" />
+            </Form.Item>
+            <Button htmlType="submit">Reset Password</Button>
+          </Form>
         </>
       );
-      }
+    }
     return null;
   };
 
@@ -355,11 +360,11 @@ export default function UserList() {
     const newPassword = values.newPassword; // Get the new password from the form values
     handleResetPassword({ memberId: modalInfo.memberId, newPassword }); // Call handleResetPassword with the new password
   };
-  
+
   useEffect(() => {
     const host_id = 'd2b154ee85f316a9ba2b9273eb2e3470'; // Default host_id
     const url = `https://api.play888king.com/users/update-all-balances/${host_id}`; // Update with your actual API endpoint
-  
+
     axios.put(url)
       .then(response => {
         console.log(response.data);
@@ -370,23 +375,64 @@ export default function UserList() {
       });
   }, []); // Empty dependency array means this effect runs once when the component mounts
 
-  
+
+  const filteredData = tableProps.dataSource && tableProps.dataSource.filter(
+    record =>
+      record.memberId.toLowerCase().includes(searchUsername.toLowerCase()) &&
+      record.bankAccountName.toLowerCase().includes(searchFullName.toLowerCase()) &&
+      record.phoneNumber.includes(searchContactNumber) &&
+      record.bankAccountNumber.includes(searchBankAccountNumber)
+  );
+
 
   return (
     <div>
-<Modal title={modalInfo.type?.toUpperCase()} visible={modalInfo.visible} onCancel={hideModal} onOk={() => form.submit()}>
-  {renderModalContent()}
-</Modal>
+      <Modal title={modalInfo.type?.toUpperCase()} visible={modalInfo.visible} onCancel={hideModal} onOk={() => form.submit()}>
+        {renderModalContent()}
+      </Modal>
       <Alert
-  message="Before you make any deposits/withdraws, please fetch balances first here"
-  type="info"
-  showIcon
-/>
+        message="Before you make any deposits/withdraws, please fetch balances first here"
+        type="info"
+        showIcon
+      />
       <Button type="primary" onClick={handleUpdateBalances}>Update Balances</Button>
       {lastFetched && <p>Last fetched time: {lastFetched.toLocaleString()}</p>}
-      <List>
-        <Table {...tableProps} rowKey="id">
 
+      <div style={{ marginBottom: 16 }}>
+        <Input
+          placeholder="Search Username"
+          value={searchUsername}
+          onChange={e => setSearchUsername(e.target.value)}
+          style={{ width: 200, marginRight: 8 }}
+        />
+        <Input
+          placeholder="Search Full Name"
+          value={searchFullName}
+          onChange={e => setSearchFullName(e.target.value)}
+          style={{ width: 200, marginRight: 8 }}
+        />
+        <Input
+          placeholder="Search Contact Number"
+          value={searchContactNumber}
+          onChange={e => setSearchContactNumber(e.target.value)}
+          style={{ width: 200, marginRight: 8 }}
+        />
+        <Input
+          placeholder="Search Bank Account Number"
+          value={searchBankAccountNumber}
+          onChange={e => setSearchBankAccountNumber(e.target.value)}
+          style={{ width: 200 }}
+        />
+      </div>
+
+      <List>
+
+        
+  <Table
+          {...tableProps}
+          rowKey="id"
+          dataSource={filteredData} // Use filtered data for the table
+        >
           <Table.Column
             dataIndex="memberId"
             title={translate("Username")}
@@ -400,7 +446,7 @@ export default function UserList() {
             title={translate("Wallet Balance")}
             render={(value: number) => value ? `RM ${value.toFixed(2)}` : 'MYR 0.00'}
 
-            
+
           />
           <Table.Column
             dataIndex="promotionalBalance"
@@ -408,79 +454,79 @@ export default function UserList() {
             render={(value: number) => value ? `RM ${value.toFixed(2)}` : 'MYR 0.00'}
 
           />
-         <Table.Column
-  title={translate("Set Credit")}
-  dataIndex="actions"
-  render={(_, record: BaseRecord) => (
-<Space>
-  <Button 
-    type="primary" 
-    size="small" 
-    onClick={() => {
-      showModal("deposit", record.memberId, record.balance);
-      handleUpdateBalances();
-    }} 
-    style={{ backgroundColor: 'green', borderColor: 'green' }}
-  >
-    Deposit
-  </Button>
-  <Button 
-    type="primary" 
-    size="small" 
-    onClick={() => {
-      showModal("withdraw", record.memberId, record.balance);
-      handleUpdateBalances();
-    }} 
-    style={{ backgroundColor: 'red', borderColor: 'red' }}
-  >
-    Withdraw
-  </Button>
-</Space>
-  )}
-/>
+          <Table.Column
+            title={translate("Set Credit")}
+            dataIndex="actions"
+            render={(_, record: BaseRecord) => (
+              <Space>
+                <Button
+                  type="primary"
+                  size="small"
+                  onClick={() => {
+                    showModal("deposit", record.memberId, record.balance);
+                    handleUpdateBalances();
+                  }}
+                  style={{ backgroundColor: 'green', borderColor: 'green' }}
+                >
+                  Deposit
+                </Button>
+                <Button
+                  type="primary"
+                  size="small"
+                  onClick={() => {
+                    showModal("withdraw", record.memberId, record.balance);
+                    handleUpdateBalances();
+                  }}
+                  style={{ backgroundColor: 'red', borderColor: 'red' }}
+                >
+                  Withdraw
+                </Button>
+              </Space>
+            )}
+          />
 
-<Table.Column
-  title={translate("Promotion Duration (Timer)")}
-  key="activePromotion"
-  render={(record) => {
-    const { activePromotion, lastPromotionClaim } = record;
-    if (activePromotion.isActive) {
-      const claimDate = new Date(lastPromotionClaim);
-      const endDate = new Date(claimDate.getTime() + activePromotion.promotionDuration * 24 * 60 * 60 * 1000); // Add duration days to claim date
-      const diffMs = endDate.getTime() - now.getTime(); // milliseconds between now & end date
-      if (diffMs < 0) {
-        return <span style={{ color: "red" }}>Promo Expired</span>;
-      }
-      const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24)); // days
+          <Table.Column
+            title={translate("Promotion Duration (Timer)")}
+            key="activePromotion"
+            render={(record) => {
+              const { activePromotion, lastPromotionClaim } = record;
+              if (activePromotion.isActive) {
+                const claimDate = new Date(lastPromotionClaim);
+                const endDate = new Date(claimDate.getTime() + activePromotion.promotionDuration * 24 * 60 * 60 * 1000); // Add duration days to claim date
+                const diffMs = endDate.getTime() - now.getTime(); // milliseconds between now & end date
+                if (diffMs < 0) {
+                  return <span style={{ color: "red" }}>Promo Expired</span>;
+                }
+                const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24)); // days
 
-      const diffHrs = Math.floor((diffMs % 86400000) / 3600000); // hours
-      const diffMins = Math.round(((diffMs % 86400000) % 3600000) / 60000); // minutes
-      const diffSecs = Math.round(((diffMs % 86400000) % 3600000) % 60000 / 1000); // seconds
+                const diffHrs = Math.floor((diffMs % 86400000) / 3600000); // hours
+                const diffMins = Math.round(((diffMs % 86400000) % 3600000) / 60000); // minutes
+                const diffSecs = Math.round(((diffMs % 86400000) % 3600000) % 60000 / 1000); // seconds
 
-      // Determine the color based on the remaining days
-      let color = "green";
-      let message = "Active";
-      if (diffDays < 5) {
-        color = "orange";
-      }
-      if (diffDays < 5) {
-        message = "Expiring";
-      }
+                // Determine the color based on the remaining days
+                let color = "green";
+                let message = "Active";
+                if (diffDays < 5) {
+                  color = "orange";
+                }
+                if (diffDays < 5) {
+                  message = "Expiring";
+                }
 
-      return (
-        <>
-          <span style={{ color: color }}>{message}</span>
-          <br />
-          Remaining: {diffDays} Days {diffHrs}:{diffMins}:{diffSecs}
-        </>
-      );
-    } else {
-      return <span style={{ color: "red" }}>Inactive</span>;
-    }
-  }}
-/>
-  
-<Table.Column
+                return (
+                  <>
+                    <span style={{ color: color }}>{message}</span>
+                    <br />
+                    Remaining: {diffDays} Days {diffHrs}:{diffMins}:{diffSecs}
+                  </>
+                );
+              } else {
+                return <span style={{ color: "red" }}>Inactive</span>;
+              }
+            }}
+          />
+
+          <Table.Column
             dataIndex="lastPromotionClaim"
             title={translate("Last Claimed")}
             render={(date: string) => {
@@ -489,7 +535,7 @@ export default function UserList() {
             }}
           />
 
-<Table.Column
+          <Table.Column
             title={translate("Last Awarded Days")}
             dataIndex="activePromotion"
             key="activePromotion"
@@ -497,7 +543,7 @@ export default function UserList() {
               <>
                 {activePromotion.isActive ? (
                   <>
-            
+
                     {activePromotion.promotionDuration} Days
                   </>
                 ) : (
@@ -506,88 +552,88 @@ export default function UserList() {
               </>
             )}
           />
-<Table.Column
+          <Table.Column
             dataIndex="bank"
             title={translate("Bank")}
           />
 
-<Table.Column
+          <Table.Column
             dataIndex="bankAccountName"
             title={translate("Full Name")}
           />
 
-<Table.Column
+          <Table.Column
             dataIndex="bankAccountNumber"
             title={translate("Bank Account No.")}
           />
 
-<Table.Column
-  dataIndex="phoneNumber"
-  title={translate("Whatsapp Contact Number")}
-  render={(phoneNumber: string) => {
-    const whatsappUrl = `https://wa.me/+6${phoneNumber}`;
-    return (
-      <a href={whatsappUrl} target="_blank" rel="noopener noreferrer">
-        <Button type="primary" icon={<WhatsAppOutlined />} style={{ backgroundColor: 'limegreen', borderColor: 'limegreen' }}>
-          +6{phoneNumber}
-        </Button>
-      </a>
-    );
-  }}
-/>
+          <Table.Column
+            dataIndex="phoneNumber"
+            title={translate("Whatsapp Contact Number")}
+            render={(phoneNumber: string) => {
+              const whatsappUrl = `https://wa.me/+6${phoneNumber}`;
+              return (
+                <a href={whatsappUrl} target="_blank" rel="noopener noreferrer">
+                  <Button type="primary" icon={<WhatsAppOutlined />} style={{ backgroundColor: 'limegreen', borderColor: 'limegreen' }}>
+                    +6{phoneNumber}
+                  </Button>
+                </a>
+              );
+            }}
+          />
 
 
 
 
-<Table.Column
-  dataIndex="suspended"
-  title={translate("Status")}
-  render={(suspended: boolean, record: BaseRecord) => (
-    <>
-      {suspended ? "Suspended" : "Active"}
-      <Switch
-        checked={suspended}
-        onChange={(checked) => handleSuspendToggle(record.memberId, checked)}
-      />
-      <span style={{ marginLeft: '8px' }}>Suspend</span>
-    </>
-  )}
-/>
+          <Table.Column
+            dataIndex="suspended"
+            title={translate("Status")}
+            render={(suspended: boolean, record: BaseRecord) => (
+              <>
+                {suspended ? "Suspended" : "Active"}
+                <Switch
+                  checked={suspended}
+                  onChange={(checked) => handleSuspendToggle(record.memberId, checked)}
+                />
+                <span style={{ marginLeft: '8px' }}>Suspend</span>
+              </>
+            )}
+          />
 
-<Table.Column
-  title={translate("Kick User")}
-  dataIndex="actions"
-  render={(_, record: BaseRecord) => (
-    <Button 
-      type="primary" 
-      size="small" 
-      onClick={() => record.memberId && handleKick(record.memberId)}
-    >
-      Kick User
-    </Button>
-  )}
-/>
+          <Table.Column
+            title={translate("Kick User")}
+            dataIndex="actions"
+            render={(_, record: BaseRecord) => (
+              <Button
+                type="primary"
+                size="small"
+                onClick={() => record.memberId && handleKick(record.memberId)}
+              >
+                Kick User
+              </Button>
+            )}
+          />
 
-<Table.Column
-  title={translate("Reset Access")}
-  dataIndex="actions"
-  render={(_, record: BaseRecord) => (
-<Space>
-  <Button 
-    type="primary" 
-    size="small" 
-    onClick={() => {
-      showModal("reset", record.memberId, record.balance);
-    }} 
-    style={{ backgroundColor: 'green', borderColor: 'green' }}
-  >
-    Manage
-  </Button>
-</Space>
-  )}
-/>
+          <Table.Column
+            title={translate("Reset Access")}
+            dataIndex="actions"
+            render={(_, record: BaseRecord) => (
+              <Space>
+                <Button
+                  type="primary"
+                  size="small"
+                  onClick={() => {
+                    showModal("reset", record.memberId, record.balance);
+                  }}
+                  style={{ backgroundColor: 'green', borderColor: 'green' }}
+                >
+                  Manage
+                </Button>
+              </Space>
+            )}
+          />
 
-         
+
 
 
 

@@ -29,6 +29,11 @@ export default function AgentList() {
   const { tableProps } = useTable({ syncWithLocation: true });
   const [agents, setAgents] = useState<BaseRecord[]>([]);
   const [isSuspended, setIsSuspended] = useState(false);
+  const [searchUsername, setSearchUsername] = useState('');
+  const [searchSubdomain, setSearchSubdomain] = useState('');
+  const [searchCompanyName, setSearchCompanyName] = useState('');
+  const [searchContactNumber, setSearchContactNumber] = useState('');
+  const [searchTelegram, setSearchTelegram] = useState('');
 
   const [modalInfo, setModalInfo] = useState<{ type: ModalType | null, visible: boolean, username: string | null }>({
     type: null,
@@ -51,7 +56,7 @@ export default function AgentList() {
   const refreshBalance = () => {
     const host_id = 'd2b154ee85f316a9ba2b9273eb2e3470'; // Default host_id
     const url = `https://api.play888king.com/agents/update-credit/${host_id}`; // Update with your actual API endpoint
-  
+
     axios.put(url)
       .then(response => {
         console.log(response.data);
@@ -193,13 +198,13 @@ export default function AgentList() {
       return;
     }
 
-      // Add this condition
-  if (showNegativeAlert) {
-    Modal.error({
-      title: 'Input Error',
-      content: 'Your input cannot be negative',
-    });    return;
-  }
+    // Add this condition
+    if (showNegativeAlert) {
+      Modal.error({
+        title: 'Input Error',
+        content: 'Your input cannot be negative',
+      }); return;
+    }
 
     console.log(`${modalInfo.type} form values:`, values);
     console.log("Username:", modalInfo.username);
@@ -237,21 +242,21 @@ export default function AgentList() {
       setShowNegativeAlert(false);
     }
   };
-  
+
 
 
   const handleSuspendToggle = async (username: string, checked: boolean) => {
     setIsSuspended(checked); // Update local state immediately (optional)
-  
+
     try {
       const jwtTokenObject = nookies.get(null, 'jwt');
       const jwtToken = jwtTokenObject ? jwtTokenObject.jwt : '';
-  
+
       if (!jwtToken) {
         console.error('JWT token is missing');
         return;
       }
-  
+
       await axios.put(`https://api.play888king.com/agents/${username}/suspend`, { suspended: checked }, {
         headers: {
           "Authorization": `Bearer ${jwtToken}`
@@ -262,17 +267,17 @@ export default function AgentList() {
       console.error('Failed to toggle suspension:', error);
     }
   };
-  
+
 
   const handleKick = async (username: string | number) => {
     const jwtTokenObject = nookies.get(null, 'jwt');
     const jwtToken = jwtTokenObject ? jwtTokenObject.jwt : '';
-  
+
     if (!jwtToken) {
       console.error('JWT token is missing');
       return;
     }
-  
+
     try {
       await axios.post(`https://api.play888king.com/agents/${username}/kick`, {}, {
         headers: {
@@ -289,12 +294,12 @@ export default function AgentList() {
   const handleResetPassword = async (user: { username: string | null, newPassword: string }) => {
     const jwtTokenObject = nookies.get(null, 'jwt');
     const jwtToken = jwtTokenObject ? jwtTokenObject.jwt : '';
-  
+
     if (!jwtToken) {
       console.error('JWT token is missing');
       return;
     }
-  
+
     try {
       await axios.put(`https://api.play888king.com/agents/${user.username}/reset-password`, { newPassword: user.newPassword }, {
         headers: {
@@ -309,35 +314,35 @@ export default function AgentList() {
 
 
   const renderModalContent = () => {
-    
+
     const modalType = modalInfo.type;
 
     if (modalType === "deposit") {
       return (
         <>
-        {showAlert && <Alert message="Your input can only be in two decimals" type="error" />}
-        {showNegativeAlert && <Alert message="Your input cannot be negative" type="error" />}
+          {showAlert && <Alert message="Your input can only be in two decimals" type="error" />}
+          {showNegativeAlert && <Alert message="Your input cannot be negative" type="error" />}
 
-        <Form form={form} onFinish={handleSubmit}>
-          <Form.Item name="depositAmount" label="Deposit Amount" rules={[{ required: true, message: "Please enter the deposit amount" }]}>
-          <InputNumber style={{ width: '100%' }} onChange={handleInputChange} />
-          </Form.Item>
-        </Form>
+          <Form form={form} onFinish={handleSubmit}>
+            <Form.Item name="depositAmount" label="Deposit Amount" rules={[{ required: true, message: "Please enter the deposit amount" }]}>
+              <InputNumber style={{ width: '100%' }} onChange={handleInputChange} />
+            </Form.Item>
+          </Form>
         </>
       );
     }
-    
+
     if (modalType === "withdraw") {
       return (
         <>
-        {showAlert && <Alert message="Your input can only be in two decimals" type="error" />}
-        {showNegativeAlert && <Alert message="Your input cannot be negative" type="error" />}
+          {showAlert && <Alert message="Your input can only be in two decimals" type="error" />}
+          {showNegativeAlert && <Alert message="Your input cannot be negative" type="error" />}
 
-        <Form form={form} onFinish={handleSubmit}>
-          <Form.Item name="withdrawAmount" label="Withdraw Amount" rules={[{ required: true, message: "Please enter the withdraw amount" }]}>
-          <InputNumber style={{ width: '100%' }} onChange={handleInputChange} />
-          </Form.Item>
-        </Form>
+          <Form form={form} onFinish={handleSubmit}>
+            <Form.Item name="withdrawAmount" label="Withdraw Amount" rules={[{ required: true, message: "Please enter the withdraw amount" }]}>
+              <InputNumber style={{ width: '100%' }} onChange={handleInputChange} />
+            </Form.Item>
+          </Form>
         </>
       );
     }
@@ -346,14 +351,64 @@ export default function AgentList() {
   };
 
 
+  // Filter function for agents
+  const filteredData = tableProps.dataSource && tableProps.dataSource.filter(
+    record =>
+      record.username.toLowerCase().includes(searchUsername.toLowerCase()) &&
+      record.subdomain.toLowerCase().includes(searchSubdomain.toLowerCase()) &&
+      record.companyName.toLowerCase().includes(searchCompanyName.toLowerCase()) &&
+      record.contactNumber && record.contactNumber.includes(searchContactNumber) &&
+      record.contactTelegram && record.contactTelegram.toLowerCase().includes(searchTelegram.toLowerCase())
+  );
+
+
+
+
+
+
+
   return (
     <div>
       <Modal title={modalInfo.type} visible={modalInfo.visible} onCancel={hideModal} onOk={() => form.submit()}>
         {renderModalContent()}
       </Modal>
       <Button type="primary" onClick={refreshBalance}>Refresh Balance</Button>
+
+      <div style={{ marginBottom: 16 }}>
+        <Input
+          placeholder="Search Username"
+          value={searchUsername}
+          onChange={e => setSearchUsername(e.target.value)}
+          style={{ width: 200, marginRight: 8 }}
+        />
+        <Input
+          placeholder="Search Subdomain"
+          value={searchSubdomain}
+          onChange={e => setSearchSubdomain(e.target.value)}
+          style={{ width: 200, marginRight: 8 }}
+        />
+        <Input
+          placeholder="Search Company Name"
+          value={searchCompanyName}
+          onChange={e => setSearchCompanyName(e.target.value)}
+          style={{ width: 200, marginRight: 8 }}
+        />
+        <Input
+          placeholder="Search Contact Number"
+          value={searchContactNumber}
+          onChange={e => setSearchContactNumber(e.target.value)}
+          style={{ width: 200, marginRight: 8 }}
+        />
+        <Input
+          placeholder="Search Telegram"
+          value={searchTelegram}
+          onChange={e => setSearchTelegram(e.target.value)}
+          style={{ width: 200 }}
+        />
+      </div>
+
       <List>
-        <Table dataSource={agents} {...tableProps} rowKey="_id">
+        <Table dataSource={filteredData} rowKey="_id">
           <Table.Column
             dataIndex="username"
             title={translate("Username")}
@@ -382,31 +437,31 @@ export default function AgentList() {
             dataIndex="subdomain"
             title={translate("Subdomain")}
           />
-        <Table.Column
-  dataIndex="logoImage"
-  title={translate("Logo")}
-  render={(filePath: string) => (
-    <img src={`https://api.play888king.com/${filePath}`} alt="Logo" style={{ width: '50px', height: '50px' }} />
-  )}
-/>
+          <Table.Column
+            dataIndex="logoImage"
+            title={translate("Logo")}
+            render={(filePath: string) => (
+              <img src={`https://api.play888king.com/${filePath}`} alt="Logo" style={{ width: '50px', height: '50px' }} />
+            )}
+          />
           <Table.Column
             dataIndex="companyName"
             title={translate("Company Name")}
           />
-         <Table.Column
-  dataIndex="contactNumber"
-  title={translate("Whatsapp Contact Number")}
-  render={(phoneNumber: string) => {
-    const whatsappUrl = `https://wa.me/+6${phoneNumber}`;
-    return (
-      <a href={whatsappUrl} target="_blank" rel="noopener noreferrer">
-        <Button type="primary" icon={<WhatsAppOutlined />} style={{ backgroundColor: 'limegreen', borderColor: 'limegreen' }}>
-          +6{phoneNumber}
-        </Button>
-      </a>
-    );
-  }}
-/>
+          <Table.Column
+            dataIndex="contactNumber"
+            title={translate("Whatsapp Contact Number")}
+            render={(phoneNumber: string) => {
+              const whatsappUrl = `https://wa.me/+6${phoneNumber}`;
+              return (
+                <a href={whatsappUrl} target="_blank" rel="noopener noreferrer">
+                  <Button type="primary" icon={<WhatsAppOutlined />} style={{ backgroundColor: 'limegreen', borderColor: 'limegreen' }}>
+                    +6{phoneNumber}
+                  </Button>
+                </a>
+              );
+            }}
+          />
 
           <Table.Column
             dataIndex="contactTelegram"
@@ -414,53 +469,53 @@ export default function AgentList() {
           />
 
 
-<Table.Column
-  dataIndex="suspended"
-  title={translate("Status")}
-  render={(suspended: boolean, record: BaseRecord) => (
-    <>
-      {suspended ? "Suspended" : "Active"}
-      <Switch
-        checked={suspended}
-        onChange={(checked) => handleSuspendToggle(record.username, checked)}
-      />
-      <span style={{ marginLeft: '8px' }}>Suspend</span>
-    </>
-  )}
-/>
+          <Table.Column
+            dataIndex="suspended"
+            title={translate("Status")}
+            render={(suspended: boolean, record: BaseRecord) => (
+              <>
+                {suspended ? "Suspended" : "Active"}
+                <Switch
+                  checked={suspended}
+                  onChange={(checked) => handleSuspendToggle(record.username, checked)}
+                />
+                <span style={{ marginLeft: '8px' }}>Suspend</span>
+              </>
+            )}
+          />
 
-<Table.Column
-  title={translate("Kick User")}
-  dataIndex="actions"
-  render={(_, record: BaseRecord) => (
-    <Button 
-      type="primary" 
-      size="small" 
-      onClick={() => record.username && handleKick(record.username)}
-    >
-      Kick User
-    </Button>
-  )}
-/>
+          <Table.Column
+            title={translate("Kick User")}
+            dataIndex="actions"
+            render={(_, record: BaseRecord) => (
+              <Button
+                type="primary"
+                size="small"
+                onClick={() => record.username && handleKick(record.username)}
+              >
+                Kick User
+              </Button>
+            )}
+          />
 
-<Table.Column
-  title={translate("Reset Access")}
-  dataIndex="actions"
-  render={(_, record: BaseRecord) => (
-<Space>
-  <Button 
-    type="primary" 
-    size="small" 
-    onClick={() => {
-      showModal("reset", record.username);
-    }} 
-    style={{ backgroundColor: 'green', borderColor: 'green' }}
-  >
-    Manage
-  </Button>
-</Space>
-  )}
-/>
+          <Table.Column
+            title={translate("Reset Access")}
+            dataIndex="actions"
+            render={(_, record: BaseRecord) => (
+              <Space>
+                <Button
+                  type="primary"
+                  size="small"
+                  onClick={() => {
+                    showModal("reset", record.username);
+                  }}
+                  style={{ backgroundColor: 'green', borderColor: 'green' }}
+                >
+                  Manage
+                </Button>
+              </Space>
+            )}
+          />
 
 
           <Table.Column

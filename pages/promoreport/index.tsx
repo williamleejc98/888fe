@@ -47,6 +47,7 @@ export default function ReportTable() {
   const [lastFetched, setLastFetched] = useState<Date | null>(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
 
+
   const [iframeUrl, setIframeUrl] = useState("");
 
   const handleViewDetail = (url: string) => {
