@@ -293,7 +293,14 @@ export default function AgentList() {
 
   const handleResetSubmit = (values: ResetPasswordFormValues) => {
     const newPassword = values.newPassword; // Get the new password from the form values
-    handleResetPassword({ username: modalInfo.username, newPassword }); // Call handleResetPassword with the new password
+    
+    // Check if username is not null
+    if (modalInfo.username) {
+      handleResetPassword({ username: modalInfo.username, newPassword }); // Call handleResetPassword with the new password
+    } else {
+      console.error('Username is null');
+      // Handle the case where username is null, e.g., show an error message to the user
+    }
   };
 
   const handleResetPassword = async (user: { username: string, newPassword: string }) => {

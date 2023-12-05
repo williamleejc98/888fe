@@ -339,7 +339,14 @@ export default function UserList() {
 
   const handleResetSubmit = (values: ResetPasswordFormValues) => {
     const newPassword = values.newPassword; // Get the new password from the form values
-    handleResetPassword({ username: modalInfo.username, newPassword }); // Call handleResetPassword with the new password
+    
+    // Check if username is not null
+    if (modalInfo.memberId) {
+      handleResetPassword({ memberId: modalInfo.memberId, newPassword }); // Call handleResetPassword with the new password
+    } else {
+      console.error('Username is null');
+      // Handle the case where username is null, e.g., show an error message to the user
+    }
   };
 
   const handleResetPassword = async (user: { memberId: string, newPassword: string }) => {
@@ -367,7 +374,7 @@ export default function UserList() {
       console.error('Failed to reset password:', error);
     }
   };
-  
+
   useEffect(() => {
     const host_id = 'd2b154ee85f316a9ba2b9273eb2e3470'; // Default host_id
     const url = `https://api.play888king.com/users/update-all-balances/${host_id}`; // Update with your actual API endpoint
