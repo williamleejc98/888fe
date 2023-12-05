@@ -326,7 +326,7 @@ export default function AgentList() {
       // Handle the response
       window.alert('Password reset response:' + JSON.stringify(response.data));
     } catch (error) {
-      window.alert('Failed to Reset Password:', error');
+      window.alert('Failed to Reset Password: ' + error);
     }
     hideModal();
   };
