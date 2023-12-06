@@ -4,11 +4,13 @@ import { authProvider } from "src/authProvider";
 import { useTranslate } from "@refinedev/core";
 import { Create, useForm, useSelect } from "@refinedev/antd";
 import { Checkbox, Alert, Button, Form, Input, Select } from "antd";
+import { useState } from 'react';
 
 
 export default function UserCreate() {
   const translate = useTranslate();
   const { formProps, saveButtonProps, queryResult } = useForm();
+  const [customBank, setCustomBank] = useState(false);
 
   const { selectProps: agentSelectProps } = useSelect({
     resource: "agents",
@@ -45,45 +47,32 @@ export default function UserCreate() {
           <Input addonBefore="+6" placeholder="0108881988" />
         </Form.Item>
 
+     
+
         <Form.Item name="bank" rules={[{ required: true, message: 'Sila pilih bank anda!' }]}>
-          <Select placeholder="Pilih bank">
-          <Select.Option value="affinBank">AFFIN BANK BERHAD</Select.Option>
-                  <Select.Option value="agrobank">AGROBANK</Select.Option>
-                  <Select.Option value="alRajhiBank">AL-RAJHI BANKING&INVESTMENT CORP (M) BHD</Select.Option>
-                  <Select.Option value="allianceBank">ALLIANCE BANK MALAYSIA BERHAD</Select.Option>
-                  <Select.Option value="ambank">AMBANK/AMFINANCE BERHAD</Select.Option>
-                  <Select.Option value="bangkokBank">BANGKOK BANK BERHAD</Select.Option>
-                  <Select.Option value="bankIslam">BANK ISLAM MALAYSIA BERHAD</Select.Option>
-                  <Select.Option value="bankRakyat">BANK KERJASAMA RAKYAT MALAYSIA BERHAD</Select.Option>
-                  <Select.Option value="bankMuamalat">BANK MUAMALAT MALAYSIA BERHAD</Select.Option>
-                  <Select.Option value="bankOfAmerica">BANK OF AMERICA (MALAYSIA) BHD</Select.Option>
-                  <Select.Option value="bankOfChina">BANK OF CHINA (MALAYSIA) BERHAD</Select.Option>
-                  <Select.Option value="bankSimpananNational">BANK SIMPANAN NASIONAL BERHAD</Select.Option>
-                  <Select.Option value="bigPayEwallet">BIGPAY EWALLET</Select.Option>
-                  <Select.Option value="bnpParibas">BNP PARIBAS MALAYSIA BERHAD</Select.Option>
-                  <Select.Option value="chinaConstructionBank">CHINA CONSTRUCTION BANK (MALAYSIA) BERHAD</Select.Option>
-                  <Select.Option value="cimbBank">CIMB BANK BERHAD</Select.Option>
-                  <Select.Option value="citibank">CITIBANK</Select.Option>
-                  <Select.Option value="deutscheBank">DEUTSCHE BANK (MALAYSIA) BERHAD</Select.Option>
-                  <Select.Option value="finexusCards">FINEXUS CARDS SDN BHD</Select.Option>
-                  <Select.Option value="gxBank">GXBank</Select.Option>
-                  <Select.Option value="hsbcBank">HSBC BANK MALAYSIA BERHAD</Select.Option>
-                  <Select.Option value="industrialAndCommercialBankOfChina">INDUSTRIAL AND COMMERCIAL BANK OF CHINA</Select.Option>
-                  <Select.Option value="jpMorganChaseBank">J.P. MORGAN CHASE BANK BERHAD</Select.Option>
-                  <Select.Option value="kuwaitFinanceHouse">KUWAIT FINANCE HOUSE (MALAYSIA) BERHAD</Select.Option>
+                <Select placeholder="Pilih bank" onChange={(value) => setCustomBank(value === 'other')}>
                   <Select.Option value="maybank">MAYBANK BERHAD</Select.Option>
-                  <Select.Option value="mbsbBank">MBSB BANK BERHAD</Select.Option>
-                  <Select.Option value="mizuhoBank">MIZUHO BANK (MALAYSIA) BERHAD</Select.Option>
-                  <Select.Option value="mufgBank">MUFG BANK (MALAYSIA) BERHAD</Select.Option>
-                  <Select.Option value="ocbcBank">OCBC BANK (M) BHD/OCBC AL-AMIN BANK BHD</Select.Option>
-                  <Select.Option value="publicBank">PUBLIC BANK/PUBLIC FINANCE BERHAD</Select.Option>
                   <Select.Option value="rhbBank">RHB BANK BERHAD</Select.Option>
+                  <Select.Option value="cimbBank">CIMB BANK BERHAD</Select.Option>
+                  <Select.Option value="hongLeongBank">HONG LEONG BANK</Select.Option>
+                  <Select.Option value="publicBank">PUBLIC BANK/PUBLIC FINANCE BERHAD</Select.Option>
+                  <Select.Option value="ambank">AMBANK/AMFINANCE BERHAD</Select.Option>
+                  <Select.Option value="bankSimpananNational">BANK SIMPANAN NASIONAL BERHAD</Select.Option>
+                  <Select.Option value="affinBank">AFFIN BANK BERHAD</Select.Option>
+                  <Select.Option value="allianceBank">ALLIANCE BANK MALAYSIA BERHAD</Select.Option>
+                  <Select.Option value="uobBank">UNITED OVERSEAS BANK (MALAYSIA) BERHAD</Select.Option>
+                  <Select.Option value="hsbcBank">HSBC BANK MALAYSIA BERHAD</Select.Option>
                   <Select.Option value="standardCharteredBank">STANDARD CHARTERED BANK MALAYSIA BERHAD</Select.Option>
-                  <Select.Option value="sumitomoMitsuiBankingCorp">SUMITOMO MITSUI BANKING CORP MSIA BHD</Select.Option>
-                  <Select.Option value="touchNGo">TOUCH & GO</Select.Option>
-                  <Select.Option value="unitedOverseasBank">UNITED OVERSEAS BANK (MALAYSIA) BERHAD</Select.Option>
-          </Select>
-        </Form.Item>
+                  <Select.Option value="other">Bank Lain</Select.Option>
+                </Select>
+              </Form.Item>
+              {customBank && (
+                <Form.Item name="customBank" rules={[{ required: true, message: 'Sila masukkan nama bank anda!' }]}>
+                  <Input placeholder="Nama Bank" />
+                </Form.Item>
+              )}
+
+
         <Form.Item name="bankAccountName" rules={[{ required: true, message: 'Sila masukkan nama akaun bank anda!' }]}>
           <Input placeholder="Nama Akaun Bank" />
         </Form.Item>
