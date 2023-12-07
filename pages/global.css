@@ -18,6 +18,8 @@
 
 
 }
+
+
 .ant-menu {
     background:black !important;
 }
@@ -45,4 +47,11 @@
     font-size: 20px;
     font-weight: bold;
     text-align: center;
+  }
+
+  .ant-layout-header{ 
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 100 !important;
+    box-shadow: 2px 2px 100px 0px #0000002e !important;
   }

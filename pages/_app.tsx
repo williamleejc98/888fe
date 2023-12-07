@@ -38,7 +38,7 @@ function MyApp({ Component, pageProps }: AppPropsWithLayout): JSX.Element {
 
     return (
       <ThemedLayoutV2
-        Header={() => <Header sticky />}
+        Header={() => <Header />}
         Sider={(props) => <ThemedSiderV2 {...props} fixed />}
         Title={({collapsed}) => (
           <ThemedTitleV2
