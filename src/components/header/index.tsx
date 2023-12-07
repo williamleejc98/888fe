@@ -62,6 +62,7 @@ export const Header: React.FC = () => {
   const [formData, setFormData] = useState({
     oldPassword: "",
     newPassword: "",
+    confirmPassword: "", // Add this line
   });
   const [loading, setLoading] = useState(false);
 
@@ -89,6 +90,12 @@ export const Header: React.FC = () => {
   };
 
   const handleChangePasswordModalOk = async () => {
+    if (formData.newPassword !== formData.confirmPassword) {
+      message.error("New password and confirm password do not match");
+      return;
+    }
+
+
     try {
       setLoading(true);
       const response = await fetch(
@@ -110,7 +117,7 @@ export const Header: React.FC = () => {
       if (response.ok) {
         // Password change was successful
         message.success("Password changed successfully");
-        setFormData({ oldPassword: "", newPassword: "" }); // Clear the form fields
+        setFormData({ oldPassword: "", newPassword: "", confirmPassword: "" });
         setIsEditModalVisible(false); // Close the modal
       } else {
         // Password change failed
@@ -237,6 +244,33 @@ export const Header: React.FC = () => {
               value={formData.newPassword}
               onChange={(e) =>
                 setFormData({ ...formData, newPassword: e.target.value })
+              }
+            />
+          </Form.Item>
+          <Form.Item
+            label="Confirm New Password"
+            name="confirmPassword"
+            dependencies={['newPassword']}
+            hasFeedback
+            rules={[
+              {
+                required: true,
+                message: "Please confirm your new password",
+              },
+              ({ getFieldValue }) => ({
+                validator(_, value) {
+                  if (!value || getFieldValue('newPassword') === value) {
+                    return Promise.resolve();
+                  }
+                  return Promise.reject(new Error('The two passwords that you entered do not match!'));
+                },
+              }),
+            ]}
+          >
+            <Input.Password
+              value={formData.confirmPassword}
+              onChange={(e) =>
+                setFormData({ ...formData, confirmPassword: e.target.value })
               }
             />
           </Form.Item>
