@@ -44,7 +44,7 @@ export default function AgentCreate() {
                                     },
                                 ]}
                             >
-                                <Input />
+                               <Input addonBefore="P888" />
                             </Form.Item>
                             <Form.Item
                                 label={translate("Password")}

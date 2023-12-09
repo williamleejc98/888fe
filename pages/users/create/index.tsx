@@ -41,7 +41,7 @@ export default function UserCreate() {
             },
           ]}
         >
-        <Input addonBefore="P888" />
+          <Input />
         </Form.Item>
         <Form.Item name="phoneNumber" rules={[{ required: true, message: 'Sila masukkan nombor telefon anda!' }]}>
           <Input addonBefore="+6" placeholder="0108881988" />
