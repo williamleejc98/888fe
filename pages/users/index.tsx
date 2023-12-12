@@ -7,6 +7,7 @@ import { useTable, List, EditButton, ShowButton, DeleteButton, MarkdownField, Da
 import { Table, DatePicker, Space, Button, Modal, Form, Input, InputNumber, Alert, Switch } from "antd";
 import nookies from 'nookies'; // Make sure you've imported nookies
 import axios from 'axios';
+import dayjs from 'dayjs';
 
 
 import { WhatsAppOutlined } from '@ant-design/icons';
@@ -473,8 +474,8 @@ export default function UserList() {
         width={800} // Set the width of the modal
         bodyStyle={{ height: '60vh', overflow: 'auto' }} // Set the height and enable scrolling
       >
-        <DatePicker value={dateFrom} onChange={date => setDateFrom(date)} />
-        <DatePicker value={dateTo} onChange={date => setDateTo(date)} />
+   <DatePicker value={dateFrom ? dayjs(dateFrom) : null} onChange={date => setDateFrom(date ? date.toDate() : null)} />
+   <DatePicker value={dateTo ? dayjs(dateTo) : null} onChange={date => setDateTo(date ? date.toDate() : null)} />
         <Table dataSource={scorelogData} columns={columns} />
 
       </Modal>
