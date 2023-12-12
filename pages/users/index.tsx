@@ -4,9 +4,10 @@ import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import { authProvider } from "src/authProvider";
 import { BaseRecord, useTranslate } from "@refinedev/core";
 import { useTable, List, EditButton, ShowButton, DeleteButton, MarkdownField, DateField } from "@refinedev/antd";
-import { Table, Space, Button, Modal, Form, Input, InputNumber, Alert, Switch } from "antd";
+import { Table, DatePicker, Space, Button, Modal, Form, Input, InputNumber, Alert, Switch } from "antd";
 import nookies from 'nookies'; // Make sure you've imported nookies
 import axios from 'axios';
+
 
 import { WhatsAppOutlined } from '@ant-design/icons';
 type CountdownProps = {
@@ -112,6 +113,58 @@ export default function UserList() {
   const [searchFullName, setSearchFullName] = useState('');
   const [searchContactNumber, setSearchContactNumber] = useState('');
   const [searchBankAccountNumber, setSearchBankAccountNumber] = useState('');
+  const [selectedMemberId, setSelectedMemberId] = useState(null);
+  const [isScorelogModalOpen, setIsScorelogModalOpen] = useState(false);
+  const [dateFrom, setDateFrom] = useState(null);
+  const [dateTo, setDateTo] = useState(null);
+  const [scorelogData, setScorelogData] = useState([]);
+
+  const handleScorelogClick = (memberId) => {
+    setSelectedMemberId(memberId);
+    setIsScorelogModalOpen(true);
+  };
+
+
+  const columns = [
+    {
+      title: 'ID',
+      dataIndex: 'id',
+      key: 'id',
+    },
+    {
+      title: 'Created At',
+      dataIndex: 'created_at',
+      key: 'created_at',
+    },
+    {
+      title: 'Description',
+      dataIndex: 'description',
+      key: 'description',
+    },
+    {
+      title: 'Amount',
+      dataIndex: 'amount',
+      key: 'amount',
+    },
+  ];
+
+  const handleSearch = async () => {
+    try {
+      const fromDate = dateFrom ? dateFrom.toISOString() : '';
+      const toDate = dateTo ? dateTo.toISOString() : '';
+      const apiUrl = `https://cr.go888king.com/api/apollo/get-credit-log-username?credit-page=1&date_from=${fromDate}&date_to=${toDate}&username=${selectedMemberId}`;
+
+      const response = await axios.get(apiUrl);
+      if (response.status === 200) {
+        setScorelogData(response.data.data);
+      } else {
+        console.error('Failed to fetch data');
+      }
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
+
 
 
   const handleSuspendToggle = async (memberId: string, checked: boolean) => {
@@ -399,9 +452,31 @@ export default function UserList() {
       record.bankAccountNumber.includes(searchBankAccountNumber)
   );
 
+  const modalFooter = ( // Custom JSX for the modal footer
+  <div>
+    <button onClick={() => handleSearch()}>Search Scorelog</button>
+  </div>
+);
+
 
   return (
     <div>
+        <Modal
+        title="Scorelog"
+        visible={isScorelogModalOpen}
+        onCancel={() => setIsScorelogModalOpen(false)}
+        onOk={handleSearch}
+        footer={modalFooter} // Set the custom footer for the modal
+
+        width={800} // Set the width of the modal
+        bodyStyle={{ height: '60vh', overflow: 'auto' }} // Set the height and enable scrolling
+      >
+        <DatePicker value={dateFrom} onChange={date => setDateFrom(date)} />
+        <DatePicker value={dateTo} onChange={date => setDateTo(date)} />
+        <Table dataSource={scorelogData} columns={columns} />
+
+      </Modal>
+
       <Modal title={modalInfo.type?.toUpperCase()} visible={modalInfo.visible} onCancel={hideModal} onOk={() => form.submit()}>
         {renderModalContent()}
       </Modal>
@@ -467,6 +542,21 @@ export default function UserList() {
             render={(value: number) => value ? `RM ${value.toFixed(2)}` : 'MYR 0.00'}
 
           />
+
+
+<Table.Column
+    title={translate("Scorelog")}
+    dataIndex="actions"
+    render={(_, record: BaseRecord) => (
+      <Button
+        type="primary"
+        size="small"
+        onClick={() => handleScorelogClick(record.memberId)}
+      >
+        =
+      </Button>
+    )}
+  />
           <Table.Column
             title={translate("Set Credit")}
             dataIndex="actions"
