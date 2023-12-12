@@ -114,8 +114,8 @@ export default function UserList() {
   const [searchContactNumber, setSearchContactNumber] = useState('');
   const [searchBankAccountNumber, setSearchBankAccountNumber] = useState('');
   const [selectedMemberId, setSelectedMemberId] = useState<string | number | null>(null);  const [isScorelogModalOpen, setIsScorelogModalOpen] = useState(false);
-  const [dateFrom, setDateFrom] = useState<Dayjs | null>(null);
-  const [dateTo, setDateTo] = useState<Dayjs | null>(null);
+  const [dateFrom, setDateFrom] = useState<Date | null>(null);
+  const [dateTo, setDateTo] = useState<Date | null>(null);
   const [scorelogData, setScorelogData] = useState([]);
 
   const handleScorelogClick = (memberId: string | number) => {
