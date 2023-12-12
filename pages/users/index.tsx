@@ -113,17 +113,19 @@ export default function UserList() {
   const [searchFullName, setSearchFullName] = useState('');
   const [searchContactNumber, setSearchContactNumber] = useState('');
   const [searchBankAccountNumber, setSearchBankAccountNumber] = useState('');
-  const [selectedMemberId, setSelectedMemberId] = useState(null);
-  const [isScorelogModalOpen, setIsScorelogModalOpen] = useState(false);
+  const [selectedMemberId, setSelectedMemberId] = useState<string | number | null>(null);  const [isScorelogModalOpen, setIsScorelogModalOpen] = useState(false);
   const [dateFrom, setDateFrom] = useState(null);
   const [dateTo, setDateTo] = useState(null);
   const [scorelogData, setScorelogData] = useState([]);
 
   const handleScorelogClick = (memberId: string | number) => {
-    setSelectedMemberId(memberId);
-    setIsScorelogModalOpen(true);
+    if (typeof memberId === 'string' || typeof memberId === 'number') {
+      setSelectedMemberId(memberId);
+      setIsScorelogModalOpen(true);
+    } else {
+      // Handle the case where memberId is neither a string nor a number
+    }
   };
-
 
   const columns = [
     {
