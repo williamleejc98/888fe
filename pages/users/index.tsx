@@ -152,8 +152,8 @@ export default function UserList() {
 
   const handleSearch = async () => {
     try {
-      const fromDate = dateFrom ? dateFrom.toISOString() : '';
-      const toDate = dateTo ? dateTo.toISOString() : '';
+      const fromDate = dateFrom ? (dateFrom as Date).toISOString() : '';
+      const toDate = dateTo ? (dateTo as Date).toISOString() : '';
       const apiUrl = `https://cr.go888king.com/api/apollo/get-credit-log-username?credit-page=1&date_from=${fromDate}&date_to=${toDate}&username=${selectedMemberId}`;
 
       const response = await axios.get(apiUrl);
