@@ -119,7 +119,7 @@ export default function UserList() {
   const [dateTo, setDateTo] = useState(null);
   const [scorelogData, setScorelogData] = useState([]);
 
-  const handleScorelogClick = (memberId) => {
+  const handleScorelogClick = (memberId: string | number) => {
     setSelectedMemberId(memberId);
     setIsScorelogModalOpen(true);
   };
