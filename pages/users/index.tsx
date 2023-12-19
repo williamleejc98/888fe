@@ -149,6 +149,17 @@ export default function UserList() {
       dataIndex: 'amount',
       key: 'amount',
     },
+      {
+      title: 'Before Balance',
+      dataIndex: 'before_balance',
+      key: 'before_balance',
+    },
+
+      {
+      title: 'After Balance',
+      dataIndex: 'after_balance',
+      key: 'after_balance',
+    },
   ];
 
   const handleSearch = async () => {
@@ -193,7 +204,33 @@ export default function UserList() {
     }
   };
 
+//helper functions
+const getToday = () => {
+  const today = new Date();
+  return { start: today, end: today };
+};
 
+const getYesterday = () => {
+  const today = new Date();
+  const yesterday = new Date(today.setDate(today.getDate() - 1));
+  return { start: yesterday, end: yesterday };
+};
+
+const getThisWeek = () => {
+  const today = new Date();
+  const firstDayOfWeek = new Date(today.setDate(today.getDate() - today.getDay()));
+  const lastDayOfWeek = new Date(firstDayOfWeek.getTime());
+  lastDayOfWeek.setDate(firstDayOfWeek.getDate() + 6);
+  return { start: firstDayOfWeek, end: lastDayOfWeek };
+};
+
+const getThisMonth = () => {
+  const today = new Date();
+  const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+  const lastDayOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+  return { start: firstDayOfMonth, end: lastDayOfMonth };
+};
+//
 
   const [showNegativeAlert, setShowNegativeAlert] = useState(false);
   const handleUpdateBalances = async () => {
@@ -464,21 +501,39 @@ export default function UserList() {
 
   return (
     <div>
-        <Modal
-        title="Scorelog"
-        visible={isScorelogModalOpen}
-        onCancel={() => setIsScorelogModalOpen(false)}
-        onOk={handleSearch}
-        footer={modalFooter} // Set the custom footer for the modal
+     <Modal
+  title="Scorelog"
+  visible={isScorelogModalOpen}
+  onCancel={() => setIsScorelogModalOpen(false)}
+  onOk={handleSearch}
+  footer={modalFooter}
+  width={800}
+  bodyStyle={{ height: '60vh', overflow: 'auto' }}
+>
+  <Space>
+  <Button onClick={() => {
+  setDateFrom(getToday().start);
+  setDateTo(getToday().end);
+}}>Today</Button>
+  <Button onClick={() => {
+  setDateFrom(getYesterday().start);
+  setDateTo(getYesterday().end);
+}}>Yesterday</Button>
 
-        width={800} // Set the width of the modal
-        bodyStyle={{ height: '60vh', overflow: 'auto' }} // Set the height and enable scrolling
-      >
-   <DatePicker value={dateFrom ? dayjs(dateFrom) : null} onChange={date => setDateFrom(date ? date.toDate() : null)} />
-   <DatePicker value={dateTo ? dayjs(dateTo) : null} onChange={date => setDateTo(date ? date.toDate() : null)} />
-        <Table dataSource={scorelogData} columns={columns} />
+<Button onClick={() => {
+  setDateFrom(getThisWeek().start);
+  setDateTo(getThisWeek().end);
+}}>This Week</Button>
 
-      </Modal>
+<Button onClick={() => {
+  setDateFrom(getThisMonth().start);
+  setDateTo(getThisMonth().end);
+}}>This Month</Button>
+  </Space>
+  <DatePicker value={dateFrom ? dayjs(dateFrom) : null} onChange={date => setDateFrom(date ? date.toDate() : null)} />
+  <DatePicker value={dateTo ? dayjs(dateTo) : null} onChange={date => setDateTo(date ? date.toDate() : null)} />
+  <Table dataSource={scorelogData} columns={columns} />
+</Modal>
 
       <Modal title={modalInfo.type?.toUpperCase()} visible={modalInfo.visible} onCancel={hideModal} onOk={() => form.submit()}>
         {renderModalContent()}
