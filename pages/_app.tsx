@@ -99,26 +99,12 @@ function MyApp({ Component, pageProps }: AppPropsWithLayout): JSX.Element {
                   },
                 },
                 {
-                  name: "Promo Report",
+                  name: "promoreport",
                   list: "/promoreport",
                   meta: {
                     canDelete: false,
                   },
                 },
-                  {
-                    name: "Summary" ,
-                    list: "/summary",
-                    meta: {
-                      canDelete: false,
-                    },
-                },
-                {
-                  name: "Promo Summary",
-                  list: "/promosummary",
-                  meta: {
-                    canDelete: false,
-                  },
-              },
               ]}
               options={{
                 syncWithLocation: true,
