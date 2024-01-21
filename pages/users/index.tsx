@@ -206,9 +206,15 @@ export default function UserList() {
 
 //helper functions
 const getToday = () => {
-  const today = new Date();
-  return { start: today, end: today };
+  const start = new Date();
+  start.setHours(0, 0, 0, 0); // Set the start time to 12:00 AM of the current day
+
+  const end = new Date();
+  end.setHours(23, 59, 59, 999); // Set the end time to 11:59:59.999 PM of the current day
+
+  return { start, end };
 };
+
 
 const getYesterday = () => {
   const today = new Date();
