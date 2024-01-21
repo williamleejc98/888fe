@@ -53,6 +53,13 @@ export const Header: React.FC = () => {
 
   const translate = useTranslate();
 
+  const [passwordForm] = Form.useForm(); // Create a form instance
+
+  const showChangePasswordModal = () => {
+    setIsChangePasswordModalVisible(true);
+  };
+
+
   // State for the modal
   const [isEditModalVisible, setIsEditModalVisible] = useState(false);
   const [isChangePasswordModalVisible, setIsChangePasswordModalVisible] =
@@ -85,42 +92,34 @@ export const Header: React.FC = () => {
     setIsEditModalVisible(false);
   };
 
-  const showChangePasswordModal = () => {
-    setIsChangePasswordModalVisible(true); // Show the change password modal
-  };
 
   const handleChangePasswordModalOk = async () => {
-    if (formData.newPassword !== formData.confirmPassword) {
-      message.error("New password and confirm password do not match");
-      return;
-    }
-
-
     try {
+      await passwordForm.validateFields();
+      const values = passwordForm.getFieldsValue();
+  
       setLoading(true);
       const response = await fetch(
-        "https://api.play888king.com/agents/change-password", // Replace with your API endpoint
+        "https://api.play888king.com/agents/change-password", // API endpoint
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            // Add any necessary headers, such as authorization token
+            // Include authorization headers if needed
           },
           body: JSON.stringify({
             username: user?.name,
-            oldPassword: formData.oldPassword,
-            newPassword: formData.newPassword,
+            oldPassword: values.oldPassword,
+            newPassword: values.newPassword,
           }),
         }
       );
-
+  
       if (response.ok) {
-        // Password change was successful
         message.success("Password changed successfully");
-        setFormData({ oldPassword: "", newPassword: "", confirmPassword: "" });
-        setIsEditModalVisible(false); // Close the modal
+        passwordForm.resetFields(); // Reset form fields after successful operation
+        setIsChangePasswordModalVisible(false);
       } else {
-        // Password change failed
         message.error("Password change failed");
       }
     } catch (error) {
@@ -129,7 +128,7 @@ export const Header: React.FC = () => {
       setLoading(false);
     } 
   };
-
+  
   const handlePasswordModalCancel = () => {
     setIsChangePasswordModalVisible(false); // Close the change password modal
   };
@@ -279,49 +278,36 @@ export const Header: React.FC = () => {
 
       {/* Change Password Modal */}
       <Modal
-        title="Change Password"
-        visible={isChangePasswordModalVisible}
-        onOk={handleChangePasswordModalOk}
-        onCancel={handlePasswordModalCancel}
-        confirmLoading={loading}
-      >
-        <Form>
-          <Form.Item
-            label="Old Password"
-            name="oldPassword"
-            rules={[
-              {
-                required: true,
-                message: "Please enter your old password",
-              },
-            ]}
-          >
-            <Input.Password
-              value={formData.oldPassword}
-              onChange={(e) =>
-                setFormData({ ...formData, oldPassword: e.target.value })
-              }
-            />
-          </Form.Item>
-          <Form.Item
-            label="New Password"
-            name="newPassword"
-            rules={[
-              {
-                required: true,
-                message: "Please enter your new password",
-              },
-            ]}
-          >
-            <Input.Password
-              value={formData.newPassword}
-              onChange={(e) =>
-                setFormData({ ...formData, newPassword: e.target.value })
-              }
-            />
-          </Form.Item>
-        </Form>
-      </Modal>
+      title="Change Password"
+      visible={isChangePasswordModalVisible}
+      onOk={handleChangePasswordModalOk}
+      onCancel={handlePasswordModalCancel}
+      confirmLoading={loading}
+    >
+      <Form form={passwordForm}>
+        <Form.Item
+          label="Old Password"
+          name="oldPassword"
+          rules={[{ required: true, message: "Please enter your old password" }]}
+        >
+          <Input.Password />
+        </Form.Item>
+        <Form.Item
+          label="New Password"
+          name="newPassword"
+          rules={[{ required: true, message: "Please enter your new password" }]}
+        >
+          <Input.Password />
+        </Form.Item>
+        <Form.Item
+          label="Confirm New Password"
+          name="confirmPassword"
+          rules={[{ required: true, message: "Please confirm your new password" }]}
+        >
+          <Input.Password />
+        </Form.Item>
+      </Form>
+    </Modal>
     </AntdLayout.Header>
   );
 };
