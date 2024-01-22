@@ -17,7 +17,7 @@ export default function PromoSummary() {
         // Decoding token without verifying it
         const decoded = jwt.decode(token);
         const username = decoded.username; // Assuming 'username' is the field in your token payload
-        const newIframeUrl = `https://bo.go888king.com/report/operator-performance-iframe?host_id=d2b154ee85f316a9ba2b9273eb2e3470&username=${username}&event_type=1`;
+        const newIframeUrl = `https://888kingplay.com/report/operator-performance-iframe?host_id=d2b154ee85f316a9ba2b9273eb2e3470&username=${username}&event_type=1`;
         setIframeUrl(newIframeUrl);
       } catch (error) {
         console.error("Error decoding token", error);
