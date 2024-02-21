@@ -118,7 +118,36 @@ export default function UserList() {
   const [dateFrom, setDateFrom] = useState<Date | null>(null);
   const [dateTo, setDateTo] = useState<Date | null>(null);
   const [scorelogData, setScorelogData] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
+  const LoadingOverlay = () => (
+    <div style={{
+      position: 'fixed',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      backgroundColor: 'rgba(0, 0, 0, 0.5)',
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      zIndex: 1000, // Ensure it's above other content
+    }}>
+      <div style={{
+        padding: '20px',
+        backgroundColor: 'white',
+        borderRadius: '5px',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+      }}>
+        <div>Depositing into User, please do not leave the window.</div>
+        {/* You can replace the text above with any spinner or animation component */}
+      </div>
+    </div>
+  );
+
+  
   const handleScorelogClick = (memberId: string | number) => {
     if (typeof memberId === 'string' || typeof memberId === 'number') {
       setSelectedMemberId(memberId);
@@ -321,41 +350,60 @@ const getThisMonth = () => {
     setModalInfo(prev => ({ ...prev, visible: false }));
     form.resetFields();
   };
-  const handleSubmit = async (values: FormValues) => {
-    if (showAlert) {
-      Modal.error({
-        title: 'Input Error',
-        content: 'Your input can only be in two decimals',
-      });
-      return;
+// Assuming you have a state to manage the loading and visibility of the modal
+// For class components: this.state = { isLoading: false, isModalVisible: true };
+// For function components, using hooks:
+
+const handleSubmit = async (values: FormValues) => {
+  // Check for errors first
+  if (showAlert) {
+    Modal.error({
+      title: 'Input Error',
+      content: 'Your input can only be in two decimals',
+    });
+    return;
+  }
+
+  if (showNegativeAlert) {
+    Modal.error({
+      title: 'Input Error',
+      content: 'Your input cannot be negative',
+    }); 
+    return;
+  }
+
+  console.log(`${modalInfo.type} form values:`, values);
+  console.log("Member ID:", modalInfo.memberId);
+
+  // Hide the modal and show loading indicator immediately to prevent double clicks
+  hideModal(); // Hide the modal immediately
+  setIsLoading(true); // Start loading
+
+  try {
+    if (modalInfo.type === "deposit" && 'depositAmount' in values) {
+      await sendApiRequest(modalInfo.memberId!, modalInfo.type, values.depositAmount);
+    } else if (modalInfo.type === "withdraw" && 'withdrawAmount' in values) {
+      await sendApiRequest(modalInfo.memberId!, modalInfo.type, values.withdrawAmount);
     }
-  
-    if (showNegativeAlert) {
-      Modal.error({
-        title: 'Input Error',
-        content: 'Your input cannot be negative',
-      }); 
-      return;
-    }
-  
-    console.log(`${modalInfo.type} form values:`, values);
-    console.log("Member ID:", modalInfo.memberId);
-  
-    try {
-      if (modalInfo.type === "deposit" && 'depositAmount' in values) {
-        await sendApiRequest(modalInfo.memberId!, modalInfo.type, values.depositAmount);
-      } else if (modalInfo.type === "withdraw" && 'withdrawAmount' in values) {
-        await sendApiRequest(modalInfo.memberId!, modalInfo.type, values.withdrawAmount);
-      }
-    } catch (error) {
-      console.error("API request failed:", error);
-      // Optionally handle the error, e.g., show an error message to the user.
-      return; // Prevent the page from reloading if the API request fails.
-    }
-  
-    hideModal();
-    window.location.reload(); // Reload the page only after the API request has completed.
-  };
+
+    // Optionally, show a success message here
+  } catch (error) {
+    console.error("API request failed:", error);
+    // Optionally handle the error, e.g., show an error message to the user.
+    // Make sure to re-show the modal or indicate the error to the user here if necessary.
+  } finally {
+    setIsLoading(false); // Stop loading regardless of the request outcome
+  }
+
+  // Reload the page only after the API request has completed and not on error
+  if (!isLoading) {
+    window.location.reload();
+  }
+};
+
+// Remember to disable the form's submit button based on the isLoading state
+// For example: <button type="submit" disabled={isLoading}>Submit</button>
+
   
 
 
@@ -514,6 +562,7 @@ const getThisMonth = () => {
 
   return (
     <div>
+          {isLoading && <LoadingOverlay />}
      <Modal
   title="Scorelog"
   visible={isScorelogModalOpen}
