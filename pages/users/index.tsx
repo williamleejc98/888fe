@@ -321,7 +321,7 @@ const getThisMonth = () => {
     setModalInfo(prev => ({ ...prev, visible: false }));
     form.resetFields();
   };
-  const handleSubmit = (values: FormValues) => {
+  const handleSubmit = async (values: FormValues) => {
     if (showAlert) {
       Modal.error({
         title: 'Input Error',
@@ -329,27 +329,34 @@ const getThisMonth = () => {
       });
       return;
     }
-
-    // Add this condition
+  
     if (showNegativeAlert) {
       Modal.error({
         title: 'Input Error',
         content: 'Your input cannot be negative',
-      }); return;
+      }); 
+      return;
     }
-
+  
     console.log(`${modalInfo.type} form values:`, values);
     console.log("Member ID:", modalInfo.memberId);
-
-    if (modalInfo.type === "deposit" && 'depositAmount' in values) {
-      sendApiRequest(modalInfo.memberId!, modalInfo.type, values.depositAmount);
-    } else if (modalInfo.type === "withdraw" && 'withdrawAmount' in values) {
-      sendApiRequest(modalInfo.memberId!, modalInfo.type, values.withdrawAmount);
+  
+    try {
+      if (modalInfo.type === "deposit" && 'depositAmount' in values) {
+        await sendApiRequest(modalInfo.memberId!, modalInfo.type, values.depositAmount);
+      } else if (modalInfo.type === "withdraw" && 'withdrawAmount' in values) {
+        await sendApiRequest(modalInfo.memberId!, modalInfo.type, values.withdrawAmount);
+      }
+    } catch (error) {
+      console.error("API request failed:", error);
+      // Optionally handle the error, e.g., show an error message to the user.
+      return; // Prevent the page from reloading if the API request fails.
     }
-
+  
     hideModal();
-    window.location.reload();
+    window.location.reload(); // Reload the page only after the API request has completed.
   };
+  
 
 
 
