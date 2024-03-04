@@ -10,7 +10,7 @@ import { useState, useEffect } from "react";
 import { Table, Space, Modal, Form, Input, Button, Card, DatePicker, Row, Col, notification } from "antd";
 import axios from "axios"; // Import axios
 import nookies from 'nookies'; // Assuming you have nookies installed
-import moment from 'moment';
+import moment from 'moment-timezone';
 import styles from './report.module.css';
 import gameCodes from '../../public/game-codes.json';
 
