@@ -9,7 +9,9 @@ import nookies from 'nookies'; // Make sure you've imported nookies
 import axios from 'axios';
 import dayjs from 'dayjs';
 
+import moment from 'moment-timezone';
 
+// Set a constant for the timezone
 import { WhatsAppOutlined } from '@ant-design/icons';
 type CountdownProps = {
   endTime: string;
@@ -119,6 +121,7 @@ export default function UserList() {
   const [dateTo, setDateTo] = useState<Date | null>(null);
   const [scorelogData, setScorelogData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const TIMEZONE = 'Asia/Singapore'; // GMT+8
 
   const LoadingOverlay = () => (
     <div style={{
@@ -193,10 +196,11 @@ export default function UserList() {
 
   const handleSearch = async () => {
     try {
-      const fromDate = dateFrom ? (dateFrom as Date).toISOString() : '';
-      const toDate = dateTo ? (dateTo as Date).toISOString() : '';
+      const TIMEZONE = 'Asia/Singapore'; // GMT+8
+      const fromDate = dateFrom ? moment(dateFrom).tz(TIMEZONE).format() : '';
+      const toDate = dateTo ? moment(dateTo).tz(TIMEZONE).format() : '';
       const apiUrl = `https://cr.go888king.com/api/apollo/get-credit-log-username?credit-page=1&date_from=${fromDate}&date_to=${toDate}&username=${selectedMemberId}`;
-
+  
       const response = await axios.get(apiUrl);
       if (response.status === 200) {
         setScorelogData(response.data.data);
@@ -207,6 +211,7 @@ export default function UserList() {
       console.error('Error fetching data:', error);
     }
   };
+  
 
 
 
@@ -233,40 +238,29 @@ export default function UserList() {
     }
   };
 
-//helper functions
-const getToday = () => {
-  const start = new Date();
-  start.setHours(0, 0, 0, 0); // Set the start time to 12:00 AM of the current day
-
-  const end = new Date();
-  end.setHours(23, 59, 59, 999); // Set the end time to 11:59:59.999 PM of the current day
-
-  return { start, end };
-};
-
-
-const getYesterday = () => {
-  const today = new Date();
-  const yesterday = new Date(today.setDate(today.getDate() - 1));
-  return { start: yesterday, end: yesterday };
-};
-
-const getThisWeek = () => {
-  const today = new Date();
-  const firstDayOfWeek = new Date(today.setDate(today.getDate() - today.getDay()));
-  const lastDayOfWeek = new Date(firstDayOfWeek.getTime());
-  lastDayOfWeek.setDate(firstDayOfWeek.getDate() + 6);
-  return { start: firstDayOfWeek, end: lastDayOfWeek };
-};
-
-const getThisMonth = () => {
-  const today = new Date();
-  const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
-  const lastDayOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
-  return { start: firstDayOfMonth, end: lastDayOfMonth };
-};
-//
-
+  const getToday = () => {
+    const start = moment().tz(TIMEZONE).startOf('day').toDate();
+    const end = moment().tz(TIMEZONE).endOf('day').toDate();
+    return { start, end };
+  };
+  
+  const getYesterday = () => {
+    const start = moment().tz(TIMEZONE).subtract(1, 'days').startOf('day').toDate();
+    const end = moment().tz(TIMEZONE).subtract(1, 'days').endOf('day').toDate();
+    return { start, end };
+  };
+  
+  const getThisWeek = () => {
+    const start = moment().tz(TIMEZONE).startOf('week').toDate();
+    const end = moment().tz(TIMEZONE).endOf('week').toDate();
+    return { start, end };
+  };
+  
+  const getThisMonth = () => {
+    const start = moment().tz(TIMEZONE).startOf('month').toDate();
+    const end = moment().tz(TIMEZONE).endOf('month').toDate();
+    return { start, end };
+  };
   const [showNegativeAlert, setShowNegativeAlert] = useState(false);
   const handleUpdateBalances = async () => {
     const host_id = 'd2b154ee85f316a9ba2b9273eb2e3470'; // Replace with your actual host_id

@@ -8,6 +8,7 @@ import nookies from 'nookies'; // Assuming you have nookies installed
 import moment from 'moment';
 import styles from './report.module.css';
 import gameCodes from '../../public/game-codes.json';
+const TIMEZONE = 'Asia/Singapore'; // GMT+8
 
 type GameCodesType = {
   [key: string]: string;
@@ -244,10 +245,23 @@ width="80%"
     placeholder="End Date"
     disabledDate={(current) => current && current > moment().endOf('day')}
   />
-    <Button onClick={() => { setStartDate(moment().subtract(1, 'days').startOf('day').toISOString()); setEndDate(moment().subtract(1, 'days').endOf('day').toISOString()); }}>YESTERDAY</Button>
-  <Button onClick={() => { setStartDate(moment().startOf('month').toISOString()); setEndDate(moment().endOf('month').toISOString()); }}>THIS MONTH</Button>
-  <Button onClick={() => { setStartDate(moment().toISOString()); setEndDate(moment().toISOString()); }}>TODAY</Button>
-  <Button onClick={() => { setStartDate(moment().subtract(1, 'weeks').startOf('week').toISOString()); setEndDate(moment().toISOString()); }}>LAST WEEK</Button>
+<Button onClick={() => { 
+  setStartDate(moment().tz(TIMEZONE).startOf('day').toISOString()); 
+  setEndDate(moment().tz(TIMEZONE).endOf('day').toISOString()); 
+}}>TODAY</Button>
+<Button onClick={() => { 
+  setStartDate(moment().tz(TIMEZONE).subtract(1, 'weeks').startOf('week').toISOString()); 
+  setEndDate(moment().tz(TIMEZONE).endOf('week').toISOString()); 
+}}>LAST WEEK</Button>
+<Button onClick={() => { 
+  setStartDate(moment().tz(TIMEZONE).subtract(1, 'months').startOf('month').toISOString()); 
+  setEndDate(moment().tz(TIMEZONE).endOf('month').toISOString()); 
+}}>LAST MONTH</Button>
+<Button onClick={() => { 
+  setStartDate(null); 
+  setEndDate(null); 
+}}>ALL TIME</Button>
+
 </Col>
 
 
