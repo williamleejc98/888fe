@@ -8,7 +8,6 @@ import nookies from 'nookies'; // Assuming you have nookies installed
 import moment from 'moment';
 import styles from './report.module.css';
 import gameCodes from '../../public/game-codes.json';
-const TIMEZONE = 'Asia/Singapore'; // GMT+8
 
 type GameCodesType = {
   [key: string]: string;
@@ -42,6 +41,7 @@ export default function ReportTable() {
   const [endDate, setEndDate] = useState<string | null>(null);
   const [lastFetched, setLastFetched] = useState<Date | null>(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const TIMEZONE = 'Asia/Singapore'; // GMT+8
 
  
 const [iframeUrl, setIframeUrl] = useState("");
